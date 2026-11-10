@@ -1,9 +1,9 @@
 /* DealDex · tactile fantasy card interface — no UI framework or external font dependencies */
 :root{color-scheme:dark;--ink:#f8ecd2;--muted:#c9bbaa;--dim:#a99b8e;--gold:#d7aa61;--gold-light:#ffe3a3;--outline:rgba(223,174,101,.35);--violet:#a18aff;--surface:#182033;--header:#12192b;font-family:system-ui,-apple-system,"Noto Sans CJK SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
 *{box-sizing:border-box}body{margin:0;background:#14151d;color:var(--ink);min-width:320px}button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #d0bcff;outline-offset:4px}button:disabled{cursor:not-allowed}a{color:inherit;text-decoration:none}svg{display:block}
-.world{position:fixed;inset:0;background:linear-gradient(180deg,rgba(9,14,25,.52),rgba(12,13,23,.24) 42%,rgba(16,9,9,.15)),url('./assets/room.svg') center center / cover no-repeat;z-index:-3}
+.world{position:fixed;inset:0;background:linear-gradient(180deg,rgba(9,14,25,.52),rgba(12,13,23,.24) 42%,rgba(16,9,9,.15)),url('./assets/room.svg') center center / cover no-repeat;z-index:0;pointer-events:none}
 .screen-grain{position:fixed;inset:0;background:url('./assets/grain.svg') repeat;mix-blend-mode:soft-light;opacity:.36;pointer-events:none;z-index:20}
-.app{min-height:100svh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.app{min-height:100svh;display:flex;flex-direction:column;position:relative;z-index:1;overflow:hidden}
 .app:after{content:"";position:absolute;inset:72px 0 auto;height:460px;background:radial-gradient(ellipse at 50% 42%,rgba(26,25,42,.55),transparent 57%);z-index:-1;pointer-events:none}
 .site-header{height:75px;display:flex;align-items:center;padding:0 clamp(24px,4.5vw,78px);gap:clamp(24px,4vw,68px);flex-shrink:0;position:relative;z-index:8;background:linear-gradient(180deg,rgba(18,24,41,.96),rgba(17,22,37,.97));border-bottom:1px solid #755538;box-shadow:0 4px 0 #24190f,0 7px 19px #07091069}
 .site-header:after{content:"";height:2px;position:absolute;bottom:0;left:9%;right:9%;background:linear-gradient(90deg,transparent,#dfaf69 15%,#65452c 47%,#e8b66d 70%,transparent);opacity:.58}
