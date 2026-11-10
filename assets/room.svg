@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#192135"/><stop offset=".55" stop-color="#272131"/><stop offset="1" stop-color="#211922"/></linearGradient>
+ <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#76533a"/><stop offset=".13" stop-color="#533a2c"/><stop offset=".46" stop-color="#392820"/><stop offset="1" stop-color="#241b19"/></linearGradient>
+ <radialGradient id="light" cx=".8" cy=".28" r=".76"><stop stop-color="#d8ae67" stop-opacity=".38"/><stop offset=".5" stop-color="#ac8456" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+ <linearGradient id="window" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7995ac"/><stop offset=".43" stop-color="#b8ac9c"/><stop offset="1" stop-color="#d6b38c"/></linearGradient>
+ <radialGradient id="vignette"><stop stop-color="#000" stop-opacity="0" offset=".48"/><stop stop-color="#000" stop-opacity=".61" offset="1"/></radialGradient>
+ <filter id="soft"><feGaussianBlur stdDeviation="14"/></filter>
+ <filter id="paper"><feTurbulence type="fractalNoise" baseFrequency=".55" numOctaves="3" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".16"/></feComponentTransfer></filter>
+ <clipPath id="arch"><path d="M1290 435V206a129 129 0 0 1 258 0v229Z"/></clipPath>
+</defs>
+<rect width="1600" height="900" fill="url(#wall)"/>
+<!-- timber wall panels -->
+<g opacity=".65" stroke="#110e14" stroke-width="12" fill="none"><path d="M0 116H1600M0 595H1600M260 0V595M1135 0V595M1555 0V595"/><path stroke="#80593c" stroke-width="4" d="M0 126H1600M272 0V595M1143 0V595"/></g>
+<!-- left bookshelves -->
+<g opacity=".77">
+<path fill="#100f18" stroke="#6b4935" stroke-width="13" d="M0 125H305V618H0Z"/>
+<path stroke="#6e4a31" stroke-width="13" d="M0 276H302M0 431H302M0 581H302"/>
+<g stroke="#17151b" stroke-width="3">
+ <path fill="#3b2e37" d="M9 149h25v115H9ZM40 160h23v102H40Z"/><path fill="#6e4550" d="M68 145h22v118H68Z"/><path fill="#35425b" d="M95 156h29v108H95Z"/><path fill="#806a4c" d="M130 151h25v112h-25Z"/><path fill="#414b45" d="M164 145h32v119h-32Z"/><path fill="#5a3c3c" d="M202 166h25v98h-25Z"/><path fill="#3b4455" d="M231 156h25v108h-25Z"/>
+ <path fill="#5d403e" d="M7 296h29v121H7Z"/><path fill="#344557" d="M42 305h25v112H42Z"/><path fill="#6f6050" d="M75 312h21v105H75Z"/><path fill="#403950" d="M107 290h30v128h-30Z"/><path fill="#74534e" d="M145 300h21v116h-21Z"/><path fill="#34475a" d="M174 306h24v110h-24Z"/><path fill="#7b624e" d="M206 292h25v124h-25Z"/><path fill="#53434a" d="M239 304h24v111h-24Z"/>
+ <path fill="#34435a" d="M12 454h24v114H12Z"/><path fill="#615243" d="M41 469h24v99H41Z"/><path fill="#68484c" d="M73 450h28v118H73Z"/><path fill="#3d5257" d="M110 458h26v111h-26Z"/><path fill="#75624e" d="M142 466h28v102h-28Z"/><path fill="#445070" d="M177 448h24v121h-24Z"/><path fill="#70504e" d="M207 461h23v107h-23Z"/><path fill="#63553f" d="M237 451h25v119h-25Z"/>
+</g>
+<g stroke="#c5a175" opacity=".28" stroke-width="3"><path d="M17 160v85M48 174v77M77 157v88M108 167v82M140 159v82M178 160v83M218 181v70M246 165v82M16 309v95M50 311v97M85 327v77M119 301v107M156 309v96M218 311v96M247 317v89M20 468v87M84 460v93M120 470v81M158 479v73M186 465v85M218 472v77"/></g>
+</g>
+<!-- windowsill and arched daylight -->
+<path d="M1260 462V203a160 160 0 0 1 320 0v259Z" fill="#19181d" stroke="#835d42" stroke-width="24"/>
+<g clip-path="url(#arch)"><rect x="1265" y="75" width="310" height="370" fill="url(#window)"/><path fill="#d7c4a3" opacity=".52" d="M1270 320q80-60 160-8t135-20v160h-295Z"/><path fill="#617078" opacity=".59" d="M1260 375q83-73 165-21t145-15v110h-310Z"/><path fill="#586478" d="M1376 347v-64l17-22 17 22v64h16v-90l20-26 20 26v90h12v-45l15-21 15 21v74Z"/><path fill="#f2ca8d" opacity=".18" d="M1250 100h400v360h-400Z"/></g>
+<path d="M1419 75v375M1287 308h265" stroke="#5c443a" stroke-width="19"/><path d="M1278 456h300" stroke="#9c6d46" stroke-width="26"/>
+<!-- atmospheric angled shaft of light -->
+<path d="M1340 88 1600 90 1230 720 710 720Z" fill="#dab878" opacity=".065"/>
+<path d="M1350 120 1530 86 1060 668 840 700Z" fill="#e6d0a0" opacity=".075" filter="url(#soft)"/>
+<!-- tabletop horizontal with irregular grain -->
+<path d="M0 640C330 613 1220 620 1600 644V900H0Z" fill="url(#wood)"/>
+<path d="M0 646q800-17 1600 0" fill="none" stroke="#bf8c57" stroke-width="8" opacity=".65"/>
+<path d="M0 675q380 28 800 0t800 7M0 739q600 11 1150-13t450 4M0 788q800-16 1600 2M0 836q420 14 900-9t700-8" stroke="#a77c53" stroke-width="3" fill="none" opacity=".20"/>
+<path d="M0 702q320 40 600 12t1000 24M0 810q600-39 900 0t700 0" stroke="#190d0c" stroke-width="10" opacity=".3" fill="none"/>
+<!-- side lantern -->
+<g transform="translate(35 425)" opacity=".85"><path d="M15 75 28 11h37l15 64-8 122H24Z" fill="#171922" stroke="#9c6c38" stroke-width="8"/><path d="M28 76 39 28h19l10 48-4 96H32Z" fill="#e8a24d" opacity=".56"/><ellipse cx="49" cy="120" rx="32" ry="80" fill="#f8b44e" opacity=".45" filter="url(#soft)"/><path d="M12 68h75M13 197h67M44 16V2m-20 20c0-27 45-28 50 0" stroke="#b98a52" stroke-width="7" fill="none"/><path d="m47 162-10-39 13-39 15 40Z" fill="#ffdb75"/></g>
+<!-- edge of old parchment and antique books -->
+<g opacity=".50"><path d="M0 790 255 795l-24 105H0Z" fill="#392e30" stroke="#916a4d" stroke-width="8"/><path d="M0 820h250M0 855h240" stroke="#b08a5f" stroke-width="5"/><path d="m1290 800 210-45 50 160-215 30Z" fill="#bb9564" opacity=".35" stroke="#d2b48b" stroke-width="5"/></g>
+<rect width="1600" height="900" fill="url(#light)"/>
+<rect width="1600" height="900" filter="url(#paper)" opacity=".37"/>
+<rect width="1600" height="900" fill="url(#vignette)" opacity=".60"/>
+</svg>
