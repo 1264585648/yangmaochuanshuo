@@ -50,12 +50,17 @@ node scripts/dev-server.mjs
 ```text
 index.html             页面语义结构
 styles.css             视觉和动效
-app.js                 卡池与交互
+src/main.js            入口：状态装配与事件绑定
+src/config.js          每日次数、存储键、动效时长等常量
+src/data/              卡池与演示福利数据
+src/domain/            抽卡、每日次数、图鉴等纯逻辑（随机源与日期可注入）
+src/storage/local.js   localStorage 读写与数据校验
+src/ui/                卡包渲染、弹窗、HTML 构建与转义
 assets/room.svg        原创矢量书房背景
 assets/grain.svg       可重复使用的颗粒纹理
 assets/favicon.svg     DealDex 标识
 scripts/dev-server.mjs 零依赖本地服务器（备用）
-tests/smoke.test.js    静态健全性检查（Vitest）
+tests/                 Vitest 单元测试与 jsdom 页面集成测试
 vite.config.js         开发服务器、构建与测试配置
 eslint.config.js       ESLint 配置
 .github/workflows/     CI：lint、格式检查、测试、构建
