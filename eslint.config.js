@@ -23,6 +23,10 @@ export default tseslint.config(
   {
     files: ['worker/**/*.ts', 'tests/**/*.ts'],
     extends: [tseslint.configs.recommended],
+    rules: {
+      // Allow `const { id, ...rest } = obj` to drop fields.
+      '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
+    },
   },
   {
     files: ['worker/**/*.ts'],

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isSharedHost } from './shared-hosts';
 
 export const POOLS = ['ai', 'cloud', 'software', 'education'] as const;
 export const RARITIES = ['A', 'S', 'SSR'] as const;
@@ -24,9 +25,10 @@ export const slugSchema = z
 
 const text = (max: number) => z.string().trim().min(1).max(max);
 
-/** https only, no embedded credentials. */
+/** https only, no embedded credentials; stored in canonical `href` form. */
 export const httpsUrl = z
   .string()
+  .trim()
   .max(LIMITS.url)
   .refine((value) => {
     try {
@@ -35,7 +37,9 @@ export const httpsUrl = z
     } catch {
       return false;
     }
-  }, 'must be an https URL without credentials');
+  }, 'must be an https URL without credentials')
+  .transform((value) => new URL(value).href)
+  .pipe(z.string().max(LIMITS.url));
 
 const isoDate = z.iso.date();
 
@@ -94,7 +98,11 @@ const domain = z
   .string()
   .trim()
   .toLowerCase()
-  .regex(/^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/, 'bare registrable domain');
+  .regex(/^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/, 'bare registrable domain')
+  .refine(
+    (d) => !isSharedHost(d),
+    'shared hosting or public suffix; register the exact host instead',
+  );
 
 export const providerSchema = z.strictObject({
   id: slugSchema,

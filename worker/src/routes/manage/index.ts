@@ -1,0 +1,102 @@
+import { authenticate } from '../../auth/tokens';
+import { readJsonBody } from '../../http/body';
+import { fail, methodNotAllowed, notFound } from '../../http/respond';
+import { commit } from '../../write/commit';
+import { checkIdempotency, requestHash, validateKey } from '../../write/idempotency';
+import { consumeRateLimit, type RateLimit } from '../../write/rate-limit';
+import { listAuditEntries, revertAuditEntry } from './audit';
+import { applyChange, listChangeRequests, proposeChange, rejectChange } from './changes';
+import {
+  createOffer,
+  editOffer,
+  getManagedOffer,
+  listManagedOffers,
+  transitionOffer,
+} from './offers';
+import { createProvider, updateProvider } from './providers';
+import type { Handler } from './shared';
+
+interface Route {
+  pattern: RegExp;
+  methods: Partial<Record<'GET' | 'POST' | 'PATCH', Handler>>;
+}
+
+const P = '^/api/manage';
+
+/** Order matters: `/offers/:id/changes` must match before `/offers/:id/:action`. */
+const ROUTES: readonly Route[] = [
+  { pattern: new RegExp(`${P}/offers$`), methods: { GET: listManagedOffers, POST: createOffer } },
+  {
+    pattern: new RegExp(`${P}/offers/([^/]+)$`),
+    methods: { GET: getManagedOffer, PATCH: editOffer },
+  },
+  { pattern: new RegExp(`${P}/offers/([^/]+)/changes$`), methods: { POST: proposeChange } },
+  { pattern: new RegExp(`${P}/offers/([^/]+)/([a-z]+)$`), methods: { POST: transitionOffer } },
+  { pattern: new RegExp(`${P}/changes$`), methods: { GET: listChangeRequests } },
+  { pattern: new RegExp(`${P}/changes/([^/]+)/apply$`), methods: { POST: applyChange } },
+  { pattern: new RegExp(`${P}/changes/([^/]+)/reject$`), methods: { POST: rejectChange } },
+  { pattern: new RegExp(`${P}/providers$`), methods: { POST: createProvider } },
+  { pattern: new RegExp(`${P}/providers/([^/]+)$`), methods: { PATCH: updateProvider } },
+  { pattern: new RegExp(`${P}/audit$`), methods: { GET: listAuditEntries } },
+  { pattern: new RegExp(`${P}/audit/(\\d+)/revert$`), methods: { POST: revertAuditEntry } },
+];
+
+function decodeParams(match: RegExpExecArray): string[] | null {
+  try {
+    return match.slice(1).map((p) => decodeURIComponent(p));
+  } catch {
+    return null;
+  }
+}
+
+const unauthorized = () =>
+  fail(401, 'unauthorized', 'A valid API token is required', {
+    headers: { 'www-authenticate': 'Bearer' },
+  });
+
+export async function routeManage(
+  request: Request,
+  env: Env,
+  url: URL,
+  now: Date,
+  rateLimit: RateLimit,
+): Promise<Response> {
+  const db = env.DB;
+  const client = await authenticate(db, request);
+  if (!client) return unauthorized();
+
+  let match: RegExpExecArray | null = null;
+  const route = ROUTES.find((r) => (match = r.pattern.exec(url.pathname)) !== null);
+  if (!route || !match) return notFound();
+  const method = request.method as keyof Route['methods'];
+  // Own-property check: methods like "constructor" must not resolve via the prototype.
+  const handler = Object.hasOwn(route.methods, method) ? route.methods[method] : undefined;
+  if (!handler) return methodNotAllowed(Object.keys(route.methods));
+  const params = decodeParams(match);
+  if (!params) return notFound();
+
+  if (method === 'GET') {
+    const result = await handler({ db, client, now, body: {}, url }, params);
+    if (result instanceof Response) return result;
+    throw new Error(`GET handler for ${url.pathname} returned a write plan`);
+  }
+
+  const limited = await consumeRateLimit(db, client.id, now, rateLimit);
+  if (!limited.ok) {
+    return fail(429, 'rate_limited', 'Too many write requests; slow down', {
+      headers: { 'retry-after': String(limited.retryAfter) },
+    });
+  }
+  const key = validateKey(request.headers.get('idempotency-key'));
+  if (!key.ok) return key.response;
+  const body = await readJsonBody(request);
+  if (!body.ok) return body.response;
+
+  const idempotency = { key: key.key, hash: await requestHash(method, url.pathname, body.raw) };
+  const replay = await checkIdempotency(db, client.id, idempotency, now);
+  if (replay) return replay;
+
+  const result = await handler({ db, client, now, body: body.value, url }, params);
+  if (result instanceof Response) return result;
+  return commit({ db, client, now, idempotency }, result);
+}

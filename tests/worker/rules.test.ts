@@ -7,6 +7,7 @@ import {
   initialStatus,
   canEditDirectly,
   canManageProviders,
+  scopeMayAttempt,
   type Action,
   type Scope,
   type Status,
@@ -67,6 +68,15 @@ describe('planTransition (full matrix)', () => {
 });
 
 describe('scope rules', () => {
+  it('scopeMayAttempt agrees with the transition matrix', () => {
+    for (const scope of SCOPES) {
+      for (const action of ACTIONS) {
+        const anyAllowed = STATUSES.some((status) => ALLOWED[`${scope}:${action}:${status}`]);
+        expect(scopeMayAttempt(scope, action), `${scope} ${action}`).toBe(anyAllowed);
+      }
+    }
+  });
+
   it('lands inspector-created offers in review, admin ones in draft', () => {
     expect(initialStatus('inspector')).toBe('pending_review');
     expect(initialStatus('admin')).toBe('draft');

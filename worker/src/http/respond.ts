@@ -18,11 +18,13 @@ const BASE_HEADERS = {
 export const PUBLIC_CACHE = 'public, max-age=60';
 export const NO_STORE = 'no-store';
 
+/** Send an already-serialised JSON body (used for idempotent replays). */
+export function sendJson(status: number, body: string, headers: Record<string, string>): Response {
+  return new Response(body, { status, headers: { ...BASE_HEADERS, ...headers } });
+}
+
 function send(status: number, body: unknown, headers: Record<string, string>): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...BASE_HEADERS, ...headers },
-  });
+  return sendJson(status, JSON.stringify(body), headers);
 }
 
 /** Success envelope: `{ success, data, error: null, meta? }`. */

@@ -60,12 +60,17 @@ assets/room.svg        原创矢量书房背景
 assets/grain.svg       可重复使用的颗粒纹理
 assets/favicon.svg     DealDex 标识
 scripts/dev-server.mjs 零依赖本地服务器（备用）
-tests/                 Vitest 单元测试与 jsdom 页面集成测试
+worker/src/             Cloudflare Worker：公开只读接口与管理写入接口
+migrations/            D1 建表迁移
+wrangler.jsonc         Worker、静态资源与 D1 配置
+scripts/manage-token.mjs 写入接口令牌的签发、列出与吊销
+tests/                 Vitest 单元测试、jsdom 页面集成测试与本地 D1 接口测试
 vite.config.js         开发服务器、构建与测试配置
 eslint.config.js       ESLint 配置
 .github/workflows/     CI：lint、格式检查、测试、构建
 docs/IMPLEMENTATION.md 第一阶段实施记录与上线边界
 docs/PLANNING.md       前期规划与分阶段路线
+docs/API.md            接口说明（含 AI 巡检接入流程）
 ```
 
 ## 重要：当前为视觉与交互原型

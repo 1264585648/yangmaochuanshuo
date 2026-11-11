@@ -35,6 +35,11 @@ export function planTransition(scope: Scope, action: Action, status: Status): Tr
   return { ok: true, to: rule.to };
 }
 
+/** Whether this scope may ever perform the action, regardless of state. */
+export function scopeMayAttempt(scope: Scope, action: Action): boolean {
+  return TRANSITIONS[action].scopes.includes(scope);
+}
+
 /** Offers created by inspectors go straight to human review. */
 export function initialStatus(scope: Scope): Status {
   return scope === 'inspector' ? 'pending_review' : 'draft';

@@ -55,6 +55,7 @@ describe('schema', () => {
       'offers',
       'providers',
       'rate_limits',
+      'write_guard',
     ]);
   });
 
