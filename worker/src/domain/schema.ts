@@ -16,7 +16,7 @@ const LIMITS = {
   regions: 50,
 } as const;
 
-const slug = z
+export const slugSchema = z
   .string()
   .min(LIMITS.idMin)
   .max(LIMITS.idMax)
@@ -71,7 +71,7 @@ const validWindow = (v: { validFrom?: string | null; validUntil?: string | null 
 const windowError = { message: 'validUntil must not be before validFrom', path: ['validUntil'] };
 
 export const offerCreateSchema = z
-  .strictObject({ id: slug, providerId: slug, ...contentShape })
+  .strictObject({ id: slugSchema, providerId: slugSchema, ...contentShape })
   .refine(validWindow, windowError);
 
 export const offerPatchSchema = z
@@ -97,7 +97,7 @@ const domain = z
   .regex(/^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/, 'bare registrable domain');
 
 export const providerSchema = z.strictObject({
-  id: slug,
+  id: slugSchema,
   name: text(LIMITS.name),
   officialDomains: z.array(domain).min(1).max(LIMITS.domains),
 });
