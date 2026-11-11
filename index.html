@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#161b2b" />
-    <meta name="description" content="DealDex 福利抽卡：在 AI、云服务器、软件工具和教育优惠中发现值得关注的数字福利。" />
+    <meta
+      name="description"
+      content="DealDex 福利抽卡：在 AI、云服务器、软件工具和教育优惠中发现值得关注的数字福利。"
+    />
     <title>DealDex · 数字福利抽卡</title>
     <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
     <link rel="stylesheet" href="./styles.css" />
@@ -15,43 +18,95 @@
     <div class="app">
       <header class="site-header">
         <a class="brand" href="#home" aria-label="DealDex 首页">
-          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 2 44 13.4v21.2L24 46 4 34.6V13.4L24 2Z" fill="#6f63d3"/><path d="m24 8 14 8.2v15.6L24 40 10 31.8V16.2L24 8Z" fill="#cec5fc"/><path d="m24 8 14 8.2-14 7.9-14-7.9L24 8Z" fill="#f6f1ff"/><path d="M24 24.1 38 16.2v15.6L24 40V24.1Z" fill="#9589ee"/><path d="M10 16.2 24 24.1V40l-14-8.2V16.2Z" fill="#564bb2"/></svg></span>
+          <span class="brand-mark" aria-hidden="true"
+            ><svg viewBox="0 0 48 48">
+              <path d="M24 2 44 13.4v21.2L24 46 4 34.6V13.4L24 2Z" fill="#6f63d3" />
+              <path d="m24 8 14 8.2v15.6L24 40 10 31.8V16.2L24 8Z" fill="#cec5fc" />
+              <path d="m24 8 14 8.2-14 7.9-14-7.9L24 8Z" fill="#f6f1ff" />
+              <path d="M24 24.1 38 16.2v15.6L24 40V24.1Z" fill="#9589ee" />
+              <path d="M10 16.2 24 24.1V40l-14-8.2V16.2Z" fill="#564bb2" /></svg
+          ></span>
           <span class="brand-word">DealDex</span>
           <span class="brand-sub">福利传说</span>
         </a>
         <nav class="main-nav" aria-label="主导航">
-          <button type="button" class="nav-link is-active" data-nav="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 7 8-4 8 4-8 4-8-4Zm0 5 8 4 8-4M4 17l8 4 8-4"/></svg>抽卡</button>
-          <button type="button" class="nav-link" data-nav="collection"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4 5 3 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Zm0 13.5c0-1.4 1-2.5 2.5-2.5H20"/></svg>福利图鉴</button>
-          <button type="button" class="nav-link" data-nav="discover"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z"/></svg>发现优惠</button>
+          <button type="button" class="nav-link is-active" data-nav="home">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m4 7 8-4 8 4-8 4-8-4Zm0 5 8 4 8-4M4 17l8 4 8-4" /></svg
+            >抽卡
+          </button>
+          <button type="button" class="nav-link" data-nav="collection">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 5.5C4 4 5 3 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Zm0 13.5c0-1.4 1-2.5 2.5-2.5H20"
+              /></svg
+            >福利图鉴
+          </button>
+          <button type="button" class="nav-link" data-nav="discover">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z" /></svg
+            >发现优惠
+          </button>
         </nav>
-        <button type="button" class="header-count" id="headerCount" aria-label="查看今日抽卡次数"> <span class="header-count-icon">✦</span><span>今日剩余</span><strong id="headerRemaining">3 / 3</strong><span>次</span></button>
+        <button type="button" class="header-count" id="headerCount" aria-label="查看今日抽卡次数">
+          <span class="header-count-icon">✦</span><span>今日剩余</span
+          ><strong id="headerRemaining">3 / 3</strong><span>次</span>
+        </button>
       </header>
 
       <main id="home" class="main-content">
         <section class="hero" aria-labelledby="pageTitle">
-          <div class="eyebrow"><span class="eyebrow-line"></span><span>THE LEGEND OF GREAT DEALS</span><span class="eyebrow-line"></span></div>
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span><span>THE LEGEND OF GREAT DEALS</span
+            ><span class="eyebrow-line"></span>
+          </div>
           <h1 id="pageTitle">抽卡发现<span>全球数字福利</span></h1>
-          <p class="subtitle">AI 工具 <span>·</span> 云服务器 <span>·</span> 软件工具 <span>·</span> 教育优惠</p>
+          <p class="subtitle">
+            AI 工具 <span>·</span> 云服务器 <span>·</span> 软件工具 <span>·</span> 教育优惠
+          </p>
         </section>
 
         <section class="summon" aria-label="选择福利卡包">
           <div class="stage-aura" aria-hidden="true"></div>
           <div class="table-rune" aria-hidden="true"><div class="rune-ring"></div></div>
-          <button type="button" class="switch-arrow prev" id="prevPack" aria-label="上一个卡池"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>
+          <button type="button" class="switch-arrow prev" id="prevPack" aria-label="上一个卡池">
+            <svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" /></svg>
+          </button>
           <div class="pack-scene" id="packScene" role="group" aria-label="四种福利卡池">
             <!-- 卡包由 JavaScript 按数据生成 -->
           </div>
-          <button type="button" class="switch-arrow next" id="nextPack" aria-label="下一个卡池"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
-          <div class="selected-hint" aria-live="polite"><span class="hint-spark">✦</span><span id="selectedDescription">精选 AI 工具、模型体验和 API 额度</span><span class="hint-spark">✦</span></div>
+          <button type="button" class="switch-arrow next" id="nextPack" aria-label="下一个卡池">
+            <svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" /></svg>
+          </button>
+          <div class="selected-hint" aria-live="polite">
+            <span class="hint-spark">✦</span
+            ><span id="selectedDescription">精选 AI 工具、模型体验和 API 额度</span
+            ><span class="hint-spark">✦</span>
+          </div>
         </section>
 
         <div class="action-zone">
-          <button type="button" class="open-button" id="openPack"><span class="open-button-art" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 5h14l-2 14H7L5 5Zm2.5 5h9M12 5v13"/></svg></span><span>打开卡包</span><span class="open-arrow">›</span></button>
-          <div class="game-meta"><span>今日剩余 <b id="metaRemaining">3 / 3</b> 次</span><span class="meta-divider" aria-hidden="true"></span><button type="button" id="probabilityButton" class="text-link">查看概率 <span aria-hidden="true">ⓘ</span></button></div>
+          <button type="button" class="open-button" id="openPack">
+            <span class="open-button-art" aria-hidden="true"
+              ><svg viewBox="0 0 24 24">
+                <path d="M5 5h14l-2 14H7L5 5Zm2.5 5h9M12 5v13" /></svg></span
+            ><span>打开卡包</span><span class="open-arrow">›</span>
+          </button>
+          <div class="game-meta">
+            <span>今日剩余 <b id="metaRemaining">3 / 3</b> 次</span
+            ><span class="meta-divider" aria-hidden="true"></span
+            ><button type="button" id="probabilityButton" class="text-link">
+              查看概率 <span aria-hidden="true">ⓘ</span>
+            </button>
+          </div>
         </div>
       </main>
 
-      <footer class="bottom-note"><span class="note-ornament">✦</span> 抽到的是优惠信息，实际领取资格以官方活动规则为准 <span class="note-ornament">✦</span></footer>
+      <footer class="bottom-note">
+        <span class="note-ornament">✦</span> 抽到的是优惠信息，实际领取资格以官方活动规则为准
+        <span class="note-ornament">✦</span>
+      </footer>
     </div>
 
     <div class="overlay" id="overlay" hidden>
