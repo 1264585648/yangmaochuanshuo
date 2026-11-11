@@ -2,17 +2,38 @@
 
 一个以「开卡包」为主角的数字福利发现网站。第一阶段实现了四大卡池的可交互首页，采用手绘质感的木质场景、皮革卡包、旧金属装饰与克制的光效。
 
-## 直接运行
+## 本地开发
 
-项目是零依赖的静态前端。由于使用 JavaScript 模块，请通过本地 HTTP 服务器运行，而不要直接以 `file://` 打开：
+需要 Node.js 22.13+、24 或 26+，推荐 24（见 `.nvmrc`）。页面运行时没有任何第三方依赖，开发依赖只用于本地服务、测试、检查与构建。
 
 ```bash
+npm install
 npm run dev
 ```
 
-然后访问 <http://localhost:4173>。无需 `npm install`。
+然后访问 <http://localhost:4173>。由于使用 JavaScript 模块，不要直接以 `file://` 打开页面。
 
-`npm run check` 可执行 JavaScript 语法和项目结构检查。也可以直接将本仓库部署到 GitHub Pages、Cloudflare Pages 或任意静态托管平台，不需要构建命令。
+不想安装依赖时，也可以用仓库自带的零依赖服务器预览：
+
+```bash
+node scripts/dev-server.mjs
+```
+
+### 常用命令
+
+| 命令               | 作用                                        |
+| ------------------ | ------------------------------------------- |
+| `npm run dev`      | Vite 开发服务器，支持热更新                 |
+| `npm test`         | 运行 Vitest 测试                            |
+| `npm run coverage` | 运行测试并生成覆盖率报告                    |
+| `npm run lint`     | ESLint 检查                                 |
+| `npm run format`   | Prettier 格式化全部文件                     |
+| `npm run build`    | 构建到 `dist/`                              |
+| `npm run check`    | lint、格式检查、测试、构建，CI 执行同一组合 |
+
+### 部署
+
+构建命令为 `npm run build`，产物目录为 `dist/`，可部署到 Cloudflare Pages、GitHub Pages 或任意静态托管平台。源码目录本身仍可不经构建直接托管。
 
 ## 已实现
 
@@ -33,9 +54,13 @@ app.js                 卡池与交互
 assets/room.svg        原创矢量书房背景
 assets/grain.svg       可重复使用的颗粒纹理
 assets/favicon.svg     DealDex 标识
-scripts/dev-server.mjs 零依赖本地服务器
-tests/smoke.mjs        静态健全性检查
-docs/IMPLEMENTATION.md 阶段计划与上线边界
+scripts/dev-server.mjs 零依赖本地服务器（备用）
+tests/smoke.test.js    静态健全性检查（Vitest）
+vite.config.js         开发服务器、构建与测试配置
+eslint.config.js       ESLint 配置
+.github/workflows/     CI：lint、格式检查、测试、构建
+docs/IMPLEMENTATION.md 第一阶段实施记录与上线边界
+docs/PLANNING.md       前期规划与分阶段路线
 ```
 
 ## 重要：当前为视觉与交互原型
