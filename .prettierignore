@@ -4,3 +4,5 @@ coverage/
 package-lock.json
 assets/*.svg
 .claude/
+worker-configuration.d.ts
+.wrangler/

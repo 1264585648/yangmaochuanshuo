@@ -9,15 +9,18 @@ export default defineConfig({
   build: { outDir: 'dist', emptyOutDir: true },
   test: {
     environment: 'node',
-    include: ['tests/**/*.test.js'],
+    include: ['tests/**/*.test.{js,ts}'],
+    testTimeout: 30_000,
+    hookTimeout: 60_000,
     coverage: {
       provider: 'v8',
-      include: ['src/**/*.js'],
+      include: ['src/**/*.js', 'worker/src/**/*.ts'],
       reporter: ['text', 'html'],
       thresholds: {
         'src/domain/**': CORE_COVERAGE,
         'src/storage/**': CORE_COVERAGE,
         'src/ui/escape.js': CORE_COVERAGE,
+        'worker/src/**': CORE_COVERAGE,
       },
     },
   },
