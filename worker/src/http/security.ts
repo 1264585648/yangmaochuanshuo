@@ -13,8 +13,9 @@ export const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   "img-src 'self' data:",
   "style-src 'self'",
-  "script-src 'self'",
-  "connect-src 'self'",
+  // Cloudflare Web Analytics is injected by the zone at the edge.
+  "script-src 'self' https://static.cloudflareinsights.com",
+  "connect-src 'self' https://cloudflareinsights.com",
   "font-src 'self'",
   "base-uri 'self'",
   "form-action 'self'",

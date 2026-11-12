@@ -12,8 +12,8 @@ const EXPECTED = {
   'x-frame-options': 'DENY',
   'permissions-policy': 'camera=(), microphone=(), geolocation=()',
   'content-security-policy':
-    "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; " +
-    "connect-src 'self'; font-src 'self'; base-uri 'self'; form-action 'self'; " +
+    "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' https://static.cloudflareinsights.com; " +
+    "connect-src 'self' https://cloudflareinsights.com; font-src 'self'; base-uri 'self'; form-action 'self'; " +
     "frame-ancestors 'none'; object-src 'none'",
 };
 
