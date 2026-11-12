@@ -66,7 +66,16 @@ function parseRegions(raw: string): string[] {
   }
 }
 
-export function toPublicOffer(row: OfferRow): PublicOffer {
+/** Columns `toPublicOffer` reads; queries over many offers select only these. */
+export type PublicOfferRow = Omit<OfferRow, 'guide' | 'status' | 'version'>;
+
+/** Column list for `PublicOfferRow`, for a query joining `offers o` and `providers p`. */
+export const PUBLIC_OFFER_COLUMNS = `o.id, o.provider_id, p.name AS provider_name, o.pool, o.rarity,
+  o.title, o.summary, o.benefit, o.official_url, o.source_url, o.new_users_only, o.student_only,
+  o.requires_payment_method, o.auto_renews, o.regions, o.conditions_note, o.valid_from,
+  o.valid_until, o.last_verified_at`;
+
+export function toPublicOffer(row: PublicOfferRow): PublicOffer {
   return {
     id: row.id,
     provider: { id: row.provider_id, name: row.provider_name },
@@ -94,7 +103,10 @@ export function toPublicOffer(row: OfferRow): PublicOffer {
 const SELECT_OFFER = `SELECT o.*, p.name AS provider_name FROM offers o JOIN providers p ON p.id = o.provider_id`;
 
 /** Qualify the shared visibility fragment with the offers alias. */
-const PUBLIC_WHERE = PUBLIC_OFFER_SQL.replace(/\b(status|valid_from|valid_until)\b/g, 'o.$1');
+export const PUBLIC_WHERE = PUBLIC_OFFER_SQL.replace(
+  /\b(status|valid_from|valid_until)\b/g,
+  'o.$1',
+);
 
 const RARITY_ORDER = `CASE o.rarity WHEN 'SSR' THEN 0 WHEN 'S' THEN 1 ELSE 2 END`;
 
@@ -200,4 +212,66 @@ export async function listSitemapOffers(
         ? row.last_verified_at
         : row.updated_at,
   }));
+}
+
+/** What the server-side draw needs from each live card in a pool. */
+export interface DrawCandidate {
+  id: string;
+  pool: string;
+  rarity: string;
+}
+
+/** Live (public) cards in one pool; the guide column is skipped to keep the read small. */
+export async function listDrawCandidates(
+  db: DB,
+  pool: string,
+  today: string,
+): Promise<DrawCandidate[]> {
+  const { results } = await db
+    .prepare(`SELECT o.id, o.pool, o.rarity FROM offers o WHERE ${PUBLIC_WHERE} AND o.pool = ?2`)
+    .bind(today, pool)
+    .all<DrawCandidate>();
+  return results;
+}
+
+/**
+ * What an owner sees of a card that is no longer public: enough to recognise
+ * it, nothing that could carry unreviewed edits (links, terms, summary).
+ */
+export interface RetiredOffer {
+  id: string;
+  provider: { id: string; name: string };
+  pool: string;
+  rarity: string;
+  title: string;
+  retired: true;
+}
+
+export const toRetiredOffer = (row: PublicOfferRow): RetiredOffer => ({
+  id: row.id,
+  provider: { id: row.provider_id, name: row.provider_name },
+  pool: row.pool,
+  rarity: row.rarity,
+  title: row.title,
+  retired: true,
+});
+
+/** Full card while it is public, the retired stub afterwards. */
+export const toOwnedOffer = (row: PublicOfferRow, live: boolean): PublicOffer | RetiredOffer =>
+  live ? toPublicOffer(row) : toRetiredOffer(row);
+
+/** A card the user already drew, as they may see it today. */
+export async function getOwnedOffer(
+  db: DB,
+  id: string,
+  today: string,
+): Promise<PublicOffer | RetiredOffer | null> {
+  const row = await db
+    .prepare(
+      `SELECT ${PUBLIC_OFFER_COLUMNS}, (${PUBLIC_WHERE}) AS live
+         FROM offers o JOIN providers p ON p.id = o.provider_id WHERE o.id = ?2`,
+    )
+    .bind(today, id)
+    .first<PublicOfferRow & { live: number }>();
+  return row ? toOwnedOffer(row, row.live === 1) : null;
 }

@@ -16,9 +16,14 @@ function base64url(bytes: Uint8Array): string {
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
+/** `prefix` followed by `bytes` random bytes, base64url-encoded. */
+export function randomToken(prefix: string, bytes = TOKEN_BYTES): string {
+  return prefix + base64url(crypto.getRandomValues(new Uint8Array(bytes)));
+}
+
 /** New random API token. Show it once; store only its hash. */
 export function generateToken(): string {
-  return TOKEN_PREFIX + base64url(crypto.getRandomValues(new Uint8Array(TOKEN_BYTES)));
+  return randomToken(TOKEN_PREFIX);
 }
 
 /** SHA-256 hex digest of a token. */

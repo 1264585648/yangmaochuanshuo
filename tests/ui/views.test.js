@@ -6,7 +6,6 @@ import {
   resultDialog,
   detailDialog,
   favoriteLabel,
-  collectionDialog,
 } from '../../src/ui/views.js';
 import { chipsHTML, errorState, externalLink, skeletonRows } from '../../src/ui/offer-views.js';
 import { packHTML, positionFor } from '../../src/ui/packs.js';
@@ -92,6 +91,8 @@ describe('dailyDialog', () => {
     const html = dailyDialog({ remaining: 2, max: 3 });
     expect(html).toContain('今天还可以打开 2 个卡包');
     expect(html).toContain('<strong>3 次</strong>');
+    expect(html).toContain('北京时间 0 点');
+    expect(dailyDialog({ remaining: null, max: 3 })).toContain('正在读取今天的剩余次数');
   });
 });
 
@@ -101,8 +102,14 @@ describe('resultDialog', () => {
     poolLabel: 'AI 福利',
     isFavorite: false,
     canDrawAgain: true,
+    isNew: true,
     now: NOW,
     ...patch,
+  });
+
+  it('says when the card is a repeat', () => {
+    expect(resultDialog(props())).toContain('发现一张新的福利卡');
+    expect(resultDialog(props({ isNew: false }))).toContain('再次抽到这张福利卡');
   });
 
   it('shows the real offer fields and a safe official link', () => {
@@ -167,31 +174,6 @@ describe('favoriteLabel', () => {
   it('toggles text', () => {
     expect(favoriteLabel(true)).toBe('已收藏 ✓');
     expect(favoriteLabel(false)).toBe('☆ 收藏到图鉴');
-  });
-});
-
-describe('collectionDialog', () => {
-  it('shows the empty state', () => {
-    const html = collectionDialog({ found: [], missing: 0, total: 12, favorites: [] });
-    expect(html).toContain('图鉴里还没有卡牌');
-    expect(html).toContain('已发现 0 / 12 张有效福利 · 收藏 0 张');
-  });
-
-  it('lists cards, marks favourites and counts only live favourites', () => {
-    const html = collectionDialog({
-      found: [offer()],
-      missing: 2,
-      total: 5,
-      favorites: ['deal-1', 'expired-one'],
-    });
-    expect(html).toContain('data-offer-id="deal-1"');
-    expect(html).toContain('aria-label="已收藏"');
-    expect(html).toContain('已发现 1 / 5 张有效福利 · 收藏 1 张');
-    expect(html).toContain('另有 2 张曾抽到的卡已过期或下架');
-  });
-
-  it('escapes every data field', () => {
-    assertSafe(collectionDialog({ found: [hostile], missing: 0, total: 1, favorites: [] }));
   });
 });
 

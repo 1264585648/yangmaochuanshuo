@@ -33,6 +33,26 @@ describe('createStore', () => {
     expect(store.read('k', null)).toEqual({ a: 1 });
   });
 
+  it('removes keys, and reports when storage cannot', () => {
+    const data = { k: '1' };
+    const store = createStore({
+      getItem: (k) => data[k] ?? null,
+      setItem: () => {},
+      removeItem: (k) => delete data[k],
+    });
+    expect(store.remove('k')).toBe(true);
+    expect(data).toEqual({});
+    expect(createStore(fakeStorage()).remove('k')).toBe(false);
+    expect(createStore(null).remove('k')).toBe(false);
+    const throwing = createStore({
+      ...fakeStorage(),
+      removeItem: () => {
+        throw new Error('blocked');
+      },
+    });
+    expect(throwing.remove('k')).toBe(false);
+  });
+
   it('returns the fallback for missing keys and bad JSON', () => {
     const store = createStore(fakeStorage({ bad: '{nope' }));
     expect(store.read('missing', 'fb')).toBe('fb');

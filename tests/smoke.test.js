@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFile, access } from 'node:fs/promises';
 import { POOLS } from '../src/data/pools.js';
-import { MAX_DRAWS } from '../src/config.js';
+import { DEFAULT_DAILY_DRAWS } from '../src/config.js';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8');
 
@@ -49,7 +49,7 @@ describe('static smoke checks', () => {
   });
 
   it('keeps the published daily quota', () => {
-    expect(MAX_DRAWS).toBe(3);
+    expect(DEFAULT_DAILY_DRAWS).toBe(3);
   });
 
   it('styles the non-default pools explicitly', async () => {

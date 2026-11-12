@@ -17,7 +17,8 @@ export function countByPool(offers) {
 /**
  * Odds for one pool. Tiers with no live card are removed and the remaining base
  * chances are scaled to sum to 1, so the published odds always match the draw.
- * @param {readonly Offer[]} offers
+ * Shared with the Worker, which runs the real draw (`worker/src/routes/draws.ts`).
+ * @param {readonly { pool: string, rarity: string }[]} offers
  * @param {string} poolId
  * @param {readonly import('./draw.js').Rarity[]} [rarities]
  * @returns {PoolOdds[]} Empty when the pool has no cards.
@@ -32,10 +33,11 @@ export function poolOdds(offers, poolId, rarities = RARITIES) {
 }
 
 /**
- * @param {readonly Offer[]} offers
+ * @template {{ pool: string, rarity: string }} T
+ * @param {readonly T[]} offers
  * @param {string} poolId
  * @param {() => number} [random]
- * @returns {Offer | null} null when the pool is empty.
+ * @returns {T | null} null when the pool is empty.
  */
 export function drawFromPool(offers, poolId, random = cryptoRandom) {
   const odds = poolOdds(offers, poolId);

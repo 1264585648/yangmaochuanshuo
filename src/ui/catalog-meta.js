@@ -15,12 +15,12 @@ import { CATALOG_PAGE_SIZE, catalogHref, isIndexable, offerHref } from '../domai
  *   status: number }} PageMeta
  */
 
-const SITE = 'DealDex';
+const SITE = '羊毛传说';
 /** Share image served from `public/og-image.png`; made absolute with the request origin. */
 export const OG_IMAGE_PATH = '/og-image.png';
 const TWITTER_CARD = 'summary_large_image';
 const GENERIC_DESCRIPTION =
-  'DealDex 数字福利目录：AI、云服务器、软件工具与教育优惠，每张注明官方来源与最后核验日期，过期自动下架。';
+  '羊毛传说 数字福利目录：AI、云服务器、软件工具与教育优惠，每张注明官方来源与最后核验日期，过期自动下架。';
 const MAX_DESCRIPTION = 150;
 const INDEX = 'index, follow';
 const NOINDEX = 'noindex, follow';
@@ -40,11 +40,11 @@ function listDescription(label, total) {
   const tail = '每张注明官方来源与最后核验日期，过期自动下架。';
   if (label) {
     return total > 0
-      ? `DealDex ${label}目录：收录 ${total} 张福利，${tail}`
-      : `DealDex ${label}目录：${tail}`;
+      ? `羊毛传说 ${label}目录：收录 ${total} 张福利，${tail}`
+      : `羊毛传说 ${label}目录：${tail}`;
   }
   return total > 0
-    ? `DealDex 收录 ${total} 张数字福利，涵盖 AI、云服务器、软件工具与教育优惠，${tail}`
+    ? `羊毛传说 收录 ${total} 张数字福利，涵盖 AI、云服务器、软件工具与教育优惠，${tail}`
     : GENERIC_DESCRIPTION;
 }
 
@@ -86,7 +86,7 @@ export function catalogMeta(view) {
   }
   return {
     title: `福利已下架 | ${SITE}`,
-    description: '这张福利已过期、失效或不存在。DealDex 只展示仍在有效期内的福利。',
+    description: '这张福利已过期、失效或不存在。羊毛传说 只展示仍在有效期内的福利。',
     path: null,
     robots: NOINDEX,
     status: 404,

@@ -22,7 +22,7 @@ const XML_ENTITIES: Record<string, string> = {
 const xml = (value: string) => value.replace(/[&<>"']/g, (ch) => XML_ENTITIES[ch] ?? ch);
 
 export function robotsTxt(url: URL): Response {
-  const body = `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${url.origin}/sitemap.xml\n`;
+  const body = `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin\n\nSitemap: ${url.origin}/sitemap.xml\n`;
   return new Response(body, {
     headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': SEO_CACHE },
   });

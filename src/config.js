@@ -1,12 +1,13 @@
-/** Daily free draws per device. */
-export const MAX_DRAWS = 3;
+/** Daily limit shown until the server reports the real quota (`GET /api/me`). */
+export const DEFAULT_DAILY_DRAWS = 3;
 
-/** Most recent draws kept in the local collection history. */
+/** Cap on legacy browser entries sent by the one-time import (the server accepts 100). */
 export const COLLECTION_LIMIT = 100;
 
 /** Pool shown in front on first load (index into POOLS). */
 export const DEFAULT_POOL_INDEX = 1;
 
+/** Pre-account browser data, read once by the legacy import and then removed. */
 export const STORAGE_KEYS = Object.freeze({
   daily: 'dealdex-daily-v1',
   collection: 'dealdex-collection-v1',

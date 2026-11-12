@@ -1,6 +1,6 @@
 import { authenticate } from '../../auth/tokens';
 import { readJsonBody } from '../../http/body';
-import { fail, methodNotAllowed, notFound } from '../../http/respond';
+import { fail, methodNotAllowed, notFound, ok } from '../../http/respond';
 import { commit } from '../../write/commit';
 import { checkIdempotency, requestHash, validateKey } from '../../write/idempotency';
 import { consumeRateLimit, type RateLimit } from '../../write/rate-limit';
@@ -13,7 +13,7 @@ import {
   listManagedOffers,
   transitionOffer,
 } from './offers';
-import { createProvider, updateProvider } from './providers';
+import { createProvider, listProvidersHandler, updateProvider } from './providers';
 import type { Handler } from './shared';
 
 interface Route {
@@ -23,8 +23,11 @@ interface Route {
 
 const P = '^/api/manage';
 
+const whoami: Handler = async ({ client }) => ok({ id: client.id, scope: client.scope });
+
 /** Order matters: `/offers/:id/changes` must match before `/offers/:id/:action`. */
 const ROUTES: readonly Route[] = [
+  { pattern: new RegExp(`${P}/me$`), methods: { GET: whoami } },
   { pattern: new RegExp(`${P}/offers$`), methods: { GET: listManagedOffers, POST: createOffer } },
   {
     pattern: new RegExp(`${P}/offers/([^/]+)$`),
@@ -35,7 +38,10 @@ const ROUTES: readonly Route[] = [
   { pattern: new RegExp(`${P}/changes$`), methods: { GET: listChangeRequests } },
   { pattern: new RegExp(`${P}/changes/([^/]+)/apply$`), methods: { POST: applyChange } },
   { pattern: new RegExp(`${P}/changes/([^/]+)/reject$`), methods: { POST: rejectChange } },
-  { pattern: new RegExp(`${P}/providers$`), methods: { POST: createProvider } },
+  {
+    pattern: new RegExp(`${P}/providers$`),
+    methods: { GET: listProvidersHandler, POST: createProvider },
+  },
   { pattern: new RegExp(`${P}/providers/([^/]+)$`), methods: { PATCH: updateProvider } },
   { pattern: new RegExp(`${P}/audit$`), methods: { GET: listAuditEntries } },
   { pattern: new RegExp(`${P}/audit/(\\d+)/revert$`), methods: { POST: revertAuditEntry } },

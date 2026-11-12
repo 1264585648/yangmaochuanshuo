@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#161b2b" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>管理后台 · 羊毛传说</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles/offers.css" />
+    <link rel="stylesheet" href="/styles/motion.css" />
+    <link rel="stylesheet" href="/styles/catalog.css" />
+    <link rel="stylesheet" href="/styles/admin.css" />
+  </head>
+  <body class="catalog-page admin-page">
+    <div class="world" aria-hidden="true"></div>
+    <div class="screen-grain" aria-hidden="true"></div>
+    <div class="app catalog-app">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="羊毛传说 首页">
+          <span class="brand-mark" aria-hidden="true"
+            ><svg viewBox="0 0 48 48">
+              <path d="M24 2 44 13.4v21.2L24 46 4 34.6V13.4L24 2Z" fill="#6f63d3" />
+              <path d="m24 8 14 8.2v15.6L24 40 10 31.8V16.2L24 8Z" fill="#cec5fc" />
+              <path d="m24 8 14 8.2-14 7.9-14-7.9L24 8Z" fill="#f6f1ff" />
+              <path d="M24 24.1 38 16.2v15.6L24 40V24.1Z" fill="#9589ee" />
+              <path d="M10 16.2 24 24.1V40l-14-8.2V16.2Z" fill="#564bb2" /></svg
+          ></span>
+          <span class="brand-word">羊毛传说</span>
+          <span class="brand-sub">数字福利</span>
+        </a>
+        <nav class="main-nav" aria-label="主导航">
+          <a class="nav-link" href="/">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m4 7 8-4 8 4-8 4-8-4Zm0 5 8 4 8-4M4 17l8 4 8-4" /></svg
+            ><span class="nav-full">抽卡</span
+            ><span class="nav-short" aria-hidden="true">抽卡</span>
+          </a>
+          <a class="nav-link" href="/offers">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z" /></svg
+            ><span class="nav-full">发现优惠</span
+            ><span class="nav-short" aria-hidden="true">发现</span>
+          </a>
+          <a class="nav-link is-active" href="/admin" aria-current="page">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 3 4 7v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V7l-8-4Zm-2 9 1.5 1.5L15 10"
+              /></svg
+            ><span class="nav-full">管理后台</span
+            ><span class="nav-short" aria-hidden="true">后台</span>
+          </a>
+        </nav>
+      </header>
+
+      <main id="adminMain" class="admin-main">
+        <p class="catalog-loading" role="status">正在初始化管理后台…</p>
+        <noscript><p class="catalog-loading">管理后台需要启用 JavaScript。</p></noscript>
+      </main>
+
+      <footer class="bottom-note">
+        <span class="note-ornament">✦</span> 羊毛传说 管理工作台 ·
+        所有写入操作均自动附加幂等键并写入审计日志
+        <span class="note-ornament">✦</span>
+      </footer>
+    </div>
+
+    <div class="toast" id="adminToast" role="status" aria-live="polite"></div>
+    <script type="module" src="/src/admin.js"></script>
+  </body>
+</html>

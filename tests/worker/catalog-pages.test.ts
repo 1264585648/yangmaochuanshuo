@@ -73,7 +73,7 @@ describe('GET /offers (server-rendered catalog)', () => {
     expect(res.status).toBe(200);
     expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8');
     expect(res.headers.get('cache-control')).toContain('max-age=');
-    expect(html).toContain('<title>发现优惠 · 数字福利目录 | DealDex</title>');
+    expect(html).toContain('<title>发现优惠 · 数字福利目录 | 羊毛传说</title>');
     expect(html).toContain(`<link rel="canonical" href="${ORIGIN}/offers">`);
     expect(html).toContain('<meta name="robots" content="index, follow">');
     expect(html).toContain('data-view="list"');
@@ -107,7 +107,7 @@ describe('GET /offers (server-rendered catalog)', () => {
     expect(res.status).toBe(200);
     expect(html).toContain('Student plan');
     expect(html).not.toContain('GPU 赠金');
-    expect(html).toContain('<title>AI 福利目录 | DealDex</title>');
+    expect(html).toContain('<title>AI 福利目录 | 羊毛传说</title>');
     expect(html).toMatch(/name="pool" value="ai" checked/);
     expect(html).toContain('<option value="true" selected>需学生身份</option>');
     expect(html).toContain('<meta name="robots" content="noindex, follow">');
@@ -125,7 +125,7 @@ describe('GET /offers (server-rendered catalog)', () => {
     expect(first.html).toContain('href="/offers?pool=education&amp;page=2" data-route rel="next"');
     const second = await page('/offers?pool=education&page=2');
     expect(second.html).toContain('第 2 / 2 页');
-    expect(second.html).toContain('<title>教育优惠目录 · 第 2 页 | DealDex</title>');
+    expect(second.html).toContain('<title>教育优惠目录 · 第 2 页 | 羊毛传说</title>');
     expect(second.html).toContain('rel="prev"');
   });
 
@@ -157,7 +157,7 @@ describe('GET /offers/:id', () => {
   it('renders one offer with its own title, description and canonical URL', async () => {
     const { res, html } = await page('/offers/ai-ssr');
     expect(res.status).toBe(200);
-    expect(html).toContain('<title>GPU 赠金 · Example | DealDex</title>');
+    expect(html).toContain('<title>GPU 赠金 · Example | 羊毛传说</title>');
     expect(html).toContain(`<link rel="canonical" href="${ORIGIN}/offers/ai-ssr">`);
     expect(html).toContain('data-view="detail"');
     expect(html).toContain('最后核验');

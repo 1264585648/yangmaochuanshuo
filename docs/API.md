@@ -29,6 +29,145 @@
 
 返回单张卡。草稿、待审核、已失效、已过期或不存在的卡一律返回 `404 not_found`。
 
+## 用户接口 `/api/me*`
+
+轻量用户体系的 A 层：服务端签发匿名身份，无需注册。规划见 `docs/PLANNING.md` 阶段 3。
+
+- 身份放在 Cookie `__Host-ddx_sid` 中（`HttpOnly; Secure; SameSite=Lax; Path=/`），有效期 180 天。数据库只存令牌的 SHA-256 哈希。会话使用满 30 天后自动续期并重新下发 Cookie。
+- 单纯浏览、调用 `GET /api/me` 不会创建用户。用户在首次成功抽卡时创建。
+- 每日次数按北京时间 0 点重置。福利有效期仍按 UTC 日期判断。
+- 用户接口一律 `Cache-Control: no-store`。
+- `/api/me`、`/api/me/*` 与 `/api/draws` 的写请求必须同源：`Origin` 等于本站，或浏览器未带 `Origin` 时 `Sec-Fetch-Site: same-origin`，否则返回 `403 forbidden_origin`。
+
+### `GET /api/me`
+
+```json
+{
+  "user": { "id": "u_…", "kind": "guest", "createdAt": "2026-11-12T03:00:00.000Z" },
+  "quota": { "max": 3, "day": "2026-11-12", "resetsAt": "2026-11-12T16:00:00.000Z" }
+}
+```
+
+没有 Cookie，或 Cookie 已过期、已吊销、无法识别时，`user` 为 `null`、`quota.used` 为 `0`，不报错。
+
+### `POST /api/draws`
+
+请求头必须带 `Idempotency-Key`（1–100 位字母、数字或 `_ . : -`，每次点击生成一个新的），请求体只允许 `{ "pool": "ai" | "cloud" | "software" | "education" }`，上限 1 KB。
+
+成功返回 `201`：
+
+```json
+{
+  "draw": {
+    "id": "d_…",
+    "pool": "cloud",
+    "rarity": "S",
+    "createdAt": "…",
+    "isNew": true,
+    "favorite": false
+  },
+  "offer": { "id": "…", "title": "…", "provider": { "id": "…", "name": "…" } },
+  "quota": { "max": 3, "used": 1, "day": "2026-11-12", "resetsAt": "2026-11-12T16:00:00.000Z" }
+}
+```
+
+`offer` 与 `GET /api/offers` 列表项同形（重放时若该卡已下架，则为下文的精简形式）。`isNew` 表示该用户第一次获得这张卡，`favorite` 表示已收藏。
+
+- 随机、扣次、记录都在服务端完成。扣次与写入是同一条条件语句，并发请求不会多扣。
+- 只从当前已发布且在有效期内的卡中抽取。稀有度先按基础概率（A 70% / S 25% / SSR 5%）在该池实际有卡的等级间重新归一，再在该等级内均匀选卡；与前端公示的概率由同一份代码（`src/domain/catalog.js`）计算。
+- 同一用户重复使用同一个幂等键：返回第一次的结果，状态码 `200`，带 `Idempotent-Replayed: true`，不再扣次；即使次数已用完、那张卡已下架也照常返回。同一个键换了卡池返回 `422 idempotency_key_reused`。
+- 没有会话时，首次成功抽卡会创建匿名用户并下发 Cookie。卡池为空时返回 `409 pool_empty`，不扣次也不建用户。
+- 次数用完返回 `429 quota_exhausted`，`Retry-After` 为距离北京时间 0 点的秒数，`error.details` 为当前 `quota`。
+- 按 IP 限流：每个 IP（IPv6 按 /64 前缀合并计算）每小时最多新建 20 个匿名用户、抽卡 120 次，超出返回 `429 rate_limited` 与 `Retry-After`。已有会话的重放与「次数已用完」在限流之前直接回答，不占用该 IP 的额度。IP 只以 HMAC 哈希形式存放在限流计数中。
+
+**部署前需配置密钥** `IP_HASH_SECRET`（`wrangler secret put IP_HASH_SECRET`，至少 32 个字符的随机串）。缺失或过短时抽卡返回 `503 unavailable`，并在服务端日志记录 `config_error`。本地开发把 `.dev.vars.example` 复制为 `.dev.vars`；修改 `.dev.vars` 后需重启 `wrangler dev`。
+
+### 已下架的卡
+
+用户拥有、但当前已不公开（已失效、已过期或撤回）的卡，在抽卡重放、图鉴与抽卡记录中只返回识别信息，不再返回链接、领取条件和摘要，以免展示未经审核的修改：
+
+```json
+{
+  "id": "…",
+  "provider": { "id": "…", "name": "…" },
+  "pool": "ai",
+  "rarity": "S",
+  "title": "…",
+  "retired": true
+}
+```
+
+### `GET /api/me/collection`
+
+图鉴：用户拥有的每张卡一条（按最近获得排序），以及对当前有效卡的收集进度。没有会话时返回空图鉴和 `found` 为 0 的进度。
+
+```json
+{
+  "cards": [
+    {
+      "offer": { "id": "…" },
+      "firstDrawnAt": "…",
+      "lastDrawnAt": "…",
+      "drawCount": 2,
+      "favorite": true,
+      "live": true
+    }
+  ],
+  "progress": {
+    "live": { "found": 3, "total": 42 },
+    "retired": 1,
+    "byPool": [{ "pool": "ai", "found": 2, "total": 12 }],
+    "byRarity": [{ "rarity": "SSR", "found": 0, "total": 5 }]
+  }
+}
+```
+
+- `live` 为 false 的卡是已下架的卡，`offer` 为上面的精简形式；它们保留在图鉴中，但不计入 `progress.live`，单独计入 `progress.retired`。
+- `byPool` 固定按 ai、cloud、software、education 排列，`byRarity` 按 SSR、S、A 排列。
+- 迁入的旧浏览器记录计入图鉴，`drawCount` 包含它们。
+
+### `GET /api/me/draws?before=&limit=`
+
+真实抽卡记录，新的在前，不含迁入的旧记录。`limit` 为 1–50，默认 20；`before` 为上一页最后一条的 `id`，`nextCursor` 为 `null` 表示没有更多。其他参数返回 `400 invalid_query`。没有会话时返回空列表。
+
+```json
+{
+  "items": [
+    {
+      "id": "d_…",
+      "pool": "ai",
+      "rarity": "A",
+      "createdAt": "…",
+      "offer": { "id": "…" },
+      "live": true
+    }
+  ],
+  "nextCursor": "d_…"
+}
+```
+
+### `PUT` / `DELETE /api/me/favorites/:offerId`
+
+收藏或取消收藏，返回 `{ "offerId": "…", "favorite": true }`，重复调用结果不变。只能收藏自己拥有的卡；没有会话或不拥有时返回 `404 not_found`。
+
+### `POST /api/me/import`
+
+一次性迁入此前保存在浏览器里的图鉴与收藏：
+
+```json
+{ "collection": [{ "id": "offer-id", "ts": 1794466012942 }], "favorites": ["offer-id"] }
+```
+
+- 两个数组各最多 100 条，请求体上限 32 KB，`ts` 为毫秒时间戳。
+- 只保留今天仍公开的卡；卡池与稀有度取自目录，不信任浏览器。时间戳限定在过去一年内，同一张卡取最早的时间。收藏只保留迁入后拥有的卡。
+- 迁入的记录不计入每日次数，也不出现在抽卡记录中。
+- 每个用户只能成功迁入一次，再次调用返回 `409 already_imported`；并发的两次请求只有一次生效。没有可迁入的内容时直接返回 `{ "imported": 0, "favorites": 0 }`，不占用这次机会，也不会为匿名访客创建用户。
+- 返回 `{ "imported": 2, "favorites": 1 }`。没有会话时会创建匿名用户并下发 Cookie，与抽卡共用每个 IP 的新建用户限额。
+
+### 每个用户的写入限额
+
+收藏与迁入共用每个用户每分钟 60 次的额度，超出返回 `429 rate_limited` 与 `Retry-After`。
+
 ## 页面与爬虫入口（HTML / XML）
 
 以下路径同样由 Worker 处理（`wrangler.jsonc` 的 `run_worker_first`），数据与公开接口一致，只含已发布且在有效期内的卡。响应可缓存 60 秒（站点地图 300 秒）。
@@ -58,7 +197,7 @@
 
 CSP 不允许内联脚本、`style="…"` 属性和外部资源；新增此类内容前需同时修改两处配置。通过 `el.style.setProperty` 设置的样式不受影响。
 
-`Cache-Control`：公开读接口与目录页为 `public, max-age=60`，`/sitemap.xml` 与 `/robots.txt` 为 `public, max-age=300`；所有管理接口、错误响应与幂等重放一律为 `no-store`。
+`Cache-Control`：公开读接口与目录页为 `public, max-age=60`，`/sitemap.xml` 与 `/robots.txt` 为 `public, max-age=300`；所有管理接口、用户接口、错误响应与幂等重放一律为 `no-store`。
 
 ## 管理接口 `/api/manage/*`
 
@@ -199,6 +338,7 @@ curl -X POST https://free.vibe-show.com/api/manage/offers/example-ai-credit/veri
 | 400  | `source_required`          | `verify` / `expire` / 带 `verified` 的 `publish` 缺少证据链接 |
 | 401  | `unauthorized`             | 缺少、无效或已吊销的令牌                                      |
 | 403  | `forbidden`                | 令牌权限不足                                                  |
+| 403  | `forbidden_origin`         | 带 Cookie 的写请求不是同源发起                                |
 | 404  | `not_found`                | 资源不存在，或对公开接口不可见                                |
 | 405  | `method_not_allowed`       | 方法不支持，`Allow` 头列出可用方法                            |
 | 409  | `already_exists`           | id 已存在                                                     |
@@ -206,6 +346,8 @@ curl -X POST https://free.vibe-show.com/api/manage/offers/example-ai-credit/veri
 | 409  | `version_conflict`         | 卡在 `baseVersion` 之后被修改                                 |
 | 409  | `change_not_pending`       | 变更申请已被采纳或驳回                                        |
 | 409  | `conflict`                 | 其他并发冲突，重新读取后重试                                  |
+| 409  | `pool_empty`               | 该卡池当前没有可抽的卡，未扣次                                |
+| 409  | `already_imported`         | 旧浏览器数据已经迁入过                                        |
 | 413  | `payload_too_large`        | 请求体超过 16 KB                                              |
 | 415  | `unsupported_media_type`   | 请求体不是 JSON                                               |
 | 422  | `unknown_provider`         | 提供方不存在                                                  |
@@ -215,6 +357,8 @@ curl -X POST https://free.vibe-show.com/api/manage/offers/example-ai-credit/veri
 | 422  | `invalid_change`           | 已保存的变更申请不再符合校验规则，应驳回                      |
 | 422  | `not_revertible`           | 该审计记录不是可回滚的内容变更                                |
 | 422  | `idempotency_key_reused`   | 同一幂等键用于不同请求                                        |
-| 429  | `rate_limited`             | 写入过快，见 `Retry-After`                                    |
+| 429  | `rate_limited`             | 写入或抽卡过快，见 `Retry-After`                              |
+| 429  | `quota_exhausted`          | 今日免费次数已用完，见 `Retry-After`                          |
 | 429  | `review_queue_full`        | 巡检令牌的待审核队列已满                                      |
 | 500  | `internal_error`           | 服务端错误，细节只记录在服务端日志                            |
+| 503  | `unavailable`              | 服务端配置缺失（如 `IP_HASH_SECRET`），暂不可抽卡             |
