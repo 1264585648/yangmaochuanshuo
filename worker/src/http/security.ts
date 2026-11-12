@@ -23,6 +23,23 @@ export const CONTENT_SECURITY_POLICY = [
   "object-src 'none'",
 ].join('; ');
 
+/**
+ * `/admin` holds an admin bearer token in sessionStorage, so it allows no
+ * third-party script at all (the edge-injected analytics beacon simply fails
+ * to load there). Served by Assets via the `/admin` block in `public/_headers`,
+ * which detaches the site-wide CSP and replaces it with this one.
+ */
+export const ADMIN_CONTENT_SECURITY_POLICY = CONTENT_SECURITY_POLICY.replace(
+  ' https://static.cloudflareinsights.com',
+  '',
+).replace(' https://cloudflareinsights.com', '');
+
+export const ADMIN_PAGE_HEADERS: Readonly<Record<string, string>> = Object.freeze({
+  'content-security-policy': ADMIN_CONTENT_SECURITY_POLICY,
+  'cache-control': 'no-store',
+  'x-robots-tag': 'noindex, nofollow',
+});
+
 export const SECURITY_HEADERS: Readonly<Record<string, string>> = Object.freeze({
   'strict-transport-security': 'max-age=31536000; includeSubDomains',
   'x-content-type-options': 'nosniff',

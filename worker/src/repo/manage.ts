@@ -151,15 +151,15 @@ export interface ProviderRecord {
   updatedAt: string;
 }
 
-export async function getProvider(db: DB, id: string): Promise<ProviderRecord | null> {
-  const row = await db.prepare('SELECT * FROM providers WHERE id = ?').bind(id).first<{
-    id: string;
-    name: string;
-    official_domains: string;
-    created_at: string;
-    updated_at: string;
-  }>();
-  if (!row) return null;
+interface ProviderRow {
+  id: string;
+  name: string;
+  official_domains: string;
+  created_at: string;
+  updated_at: string;
+}
+
+function toProvider(row: ProviderRow): ProviderRecord {
   const domains: unknown = JSON.parse(row.official_domains);
   return {
     id: row.id,
@@ -170,6 +170,21 @@ export async function getProvider(db: DB, id: string): Promise<ProviderRecord | 
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+}
+
+export async function getProvider(db: DB, id: string): Promise<ProviderRecord | null> {
+  const row = await db
+    .prepare('SELECT * FROM providers WHERE id = ?')
+    .bind(id)
+    .first<ProviderRow>();
+  return row ? toProvider(row) : null;
+}
+
+export async function listProviders(db: DB): Promise<ProviderRecord[]> {
+  const { results } = await db
+    .prepare('SELECT * FROM providers ORDER BY id ASC')
+    .all<ProviderRow>();
+  return results.map(toProvider);
 }
 
 export interface ChangeRecord {

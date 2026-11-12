@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { createHandler } from '../../worker/src/app';
-import { SECURITY_HEADERS } from '../../worker/src/http/security';
+import { ADMIN_PAGE_HEADERS, SECURITY_HEADERS } from '../../worker/src/http/security';
 import { createHarness, PROVIDER, type Harness } from './helpers/api';
 
 const EXPECTED = {
@@ -23,6 +23,29 @@ function expectSecure(res: Response) {
   }
 }
 
+/** Parse `public/_headers` into path rules: headers set, and headers detached with `! Name`. */
+async function readHeaderRules() {
+  const file = await readFile(resolve(process.cwd(), 'public/_headers'), 'utf8');
+  const rules = new Map<string, { set: Map<string, string>; detach: string[] }>();
+  let current: { set: Map<string, string>; detach: string[] } | undefined;
+  for (const line of file.split(/\r?\n/)) {
+    if (!line.trim() || line.trim().startsWith('#')) continue;
+    if (!/^\s/.test(line)) {
+      current = { set: new Map(), detach: [] };
+      rules.set(line.trim(), current);
+      continue;
+    }
+    const entry = line.trim();
+    if (entry.startsWith('! ')) {
+      current?.detach.push(entry.slice(2).trim().toLowerCase());
+      continue;
+    }
+    const i = entry.indexOf(':');
+    current?.set.set(entry.slice(0, i).trim().toLowerCase(), entry.slice(i + 1).trim());
+  }
+  return rules;
+}
+
 let h: Harness;
 
 beforeAll(async () => {
@@ -40,18 +63,22 @@ describe('security headers', () => {
   });
 
   it('are mirrored in public/_headers for directly served assets', async () => {
-    const file = await readFile(resolve(process.cwd(), 'public/_headers'), 'utf8');
-    const lines = file.split(/\r?\n/);
-    expect(lines).toContain('/*');
-    const rules = new Map(
-      lines
-        .filter((l) => /^\s+\S+:/.test(l))
-        .map((l) => {
-          const i = l.indexOf(':');
-          return [l.slice(0, i).trim().toLowerCase(), l.slice(i + 1).trim()] as const;
-        }),
-    );
-    expect(Object.fromEntries(rules)).toEqual(EXPECTED);
+    const rules = await readHeaderRules();
+    expect(Object.fromEntries(rules.get('/*')?.set ?? [])).toEqual(EXPECTED);
+  });
+
+  it('give the admin console a CSP without third-party origins', async () => {
+    const csp = ADMIN_PAGE_HEADERS['content-security-policy'];
+    expect(csp).not.toMatch(/cloudflareinsights|https:/);
+    expect(csp).toContain("script-src 'self';");
+    expect(csp).toContain("connect-src 'self';");
+    expect(csp).toContain("frame-ancestors 'none'");
+    const rules = await readHeaderRules();
+    for (const path of ['/admin', '/admin.html']) {
+      const rule = rules.get(path);
+      expect(rule?.detach, path).toEqual(['content-security-policy']);
+      expect(Object.fromEntries(rule?.set ?? []), path).toEqual(ADMIN_PAGE_HEADERS);
+    }
   });
 
   it('are sent on public API reads, errors and 405s', async () => {

@@ -1,9 +1,11 @@
-import { notFound } from '../../http/respond';
+import { notFound, ok } from '../../http/respond';
 import { providerSchema } from '../../domain/schema';
 import { canManageProviders } from '../../domain/status';
-import { getProvider, type ProviderRecord } from '../../repo/manage';
+import { getProvider, listProviders, type ProviderRecord } from '../../repo/manage';
 import { plan } from '../../write/commit';
 import { forbidden, invalid, type Handler } from './shared';
+
+export const listProvidersHandler: Handler = async ({ db }) => ok(await listProviders(db));
 
 const providerUpdateSchema = providerSchema
   .pick({ name: true, officialDomains: true })

@@ -21,23 +21,25 @@ const API_PROXY = {
 
 /** `/offers` and `/offers/<id>` share one page template (`offers.html`). */
 const CATALOG_ROUTE = /^\/offers(?:\/[a-z0-9-]*)?\/?(?=\?|$)/;
+const ADMIN_ROUTE = /^\/admin\/?(?=\?|$)/;
 
 /**
- * Serve the catalog template for its clean URLs in `vite` and `vite preview`.
- * In production the Worker renders these routes (see worker/src/routes/pages.ts).
+ * Serve clean-URL templates in `vite` and `vite preview`.
+ * In production the Worker renders `/offers*`, and Assets serves `admin.html` at `/admin`.
  * @returns {import('vite').Plugin}
  */
-function catalogRoutes() {
+function cleanPageRoutes() {
   /** @param {import('vite').Connect.Server} middlewares */
   const install = (middlewares) => {
     middlewares.use((req, _res, next) => {
       const url = req.url ?? '';
       if (CATALOG_ROUTE.test(url)) req.url = url.replace(CATALOG_ROUTE, '/offers.html');
+      else if (ADMIN_ROUTE.test(url)) req.url = url.replace(ADMIN_ROUTE, '/admin.html');
       next();
     });
   };
   return {
-    name: 'dealdex-catalog-routes',
+    name: 'dealdex-clean-page-routes',
     // Pre-middleware: must not return anything (a returned function is a post hook).
     configureServer(server) {
       install(server.middlewares);
@@ -49,13 +51,13 @@ function catalogRoutes() {
 }
 
 export default defineConfig({
-  plugins: [catalogRoutes()],
+  plugins: [cleanPageRoutes()],
   server: { port: DEV_PORT, strictPort: true, proxy: API_PROXY },
   preview: { port: DEV_PORT, strictPort: true, proxy: API_PROXY },
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    rollupOptions: { input: { main: 'index.html', offers: 'offers.html' } },
+    rollupOptions: { input: { main: 'index.html', offers: 'offers.html', admin: 'admin.html' } },
   },
   test: {
     environment: 'node',
