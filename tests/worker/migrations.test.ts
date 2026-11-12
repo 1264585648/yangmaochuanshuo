@@ -50,6 +50,7 @@ describe('schema', () => {
     expect(results.map((r) => r.name)).toEqual([
       'api_clients',
       'audit_log',
+      'draws',
       'idempotency_keys',
       'offer_changes',
       'offers',

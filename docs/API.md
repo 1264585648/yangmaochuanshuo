@@ -34,10 +34,10 @@
 轻量用户体系的 A 层：服务端签发匿名身份，无需注册。规划见 `docs/PLANNING.md` 阶段 3。
 
 - 身份放在 Cookie `__Host-ddx_sid` 中（`HttpOnly; Secure; SameSite=Lax; Path=/`），有效期 180 天。数据库只存令牌的 SHA-256 哈希。会话使用满 30 天后自动续期并重新下发 Cookie。
-- 单纯浏览、调用 `GET /api/me` 不会创建用户。用户在首次抽卡时创建（随 `POST /api/draws` 上线）。
+- 单纯浏览、调用 `GET /api/me` 不会创建用户。用户在首次成功抽卡时创建。
 - 每日次数按北京时间 0 点重置。福利有效期仍按 UTC 日期判断。
 - 用户接口一律 `Cache-Control: no-store`。
-- `/api/me` 与 `/api/me/*` 的写请求必须同源（后续 `/api/draws` 同样适用）：`Origin` 等于本站，或浏览器未带 `Origin` 时 `Sec-Fetch-Site: same-origin`，否则返回 `403 forbidden_origin`。
+- `/api/me`、`/api/me/*` 与 `/api/draws` 的写请求必须同源：`Origin` 等于本站，或浏览器未带 `Origin` 时 `Sec-Fetch-Site: same-origin`，否则返回 `403 forbidden_origin`。
 
 ### `GET /api/me`
 
@@ -48,7 +48,32 @@
 }
 ```
 
-没有 Cookie，或 Cookie 已过期、已吊销、无法识别时，`user` 为 `null`，不报错。`quota.used`（当日已用次数）随服务端抽卡一起加入。
+没有 Cookie，或 Cookie 已过期、已吊销、无法识别时，`user` 为 `null`、`quota.used` 为 `0`，不报错。
+
+### `POST /api/draws`
+
+请求头必须带 `Idempotency-Key`（1–100 位字母、数字或 `_ . : -`，每次点击生成一个新的），请求体只允许 `{ "pool": "ai" | "cloud" | "software" | "education" }`，上限 1 KB。
+
+成功返回 `201`：
+
+```json
+{
+  "draw": { "id": "d_…", "pool": "cloud", "rarity": "S", "createdAt": "…", "isNew": true },
+  "offer": { "id": "…", "title": "…", "provider": { "id": "…", "name": "…" } },
+  "quota": { "max": 3, "used": 1, "day": "2026-11-12", "resetsAt": "2026-11-12T16:00:00.000Z" }
+}
+```
+
+`offer` 与 `GET /api/offers` 列表项同形。`isNew` 表示该用户第一次抽到这张卡。
+
+- 随机、扣次、记录都在服务端完成。扣次与写入是同一条条件语句，并发请求不会多扣。
+- 只从当前已发布且在有效期内的卡中抽取。稀有度先按基础概率（A 70% / S 25% / SSR 5%）在该池实际有卡的等级间重新归一，再在该等级内均匀选卡；与前端公示的概率由同一份代码（`src/domain/catalog.js`）计算。
+- 同一用户重复使用同一个幂等键：返回第一次的结果，状态码 `200`，带 `Idempotent-Replayed: true`，不再扣次；即使次数已用完、那张卡已下架也照常返回。同一个键换了卡池返回 `422 idempotency_key_reused`。
+- 没有会话时，首次成功抽卡会创建匿名用户并下发 Cookie。卡池为空时返回 `409 pool_empty`，不扣次也不建用户。
+- 次数用完返回 `429 quota_exhausted`，`Retry-After` 为距离北京时间 0 点的秒数，`error.details` 为当前 `quota`。
+- 按 IP 限流：每个 IP（IPv6 按 /64 前缀合并计算）每小时最多新建 20 个匿名用户、抽卡 120 次，超出返回 `429 rate_limited` 与 `Retry-After`。已有会话的重放与「次数已用完」在限流之前直接回答，不占用该 IP 的额度。IP 只以 HMAC 哈希形式存放在限流计数中。
+
+**部署前需配置密钥** `IP_HASH_SECRET`（`wrangler secret put IP_HASH_SECRET`，至少 32 个字符的随机串）。缺失或过短时抽卡返回 `503 unavailable`，并在服务端日志记录 `config_error`。本地开发把 `.dev.vars.example` 复制为 `.dev.vars`；修改 `.dev.vars` 后需重启 `wrangler dev`。
 
 ## 页面与爬虫入口（HTML / XML）
 
@@ -228,6 +253,7 @@ curl -X POST https://free.vibe-show.com/api/manage/offers/example-ai-credit/veri
 | 409  | `version_conflict`         | 卡在 `baseVersion` 之后被修改                                 |
 | 409  | `change_not_pending`       | 变更申请已被采纳或驳回                                        |
 | 409  | `conflict`                 | 其他并发冲突，重新读取后重试                                  |
+| 409  | `pool_empty`               | 该卡池当前没有可抽的卡，未扣次                                |
 | 413  | `payload_too_large`        | 请求体超过 16 KB                                              |
 | 415  | `unsupported_media_type`   | 请求体不是 JSON                                               |
 | 422  | `unknown_provider`         | 提供方不存在                                                  |
@@ -237,6 +263,8 @@ curl -X POST https://free.vibe-show.com/api/manage/offers/example-ai-credit/veri
 | 422  | `invalid_change`           | 已保存的变更申请不再符合校验规则，应驳回                      |
 | 422  | `not_revertible`           | 该审计记录不是可回滚的内容变更                                |
 | 422  | `idempotency_key_reused`   | 同一幂等键用于不同请求                                        |
-| 429  | `rate_limited`             | 写入过快，见 `Retry-After`                                    |
+| 429  | `rate_limited`             | 写入或抽卡过快，见 `Retry-After`                              |
+| 429  | `quota_exhausted`          | 今日免费次数已用完，见 `Retry-After`                          |
 | 429  | `review_queue_full`        | 巡检令牌的待审核队列已满                                      |
 | 500  | `internal_error`           | 服务端错误，细节只记录在服务端日志                            |
+| 503  | `unavailable`              | 服务端配置缺失（如 `IP_HASH_SECRET`），暂不可抽卡             |

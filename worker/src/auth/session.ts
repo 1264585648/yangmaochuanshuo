@@ -3,7 +3,7 @@
  * The cookie holds a random token; D1 stores only its SHA-256 hash, the same
  * scheme as API tokens. `__Host-` pins the cookie to this exact origin over
  * HTTPS with Path=/. Most browsers accept Secure cookies on http://localhost;
- * confirm in a real browser when the first session is issued (U2).
+ * confirm in a real browser before the frontend switches to it (U3).
  */
 import { SESSION } from '../config';
 import { quotaDay } from '../users/day';

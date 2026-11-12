@@ -21,3 +21,13 @@ export const SESSION = Object.freeze({
   /** Extend a session (one write) once it is this old, so active users never expire. */
   renewAfterDays: 30,
 });
+
+/**
+ * Per-IP limits for the draw API. Clearing cookies yields a fresh guest, so
+ * these cap how far one address can farm draws. Generous enough for shared
+ * campus and office NAT. IPs are only ever stored as keyed hashes.
+ */
+export const USER_LIMITS = Object.freeze({
+  guestsPerIp: Object.freeze({ max: 20, windowSeconds: 60 * 60 }),
+  drawsPerIp: Object.freeze({ max: 120, windowSeconds: 60 * 60 }),
+});

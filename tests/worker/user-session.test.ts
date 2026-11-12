@@ -150,7 +150,7 @@ describe('GET /api/me', () => {
     const body = (await res.json()) as { data: unknown };
     expect(body.data).toEqual({
       user: null,
-      quota: { max: DAILY_DRAWS, day: '2026-11-12', resetsAt: '2026-11-12T16:00:00.000Z' },
+      quota: { max: DAILY_DRAWS, used: 0, day: '2026-11-12', resetsAt: '2026-11-12T16:00:00.000Z' },
     });
     expect(await countRows('users')).toBe(before);
   });

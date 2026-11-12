@@ -2,7 +2,10 @@ import { utcDay } from './domain/visibility';
 import { fail, methodNotAllowed, notFound } from './http/respond';
 import { withSecurityHeaders } from './http/security';
 import { routeManage } from './routes/manage';
+import { type UserLimits } from './routes/draws';
 import { isUserPath, routeUser } from './routes/me';
+import { cryptoRandom } from '../../src/domain/draw.js';
+import { USER_LIMITS } from './config';
 import { routeCatalogPage } from './routes/pages';
 import { getOffer, listOffers } from './routes/read';
 import { robotsTxt, sitemapXml } from './routes/seo';
@@ -13,6 +16,10 @@ export interface AppOptions {
   now?: () => Date;
   /** Per-caller write limit for the management API. */
   rateLimit?: RateLimit;
+  /** Injectable random source for draws, uniform in [0, 1). */
+  random?: () => number;
+  /** Per-IP limits for the draw API. */
+  userLimits?: UserLimits;
 }
 
 const READ_METHODS = ['GET', 'HEAD'] as const;
@@ -54,6 +61,8 @@ async function routePublic(request: Request, env: Env, url: URL, today: string):
 export function createHandler({
   now = () => new Date(),
   rateLimit = DEFAULT_RATE_LIMIT,
+  random = cryptoRandom,
+  userLimits = USER_LIMITS,
 }: AppOptions = {}) {
   async function route(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -65,7 +74,15 @@ export function createHandler({
       if (url.pathname === '/api/manage' || url.pathname.startsWith('/api/manage/')) {
         return await routeManage(request, env, url, at, rateLimit);
       }
-      if (isUserPath(url.pathname)) return await routeUser(request, env.DB, url, at);
+      if (isUserPath(url.pathname)) {
+        return await routeUser(request, url, {
+          db: env.DB,
+          env,
+          now: at,
+          random,
+          limits: userLimits,
+        });
+      }
       return await routePublic(request, env, url, utcDay(at));
     } catch (error: unknown) {
       // Log full detail server-side; callers get a generic message.

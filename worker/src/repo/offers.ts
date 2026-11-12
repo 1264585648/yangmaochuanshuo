@@ -201,3 +201,29 @@ export async function listSitemapOffers(
         : row.updated_at,
   }));
 }
+
+/** What the server-side draw needs from each live card in a pool. */
+export interface DrawCandidate {
+  id: string;
+  pool: string;
+  rarity: string;
+}
+
+/** Live (public) cards in one pool; the guide column is skipped to keep the read small. */
+export async function listDrawCandidates(
+  db: DB,
+  pool: string,
+  today: string,
+): Promise<DrawCandidate[]> {
+  const { results } = await db
+    .prepare(`SELECT o.id, o.pool, o.rarity FROM offers o WHERE ${PUBLIC_WHERE} AND o.pool = ?2`)
+    .bind(today, pool)
+    .all<DrawCandidate>();
+  return results;
+}
+
+/** Any offer by id, whatever its status. Used for cards a user already drew. */
+export async function getOfferById(db: DB, id: string): Promise<PublicOffer | null> {
+  const row = await db.prepare(`${SELECT_OFFER} WHERE o.id = ?`).bind(id).first<OfferRow>();
+  return row ? toPublicOffer(row) : null;
+}
