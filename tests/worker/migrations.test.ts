@@ -55,8 +55,30 @@ describe('schema', () => {
       'offers',
       'providers',
       'rate_limits',
+      'sessions',
+      'users',
       'write_guard',
     ]);
+  });
+
+  it('restricts user kind and requires an existing user for sessions', async () => {
+    const at = '2026-11-12T00:00:00Z';
+    const user = (id: string, kind: string) =>
+      t.db
+        .prepare('INSERT INTO users (id, kind, created_at, last_seen_at) VALUES (?, ?, ?, ?)')
+        .bind(id, kind, at, at)
+        .run();
+    await expect(user('u_bad', 'admin')).rejects.toThrow();
+    await user('u_ok', 'guest');
+    const session = (hash: string, userId: string) =>
+      t.db
+        .prepare(
+          'INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)',
+        )
+        .bind(hash, userId, at, at)
+        .run();
+    await expect(session('h-orphan', 'u_missing')).rejects.toThrow();
+    await session('h-ok', 'u_ok');
   });
 
   it('enforces the provider foreign key', async () => {

@@ -2,6 +2,7 @@ import { utcDay } from './domain/visibility';
 import { fail, methodNotAllowed, notFound } from './http/respond';
 import { withSecurityHeaders } from './http/security';
 import { routeManage } from './routes/manage';
+import { isUserPath, routeUser } from './routes/me';
 import { routeCatalogPage } from './routes/pages';
 import { getOffer, listOffers } from './routes/read';
 import { robotsTxt, sitemapXml } from './routes/seo';
@@ -64,6 +65,7 @@ export function createHandler({
       if (url.pathname === '/api/manage' || url.pathname.startsWith('/api/manage/')) {
         return await routeManage(request, env, url, at, rateLimit);
       }
+      if (isUserPath(url.pathname)) return await routeUser(request, env.DB, url, at);
       return await routePublic(request, env, url, utcDay(at));
     } catch (error: unknown) {
       // Log full detail server-side; callers get a generic message.

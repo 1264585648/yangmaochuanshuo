@@ -29,6 +29,27 @@
 
 返回单张卡。草稿、待审核、已失效、已过期或不存在的卡一律返回 `404 not_found`。
 
+## 用户接口 `/api/me*`
+
+轻量用户体系的 A 层：服务端签发匿名身份，无需注册。规划见 `docs/PLANNING.md` 阶段 3。
+
+- 身份放在 Cookie `__Host-ddx_sid` 中（`HttpOnly; Secure; SameSite=Lax; Path=/`），有效期 180 天。数据库只存令牌的 SHA-256 哈希。会话使用满 30 天后自动续期并重新下发 Cookie。
+- 单纯浏览、调用 `GET /api/me` 不会创建用户。用户在首次抽卡时创建（随 `POST /api/draws` 上线）。
+- 每日次数按北京时间 0 点重置。福利有效期仍按 UTC 日期判断。
+- 用户接口一律 `Cache-Control: no-store`。
+- `/api/me` 与 `/api/me/*` 的写请求必须同源（后续 `/api/draws` 同样适用）：`Origin` 等于本站，或浏览器未带 `Origin` 时 `Sec-Fetch-Site: same-origin`，否则返回 `403 forbidden_origin`。
+
+### `GET /api/me`
+
+```json
+{
+  "user": { "id": "u_…", "kind": "guest", "createdAt": "2026-11-12T03:00:00.000Z" },
+  "quota": { "max": 3, "day": "2026-11-12", "resetsAt": "2026-11-12T16:00:00.000Z" }
+}
+```
+
+没有 Cookie，或 Cookie 已过期、已吊销、无法识别时，`user` 为 `null`，不报错。`quota.used`（当日已用次数）随服务端抽卡一起加入。
+
 ## 页面与爬虫入口（HTML / XML）
 
 以下路径同样由 Worker 处理（`wrangler.jsonc` 的 `run_worker_first`），数据与公开接口一致，只含已发布且在有效期内的卡。响应可缓存 60 秒（站点地图 300 秒）。
@@ -58,7 +79,7 @@
 
 CSP 不允许内联脚本、`style="…"` 属性和外部资源；新增此类内容前需同时修改两处配置。通过 `el.style.setProperty` 设置的样式不受影响。
 
-`Cache-Control`：公开读接口与目录页为 `public, max-age=60`，`/sitemap.xml` 与 `/robots.txt` 为 `public, max-age=300`；所有管理接口、错误响应与幂等重放一律为 `no-store`。
+`Cache-Control`：公开读接口与目录页为 `public, max-age=60`，`/sitemap.xml` 与 `/robots.txt` 为 `public, max-age=300`；所有管理接口、用户接口、错误响应与幂等重放一律为 `no-store`。
 
 ## 管理接口 `/api/manage/*`
 
@@ -199,6 +220,7 @@ curl -X POST https://free.vibe-show.com/api/manage/offers/example-ai-credit/veri
 | 400  | `source_required`          | `verify` / `expire` / 带 `verified` 的 `publish` 缺少证据链接 |
 | 401  | `unauthorized`             | 缺少、无效或已吊销的令牌                                      |
 | 403  | `forbidden`                | 令牌权限不足                                                  |
+| 403  | `forbidden_origin`         | 带 Cookie 的写请求不是同源发起                                |
 | 404  | `not_found`                | 资源不存在，或对公开接口不可见                                |
 | 405  | `method_not_allowed`       | 方法不支持，`Allow` 头列出可用方法                            |
 | 409  | `already_exists`           | id 已存在                                                     |
