@@ -58,13 +58,20 @@
 
 ```json
 {
-  "draw": { "id": "d_…", "pool": "cloud", "rarity": "S", "createdAt": "…", "isNew": true },
+  "draw": {
+    "id": "d_…",
+    "pool": "cloud",
+    "rarity": "S",
+    "createdAt": "…",
+    "isNew": true,
+    "favorite": false
+  },
   "offer": { "id": "…", "title": "…", "provider": { "id": "…", "name": "…" } },
   "quota": { "max": 3, "used": 1, "day": "2026-11-12", "resetsAt": "2026-11-12T16:00:00.000Z" }
 }
 ```
 
-`offer` 与 `GET /api/offers` 列表项同形。`isNew` 表示该用户第一次抽到这张卡。
+`offer` 与 `GET /api/offers` 列表项同形（重放时若该卡已下架，则为下文的精简形式）。`isNew` 表示该用户第一次获得这张卡，`favorite` 表示已收藏。
 
 - 随机、扣次、记录都在服务端完成。扣次与写入是同一条条件语句，并发请求不会多扣。
 - 只从当前已发布且在有效期内的卡中抽取。稀有度先按基础概率（A 70% / S 25% / SSR 5%）在该池实际有卡的等级间重新归一，再在该等级内均匀选卡；与前端公示的概率由同一份代码（`src/domain/catalog.js`）计算。
@@ -74,6 +81,92 @@
 - 按 IP 限流：每个 IP（IPv6 按 /64 前缀合并计算）每小时最多新建 20 个匿名用户、抽卡 120 次，超出返回 `429 rate_limited` 与 `Retry-After`。已有会话的重放与「次数已用完」在限流之前直接回答，不占用该 IP 的额度。IP 只以 HMAC 哈希形式存放在限流计数中。
 
 **部署前需配置密钥** `IP_HASH_SECRET`（`wrangler secret put IP_HASH_SECRET`，至少 32 个字符的随机串）。缺失或过短时抽卡返回 `503 unavailable`，并在服务端日志记录 `config_error`。本地开发把 `.dev.vars.example` 复制为 `.dev.vars`；修改 `.dev.vars` 后需重启 `wrangler dev`。
+
+### 已下架的卡
+
+用户拥有、但当前已不公开（已失效、已过期或撤回）的卡，在抽卡重放、图鉴与抽卡记录中只返回识别信息，不再返回链接、领取条件和摘要，以免展示未经审核的修改：
+
+```json
+{
+  "id": "…",
+  "provider": { "id": "…", "name": "…" },
+  "pool": "ai",
+  "rarity": "S",
+  "title": "…",
+  "retired": true
+}
+```
+
+### `GET /api/me/collection`
+
+图鉴：用户拥有的每张卡一条（按最近获得排序），以及对当前有效卡的收集进度。没有会话时返回空图鉴和 `found` 为 0 的进度。
+
+```json
+{
+  "cards": [
+    {
+      "offer": { "id": "…" },
+      "firstDrawnAt": "…",
+      "lastDrawnAt": "…",
+      "drawCount": 2,
+      "favorite": true,
+      "live": true
+    }
+  ],
+  "progress": {
+    "live": { "found": 3, "total": 42 },
+    "retired": 1,
+    "byPool": [{ "pool": "ai", "found": 2, "total": 12 }],
+    "byRarity": [{ "rarity": "SSR", "found": 0, "total": 5 }]
+  }
+}
+```
+
+- `live` 为 false 的卡是已下架的卡，`offer` 为上面的精简形式；它们保留在图鉴中，但不计入 `progress.live`，单独计入 `progress.retired`。
+- `byPool` 固定按 ai、cloud、software、education 排列，`byRarity` 按 SSR、S、A 排列。
+- 迁入的旧浏览器记录计入图鉴，`drawCount` 包含它们。
+
+### `GET /api/me/draws?before=&limit=`
+
+真实抽卡记录，新的在前，不含迁入的旧记录。`limit` 为 1–50，默认 20；`before` 为上一页最后一条的 `id`，`nextCursor` 为 `null` 表示没有更多。其他参数返回 `400 invalid_query`。没有会话时返回空列表。
+
+```json
+{
+  "items": [
+    {
+      "id": "d_…",
+      "pool": "ai",
+      "rarity": "A",
+      "createdAt": "…",
+      "offer": { "id": "…" },
+      "live": true
+    }
+  ],
+  "nextCursor": "d_…"
+}
+```
+
+### `PUT` / `DELETE /api/me/favorites/:offerId`
+
+收藏或取消收藏，返回 `{ "offerId": "…", "favorite": true }`，重复调用结果不变。只能收藏自己拥有的卡；没有会话或不拥有时返回 `404 not_found`。
+
+### `POST /api/me/import`
+
+一次性迁入此前保存在浏览器里的图鉴与收藏：
+
+```json
+{ "collection": [{ "id": "offer-id", "ts": 1794466012942 }], "favorites": ["offer-id"] }
+```
+
+- 两个数组各最多 100 条，请求体上限 32 KB，`ts` 为毫秒时间戳。
+- 只保留今天仍公开的卡；卡池与稀有度取自目录，不信任浏览器。时间戳限定在过去一年内，同一张卡取最早的时间。收藏只保留迁入后拥有的卡。
+- 迁入的记录不计入每日次数，也不出现在抽卡记录中。
+- 每个用户只能成功迁入一次，再次调用返回 `409 already_imported`；并发的两次请求只有一次生效。没有可迁入的内容时直接返回 `{ "imported": 0, "favorites": 0 }`，不占用这次机会，也不会为匿名访客创建用户。
+- 返回 `{ "imported": 2, "favorites": 1 }`。没有会话时会创建匿名用户并下发 Cookie，与抽卡共用每个 IP 的新建用户限额。
+
+### 每个用户的写入限额
+
+收藏与迁入共用每个用户每分钟 60 次的额度，超出返回 `429 rate_limited` 与 `Retry-After`。
 
 ## 页面与爬虫入口（HTML / XML）
 
@@ -254,6 +347,7 @@ curl -X POST https://free.vibe-show.com/api/manage/offers/example-ai-credit/veri
 | 409  | `change_not_pending`       | 变更申请已被采纳或驳回                                        |
 | 409  | `conflict`                 | 其他并发冲突，重新读取后重试                                  |
 | 409  | `pool_empty`               | 该卡池当前没有可抽的卡，未扣次                                |
+| 409  | `already_imported`         | 旧浏览器数据已经迁入过                                        |
 | 413  | `payload_too_large`        | 请求体超过 16 KB                                              |
 | 415  | `unsupported_media_type`   | 请求体不是 JSON                                               |
 | 422  | `unknown_provider`         | 提供方不存在                                                  |

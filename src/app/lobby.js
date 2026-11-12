@@ -2,7 +2,8 @@
 import { describeError } from '../api/client.js';
 
 /**
- * @typedef {{ remaining: number, max: number, opening: boolean,
+ * `remaining` is null until the server has reported the quota.
+ * @typedef {{ remaining: number | null, max: number, opening: boolean,
  *   catalog: import('./catalog-store.js').CatalogState, poolCount: number | null,
  *   description: string }} LobbyView
  */
@@ -13,7 +14,7 @@ import { describeError } from '../api/client.js';
  */
 export function openButtonState({ remaining, opening, catalog, poolCount }) {
   if (opening) return { label: '开启中…', disabled: true };
-  if (remaining <= 0) return { label: '明日再来', disabled: true };
+  if (remaining !== null && remaining <= 0) return { label: '明日再来', disabled: true };
   if (catalog.status === 'loading' || catalog.status === 'idle') {
     return { label: '载入卡池…', disabled: true };
   }
@@ -38,7 +39,7 @@ export function poolStatus({ catalog, poolCount }) {
  * @param {LobbyView} view
  */
 export function renderLobby($, view) {
-  const counts = `${view.remaining} / ${view.max}`;
+  const counts = `${view.remaining ?? '–'} / ${view.max}`;
   for (const id of ['#headerRemaining', '#metaRemaining']) {
     const el = $(id);
     if (el.textContent !== counts) el.textContent = counts;

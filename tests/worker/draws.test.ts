@@ -242,6 +242,8 @@ describe('POST /api/draws — idempotency', () => {
     const again = await draw('cloud', { cookie, key: 'k-1' });
     expect(again.res.status).toBe(200);
     expect(again.body.data.offer.id).toBe(first.body.data.offer.id);
+    expect(again.body.data.offer).toMatchObject({ retired: true });
+    expect(again.body.data.offer).not.toHaveProperty('officialUrl');
   });
 
   it('records one draw for concurrent requests with the same key', async () => {

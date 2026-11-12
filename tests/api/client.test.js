@@ -207,3 +207,64 @@ describe('getOffer', () => {
     await expect(client(fetchImpl).getOffer('x')).rejects.toMatchObject({ kind: 'invalid' });
   });
 });
+
+describe('request', () => {
+  it('sends JSON bodies and extra headers, and returns the status', async () => {
+    const fetchImpl = vi.fn(async () =>
+      jsonResponse({ success: true, data: { ok: 1 }, error: null }, 201),
+    );
+    const api = createApiClient({ timeoutMs: 1000, fetchImpl });
+    const result = await api.request('/api/draws', {
+      method: 'POST',
+      body: { pool: 'ai' },
+      headers: { 'idempotency-key': 'k1' },
+    });
+    expect(result).toMatchObject({ data: { ok: 1 }, status: 201 });
+    const [, init] = fetchImpl.mock.calls[0];
+    expect(init.method).toBe('POST');
+    expect(init.body).toBe('{"pool":"ai"}');
+    expect(init.headers).toMatchObject({
+      'content-type': 'application/json',
+      'idempotency-key': 'k1',
+    });
+  });
+
+  it('exposes error details and Retry-After on failures', async () => {
+    const fetchImpl = async () =>
+      new Response(
+        JSON.stringify({
+          success: false,
+          data: null,
+          error: { code: 'quota_exhausted', message: 'x', details: { used: 3 } },
+        }),
+        { status: 429, headers: { 'content-type': 'application/json', 'retry-after': '120' } },
+      );
+    const api = createApiClient({ timeoutMs: 1000, fetchImpl });
+    const error = await api.request('/api/draws', { method: 'POST', body: {} }).catch((e) => e);
+    expect(error).toMatchObject({ code: 'quota_exhausted', status: 429, retryAfter: 120 });
+    expect(error.details).toEqual({ used: 3 });
+    expect(describeError(error)).toContain('次数已用完');
+  });
+
+  it('never shows prototype members for odd server codes', () => {
+    for (const code of ['constructor', 'toString', '__proto__']) {
+      const message = describeError(new ApiError('http', 'x', { status: 400, code }));
+      expect(message).toBe('请求未被接受，请刷新页面后重试。');
+    }
+  });
+
+  it('ignores a Retry-After that is not a number of seconds', async () => {
+    const fetchImpl = async () =>
+      new Response(
+        JSON.stringify({ success: false, data: null, error: { code: 'rate_limited' } }),
+        {
+          status: 429,
+          headers: { 'retry-after': 'Wed, 21 Oct 2026 07:28:00 GMT' },
+        },
+      );
+    const api = createApiClient({ timeoutMs: 1000, fetchImpl });
+    const error = await api.request('/x').catch((e) => e);
+    expect(error.retryAfter).toBeNull();
+    expect(describeError(error)).toContain('操作太频繁');
+  });
+});

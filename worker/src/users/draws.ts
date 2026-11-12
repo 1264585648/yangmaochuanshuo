@@ -1,5 +1,7 @@
 /* Data access for server-side draws. `draws` is the single source of truth for
- * the daily quota (rows per user and day) and, later, the collection. */
+ * the daily quota (real draws per user and day) and the collection. Rows with
+ * source 'import' are legacy browser cards: they belong to the collection but
+ * never count toward the quota or answer an idempotent replay. */
 import { randomToken } from '../auth/tokens';
 
 type DB = Env['DB'];
@@ -12,8 +14,9 @@ export interface DrawView {
   pool: string;
   rarity: string;
   createdAt: string;
-  /** First time this user drew this card. */
+  /** First time this user got this card. */
   isNew: boolean;
+  favorite: boolean;
 }
 
 export interface DrawState {
@@ -40,6 +43,7 @@ interface DrawRow {
   rarity: string;
   created_at: string;
   is_new: number;
+  favorite: number;
 }
 
 const toView = (row: DrawRow): DrawView => ({
@@ -49,6 +53,7 @@ const toView = (row: DrawRow): DrawView => ({
   rarity: row.rarity,
   createdAt: row.created_at,
   isNew: row.is_new === 1,
+  favorite: row.favorite === 1,
 });
 
 function selectByKey(db: DB, userId: string, key: string) {
@@ -57,15 +62,17 @@ function selectByKey(db: DB, userId: string, key: string) {
       `SELECT d.id, d.offer_id, d.pool, d.rarity, d.created_at,
               NOT EXISTS (SELECT 1 FROM draws e
                            WHERE e.user_id = d.user_id AND e.offer_id = d.offer_id
-                             AND e.rowid < d.rowid) AS is_new
-         FROM draws d WHERE d.user_id = ? AND d.idem_key = ?`,
+                             AND e.rowid < d.rowid) AS is_new,
+              EXISTS (SELECT 1 FROM favorites f
+                       WHERE f.user_id = d.user_id AND f.offer_id = d.offer_id) AS favorite
+         FROM draws d WHERE d.user_id = ? AND d.idem_key = ? AND d.source = 'draw'`,
     )
     .bind(userId, key);
 }
 
 function countOnDay(db: DB, userId: string, day: string) {
   return db
-    .prepare('SELECT COUNT(*) AS n FROM draws WHERE user_id = ? AND day = ?')
+    .prepare("SELECT COUNT(*) AS n FROM draws WHERE user_id = ? AND day = ? AND source = 'draw'")
     .bind(userId, day);
 }
 
@@ -111,7 +118,8 @@ export async function insertDraw(
       .prepare(
         `INSERT INTO draws (id, user_id, offer_id, pool, rarity, day, idem_key, created_at)
          SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8
-          WHERE (SELECT COUNT(*) FROM draws WHERE user_id = ?2 AND day = ?6) < ?9
+          WHERE (SELECT COUNT(*) FROM draws
+                  WHERE user_id = ?2 AND day = ?6 AND source = 'draw') < ?9
          ON CONFLICT (user_id, idem_key) DO NOTHING`,
       )
       .bind(

@@ -5,6 +5,20 @@ const DEV_PORT = 4173;
 const API_TARGET = process.env.DEALDEX_API ?? 'http://127.0.0.1:8787';
 const CORE_COVERAGE = { lines: 80, functions: 80, branches: 80, statements: 80 };
 
+/**
+ * `/api` proxy for `vite` and `vite preview`. The Worker refuses
+ * cookie-authenticated writes whose Origin is not its own
+ * (worker/src/http/origin.ts); in production the page and API share one
+ * origin, so the proxy presents the Worker's origin to match.
+ */
+const API_PROXY = {
+  '/api': {
+    target: API_TARGET,
+    changeOrigin: true,
+    headers: { origin: new URL(API_TARGET).origin },
+  },
+};
+
 /** `/offers` and `/offers/<id>` share one page template (`offers.html`). */
 const CATALOG_ROUTE = /^\/offers(?:\/[a-z0-9-]*)?\/?(?=\?|$)/;
 
@@ -36,8 +50,8 @@ function catalogRoutes() {
 
 export default defineConfig({
   plugins: [catalogRoutes()],
-  server: { port: DEV_PORT, strictPort: true, proxy: { '/api': API_TARGET } },
-  preview: { port: DEV_PORT, strictPort: true, proxy: { '/api': API_TARGET } },
+  server: { port: DEV_PORT, strictPort: true, proxy: API_PROXY },
+  preview: { port: DEV_PORT, strictPort: true, proxy: API_PROXY },
   build: {
     outDir: 'dist',
     emptyOutDir: true,

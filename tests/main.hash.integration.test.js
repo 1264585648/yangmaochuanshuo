@@ -16,7 +16,7 @@ beforeAll(async () => {
   window.matchMedia = vi.fn(() => ({ matches: false }));
   window.scrollTo = vi.fn();
   globalThis.fetch = vi.fn(api.fetch);
-  vi.useFakeTimers();
+  vi.useFakeTimers({ now: new Date('2026-11-12T10:00:00Z') });
   api.hold();
   await import('../src/main.js');
 });
@@ -26,15 +26,17 @@ afterAll(() => {
 });
 
 describe('opening the lobby at /#collection', () => {
-  it('waits for the catalog instead of showing the loading notice', () => {
-    expect($('#overlay').hidden).toBe(true);
-  });
-
-  it('opens the collection once the catalog is ready', async () => {
-    api.release();
-    await settle();
+  it('opens the collection at once, showing that it is loading', () => {
     expect($('#overlay').hidden).toBe(false);
     expect($('#dialogTitle').textContent).toBe('我的福利图鉴');
+    expect($('#dialogContent').textContent).toContain('正在载入你的图鉴');
+  });
+
+  it('fills in the collection from the server', async () => {
+    api.release();
+    await settle();
+    expect($('#dialogContent').textContent).toContain('图鉴里还没有卡牌');
+    expect($('#dialogContent').textContent).toContain('已发现 0 / 5 张有效福利');
   });
 
   it('does not reopen it on later catalog updates', async () => {

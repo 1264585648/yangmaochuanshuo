@@ -1,8 +1,8 @@
 import { STORAGE_KEYS } from '../config.js';
 
 /**
- * @typedef {Pick<Storage, 'getItem' | 'setItem'>} StorageLike
- * @typedef {{ read: (key: string, fallback: unknown) => unknown, write: (key: string, value: unknown) => boolean }} Store
+ * @typedef {Pick<Storage, 'getItem' | 'setItem'> & Partial<Pick<Storage, 'removeItem'>>} StorageLike
+ * @typedef {{ read: (key: string, fallback: unknown) => unknown, write: (key: string, value: unknown) => boolean, remove: (key: string) => boolean }} Store
  */
 
 /**
@@ -43,6 +43,15 @@ export function createStore(storage) {
         return false;
       }
     },
+    remove(key) {
+      if (!storage?.removeItem) return false;
+      try {
+        storage.removeItem(key);
+        return true;
+      } catch {
+        return false;
+      }
+    },
   };
 }
 
@@ -55,7 +64,7 @@ const isCollectionEntry = (entry) =>
 
 /**
  * @param {Store} store
- * @returns {import('../domain/collection.js').CollectionEntry[]}
+ * @returns {{ id: string, ts: number }[]} Legacy draw history, newest first.
  */
 export function loadCollection(store) {
   const raw = store.read(STORAGE_KEYS.collection, []);
@@ -70,13 +79,4 @@ export function loadFavorites(store) {
   const raw = store.read(STORAGE_KEYS.favorites, []);
   if (!Array.isArray(raw)) return [];
   return [...new Set(raw.filter((id) => typeof id === 'string'))];
-}
-
-/**
- * Raw daily record; validate with `normalizeDaily` before use.
- * @param {Store} store
- * @returns {unknown}
- */
-export function readDaily(store) {
-  return store.read(STORAGE_KEYS.daily, null);
 }

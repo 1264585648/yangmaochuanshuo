@@ -9,14 +9,18 @@ export class ApiError extends Error {
   /**
    * @param {ApiErrorKind} kind
    * @param {string} message
-   * @param {{ status?: number, code?: string }} [details]
+   * @param {{ status?: number, code?: string, details?: unknown, retryAfter?: number | null }} [extra]
    */
-  constructor(kind, message, { status, code } = {}) {
+  constructor(kind, message, { status, code, details, retryAfter = null } = {}) {
     super(message);
     this.name = 'ApiError';
     this.kind = kind;
     this.status = status;
     this.code = code;
+    /** Server-provided `error.details`; validate before use. */
+    this.details = details;
+    /** Seconds from `Retry-After`, when the server sent one. */
+    this.retryAfter = retryAfter;
   }
 }
 
@@ -27,6 +31,9 @@ export class ApiError extends Error {
  */
 export function describeError(error) {
   if (!(error instanceof ApiError)) return '出现了意外错误，请稍后再试。';
+  const byCode =
+    error.code && Object.hasOwn(CODE_MESSAGES, error.code) ? CODE_MESSAGES[error.code] : undefined;
+  if (byCode) return byCode;
   switch (error.kind) {
     case 'network':
       return '网络连接失败，请检查网络后重试。';
@@ -40,6 +47,14 @@ export function describeError(error) {
       return '收到的数据格式异常，请稍后重试。';
   }
 }
+
+/** Messages for server error codes the lobby can run into. */
+const CODE_MESSAGES = Object.freeze({
+  quota_exhausted: '今天的免费开包次数已用完，北京时间 0 点后再来吧。',
+  pool_empty: '这个卡池暂时没有有效福利，换一个试试吧。',
+  rate_limited: '操作太频繁了，请稍等片刻再试。',
+  unavailable: '服务暂时不可用，请稍后重试。',
+});
 
 const QUERY_KEYS = Object.freeze([
   'pool',
@@ -84,6 +99,14 @@ function parseMeta(meta) {
 }
 
 /**
+ * @param {string | null} header `Retry-After` in seconds (dates are not used by this API).
+ * @returns {number | null}
+ */
+function parseRetryAfter(header) {
+  return header !== null && /^\d+$/.test(header) ? Number(header) : null;
+}
+
+/**
  * Link an optional caller signal and a timeout to one controller.
  * @param {AbortSignal | undefined} outer
  * @param {number} timeoutMs
@@ -116,11 +139,13 @@ export function createApiClient({ baseUrl = '', timeoutMs, fetchImpl }) {
   const doFetch = (...args) => (fetchImpl ?? globalThis.fetch)(...args);
 
   /**
+   * One JSON request. Cookies go along on same-origin calls (the fetch default),
+   * which the user API relies on.
    * @param {string} path
-   * @param {{ signal?: AbortSignal }} [options]
-   * @returns {Promise<{ data: unknown, meta: ReturnType<typeof parseMeta> }>}
+   * @param {{ method?: string, body?: unknown, headers?: Record<string, string>, signal?: AbortSignal }} [options]
+   * @returns {Promise<{ data: unknown, meta: ReturnType<typeof parseMeta>, status: number }>}
    */
-  async function getJson(path, { signal } = {}) {
+  async function request(path, { method = 'GET', body, headers = {}, signal } = {}) {
     // The timeout covers the whole exchange, body included: a server that
     // sends headers and then stalls must not hang the caller forever.
     const abort = linkedAbort(signal, timeoutMs);
@@ -133,16 +158,22 @@ export function createApiClient({ baseUrl = '', timeoutMs, fetchImpl }) {
       let response;
       try {
         response = await doFetch(`${baseUrl}${path}`, {
-          headers: { accept: 'application/json' },
+          method,
+          headers: {
+            accept: 'application/json',
+            ...(body === undefined ? {} : { 'content-type': 'application/json' }),
+            ...headers,
+          },
+          body: body === undefined ? undefined : JSON.stringify(body),
           signal: abort.signal,
         });
       } catch {
         throw failure() ?? new ApiError('network', 'Network request failed');
       }
 
-      let body;
+      let payload;
       try {
-        body = await response.json();
+        payload = await response.json();
       } catch {
         throw (
           failure() ??
@@ -151,22 +182,26 @@ export function createApiClient({ baseUrl = '', timeoutMs, fetchImpl }) {
           })
         );
       }
-      if (!isObject(body) || typeof body.success !== 'boolean') {
+      if (!isObject(payload) || typeof payload.success !== 'boolean') {
         throw new ApiError('invalid', 'Unexpected response envelope', { status: response.status });
       }
-      if (!response.ok || !body.success) {
-        const code =
-          isObject(body.error) && typeof body.error.code === 'string' ? body.error.code : '';
+      if (!response.ok || !payload.success) {
+        const error = isObject(payload.error) ? payload.error : {};
         throw new ApiError('http', `Request failed (${response.status})`, {
           status: response.status,
-          code,
+          code: typeof error.code === 'string' ? error.code : '',
+          details: error.details,
+          retryAfter: parseRetryAfter(response.headers.get('retry-after')),
         });
       }
-      return { data: body.data, meta: parseMeta(body.meta) };
+      return { data: payload.data, meta: parseMeta(payload.meta), status: response.status };
     } finally {
       abort.dispose();
     }
   }
+
+  /** @param {string} path @param {{ signal?: AbortSignal }} [options] */
+  const getJson = (path, options = {}) => request(path, options);
 
   /**
    * One page of public offers. Invalid rows are dropped, never rendered.
@@ -216,5 +251,5 @@ export function createApiClient({ baseUrl = '', timeoutMs, fetchImpl }) {
     return all;
   }
 
-  return { listOffers, getOffer, listAllOffers };
+  return { request, listOffers, getOffer, listAllOffers };
 }

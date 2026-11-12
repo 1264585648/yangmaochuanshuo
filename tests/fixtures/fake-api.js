@@ -1,5 +1,7 @@
-/* In-memory stand-in for the public `/api/offers` endpoint, for page tests. */
+/* In-memory stand-in for the public `/api/offers` endpoint and the user API,
+   for page tests. */
 import { apiOffer, jsonResponse, listEnvelope } from './offers.js';
+import { createFakeUserApi } from './fake-user-api.js';
 
 export const CATALOG = Object.freeze([
   apiOffer({ id: 'ai-basic', pool: 'ai', rarity: 'A', title: '对话额度', benefit: '每日 50 次' }),
@@ -25,8 +27,10 @@ const NOT_FOUND = {
 
 /**
  * @param {{ offers?: readonly object[] }} [options]
- * @returns {{ fetch: (url: string) => Promise<Response>, hold: () => void, release: () => void,
- *   fail: (on: boolean) => void, setOffers: (next: readonly object[]) => void, calls: string[] }}
+ * @returns {{ fetch: (url: string, init?: RequestInit) => Promise<Response>, hold: () => void,
+ *   release: () => void, fail: (on: boolean) => void, setOffers: (next: readonly object[]) => void,
+ *   calls: string[], user: ReturnType<typeof createFakeUserApi> }}
+ *   `calls` lists catalog requests only; user API calls are in `user.calls`.
  */
 export function createFakeApi({ offers: initial = CATALOG } = {}) {
   let offers = initial;
@@ -34,12 +38,16 @@ export function createFakeApi({ offers: initial = CATALOG } = {}) {
   let open = () => {};
   let failing = false;
   const calls = [];
+  const user = createFakeUserApi({ offers: () => offers });
 
-  async function fetchImpl(url) {
-    calls.push(String(url));
+  async function fetchImpl(url, init = {}) {
+    const parsed = new URL(String(url), 'https://dealdex.test');
+    const isUser = parsed.pathname === '/api/draws' || parsed.pathname.startsWith('/api/me');
+    if (!isUser) calls.push(String(url));
     if (gate) await gate;
     if (failing) throw new TypeError('Failed to fetch');
-    const parsed = new URL(String(url), 'https://dealdex.test');
+    const handled = await user.handle(parsed, init);
+    if (handled) return handled;
     const detail = /^\/api\/offers\/([^/]+)$/.exec(parsed.pathname);
     if (detail) {
       const found = offers.find((o) => o.id === decodeURIComponent(detail[1]));
@@ -81,5 +89,6 @@ export function createFakeApi({ offers: initial = CATALOG } = {}) {
       offers = next;
     },
     calls,
+    user,
   };
 }

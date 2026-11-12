@@ -1,27 +1,15 @@
-/* DealDex entry: wires the live catalog, local quota and dialogs to the page.
-   Offers come from the public `/api/offers` endpoint. The draw itself runs in
-   the browser over published offers until server-side draws ship (phase 3). */
-import {
-  API,
-  COLLECTION_LIMIT,
-  DEFAULT_POOL_INDEX,
-  MAX_DRAWS,
-  STORAGE_KEYS,
-  TIMINGS,
-} from './config.js';
+/* Lobby entry: wires the live catalog, the server-side user state (identity,
+   quota, draws, collection, favorites) and dialogs to the page. Offers for the
+   pool counts and odds come from `/api/offers`; draws run on the server. */
+import '../styles/collection.css';
+import { API, DEFAULT_DAILY_DRAWS, DEFAULT_POOL_INDEX, TIMINGS } from './config.js';
 import { POOLS, poolLabel } from './data/pools.js';
 import { createApiClient, describeError } from './api/client.js';
+import { createMeClient } from './api/me-client.js';
 import { RARITIES } from './domain/draw.js';
-import { countByPool, drawFromPool, poolOdds, resolveCollection } from './domain/catalog.js';
-import { dayKey, normalizeDaily, remainingDraws, consumeDraw } from './domain/quota.js';
-import { recordDraw, toggleFavorite } from './domain/collection.js';
-import {
-  createStore,
-  getBrowserStorage,
-  loadCollection,
-  loadFavorites,
-  readDaily,
-} from './storage/local.js';
+import { countByPool, poolOdds } from './domain/catalog.js';
+import { isRetired, remainingDraws } from './domain/me.js';
+import { createStore, getBrowserStorage } from './storage/local.js';
 import { renderPacks, applySelection, updatePackCounts } from './ui/packs.js';
 import { createDialog, createToast } from './ui/dialog.js';
 import {
@@ -30,11 +18,13 @@ import {
   resultDialog,
   detailDialog,
   favoriteLabel,
-  collectionDialog,
-  collectionUnavailableDialog,
 } from './ui/views.js';
 import { createCatalogStore } from './app/catalog-store.js';
+import { createCollectionView } from './app/collection-view.js';
+import { createDrawFlow } from './app/draw-flow.js';
+import { importLegacyOnce } from './app/legacy-import.js';
 import { initialView, renderLobby } from './app/lobby.js';
+import { createMeStore } from './app/me-store.js';
 import {
   bindPackTilt,
   bindSwipe,
@@ -45,12 +35,12 @@ import {
 } from './app/motion.js';
 
 const $ = (selector) => /** @type {HTMLElement} */ (document.querySelector(selector));
-const store = createStore(getBrowserStorage());
 const api = createApiClient({ baseUrl: API.baseUrl, timeoutMs: API.timeoutMs });
+const meClient = createMeClient(api);
 const toast = createToast($('#toast'), TIMINGS.toastMs);
 const scene = $('#packScene');
 
-/** Cleanup for the view currently in the dialog (e.g. pending searches). */
+/** Cleanup for the view currently in the dialog (e.g. a pending load). */
 let disposeView = null;
 const disposeCurrentView = () => {
   disposeView?.();
@@ -70,11 +60,6 @@ const dialog = createDialog({
 
 let activeIndex = DEFAULT_POOL_INDEX;
 let opening = false;
-let daily = readDaily(store);
-let collection = loadCollection(store);
-let favorites = loadFavorites(store);
-/** Dialog requested by the URL hash on load (e.g. `/#collection`), opened once the catalog settles. */
-let pendingView = initialView(window.location.hash);
 
 const catalog = createCatalogStore({
   load: (signal) => api.listAllOffers({ pageSize: API.pageSize, maxPages: API.maxPages, signal }),
@@ -82,34 +67,31 @@ const catalog = createCatalogStore({
   onChange: (state) => {
     updatePackCounts(scene, state.status === 'ready' ? countByPool(state.offers) : null);
     refresh();
-    openPendingView(state);
   },
 });
 
-/** @param {import('./app/catalog-store.js').CatalogState} state */
-function openPendingView(state) {
-  if (!pendingView || (state.status !== 'ready' && state.status !== 'error')) return;
-  const action = NAV_ACTIONS[pendingView];
-  pendingView = null;
-  if (action && !dialog.isOpen()) guarded(action)();
-}
+const me = createMeStore({ load: () => meClient.getMe(), onChange: () => refresh() });
+/** Settles once the quota is loaded and any legacy import is done. */
+let userLoaded = Promise.resolve();
+const drawFlow = createDrawFlow({
+  // A first draw sent while the import is in flight would carry no cookie and
+  // create a second guest; wait for the import to settle first.
+  draw: (pool, key) => userLoaded.then(() => meClient.draw(pool, key)),
+});
 
-/** Validate today's record, persisting only when it had to be reset. */
-function currentDaily() {
-  const normalized = normalizeDaily(daily, dayKey(new Date()));
-  if (normalized !== daily) store.write(STORAGE_KEYS.daily, normalized);
-  daily = normalized;
-  return daily;
+/** Remaining draws, or null until the server has reported the quota. */
+function quotaCounts() {
+  const { quota } = me.get();
+  return quota
+    ? { remaining: remainingDraws(quota), max: quota.max }
+    : { remaining: null, max: DEFAULT_DAILY_DRAWS };
 }
-
-const remaining = () => remainingDraws(currentDaily(), MAX_DRAWS);
 
 function refresh() {
   const state = catalog.get();
   const pool = POOLS[activeIndex];
   renderLobby($, {
-    remaining: remaining(),
-    max: MAX_DRAWS,
+    ...quotaCounts(),
     opening,
     catalog: state,
     poolCount: state.status === 'ready' ? (countByPool(state.offers)[pool.id] ?? 0) : null,
@@ -129,57 +111,79 @@ function cycle(direction) {
 
 const openDelay = () => (prefersReducedMotion() ? TIMINGS.openReducedMotionMs : TIMINGS.openMs);
 
-function spendDraw(offer) {
-  daily = consumeDraw(currentDaily());
-  store.write(STORAGE_KEYS.daily, daily);
-  collection = recordDraw(collection, offer.id, Date.now(), COLLECTION_LIMIT);
-  store.write(STORAGE_KEYS.collection, collection);
-  replayClass($('#headerRemaining'), 'bump');
+/** @param {import('./app/draw-flow.js').DrawOutcome} outcome */
+function reportFailure(outcome) {
+  if (outcome.kind === 'empty') {
+    flashClass(scene, 'is-fizzle', TIMINGS.fizzleMs);
+    catalog.refresh();
+    toast('这个卡池暂时没有有效福利，换一个试试吧。');
+  } else if (outcome.kind === 'exhausted') {
+    if (outcome.quota) me.applyQuota(outcome.quota);
+    else me.refresh();
+    toast('今天的免费开包次数已用完，北京时间 0 点后再来吧。');
+  } else if (outcome.kind === 'failed') {
+    const retry = outcome.unknownOutcome ? '再次开包不会重复扣次。' : '';
+    toast(`${describeError(outcome.error)}${retry}`);
+  }
 }
 
 async function draw() {
   if (opening) return;
-  if (remaining() <= 0) {
-    toast(`今天的 ${MAX_DRAWS} 次免费开包已用完，明天再来吧。`);
+  if (quotaCounts().remaining === 0) {
+    toast('今天的免费开包次数已用完，北京时间 0 点后再来吧。');
     return;
   }
   const pool = POOLS[activeIndex];
   opening = true;
   document.body.classList.add('is-opening');
   refresh();
-  // A stale catalog refreshes during the animation. If the refresh is slower
-  // than the animation, draw from the cached offers; it finishes in the background.
-  const delay = openDelay();
-  const latest = Promise.race([catalog.ensureFresh(), wait(delay).then(catalog.get)]);
-  const [state] = await Promise.all([latest, wait(delay)]);
-  const offer = state.status === 'ready' ? drawFromPool(state.offers, pool.id) : null;
+  const outcome = await drawFlow.open(pool.id, wait(openDelay()));
   document.body.classList.remove('is-opening');
   opening = false;
-  if (!offer) {
-    flashClass(scene, 'is-fizzle', TIMINGS.fizzleMs);
+  if (outcome.kind !== 'drawn') {
+    reportFailure(outcome);
     refresh();
-    toast(
-      state.status === 'ready'
-        ? '这个卡池暂时没有有效福利，换一个试试吧。'
-        : describeError(state.error),
-    );
     return;
   }
-  spendDraw(offer);
+  const { result } = outcome;
+  me.applyQuota(result.quota);
+  replayClass($('#headerRemaining'), 'bump');
   refresh();
-  showResult(offer);
+  if (isRetired(result.offer)) {
+    toast('上次未完成的开包已记录，但那张卡已下架，可在图鉴中查看。');
+    return;
+  }
+  showResult(result.offer, result.draw);
 }
 
-function bindFavorite(offer) {
-  const button = $('#favoriteResult');
-  button.addEventListener('click', () => {
-    favorites = toggleFavorite(favorites, offer.id);
-    store.write(STORAGE_KEYS.favorites, favorites);
-    const isFavorite = favorites.includes(offer.id);
+/**
+ * @param {import('./domain/offer.js').Offer} offer
+ * @param {boolean} initial
+ */
+function bindFavorite(offer, initial) {
+  const button = /** @type {HTMLButtonElement} */ ($('#favoriteResult'));
+  let isFavorite = initial;
+  const show = () => {
     button.textContent = favoriteLabel(isFavorite);
     button.setAttribute('aria-pressed', String(isFavorite));
+  };
+  button.addEventListener('click', async () => {
+    if (button.disabled) return;
+    const next = !isFavorite;
+    isFavorite = next;
+    show();
     replayClass(button, 'pop');
-    toast(isFavorite ? '已加入收藏' : '已取消收藏');
+    button.disabled = true;
+    try {
+      await meClient.setFavorite(offer.id, next);
+      toast(next ? '已加入收藏' : '已取消收藏');
+    } catch (error) {
+      isFavorite = !next;
+      show();
+      toast(describeError(error));
+    } finally {
+      button.disabled = false;
+    }
   });
 }
 
@@ -196,63 +200,54 @@ function showView(html, { wide = false, dispose = null, returnFocus = null } = {
   disposeView = dispose;
 }
 
-function showResult(offer) {
+/**
+ * @param {import('./domain/offer.js').Offer} offer
+ * @param {{ favorite: boolean, isNew: boolean }} draw
+ */
+function showResult(offer, { favorite, isNew }) {
   showView(
     resultDialog({
       offer,
       poolLabel: poolLabel(offer.pool),
-      isFavorite: favorites.includes(offer.id),
-      canDrawAgain: remaining() > 0,
+      isFavorite: favorite,
+      isNew,
+      canDrawAgain: quotaCounts().remaining !== 0,
       now: new Date(),
     }),
     // The open button was disabled during the animation and lost focus.
     { returnFocus: $('#openPack') },
   );
-  bindFavorite(offer);
+  bindFavorite(offer, favorite);
   $('#nextDraw').addEventListener('click', dialog.close);
 }
 
 /**
  * @param {import('./domain/offer.js').Offer} offer
+ * @param {boolean} isFavorite
  * @param {{ label: string, open: () => void } | null} back
  */
-function showDetail(offer, back) {
+function showDetail(offer, isFavorite, back) {
   showView(
     detailDialog({
       offer,
       poolLabel: poolLabel(offer.pool),
-      isFavorite: favorites.includes(offer.id),
+      isFavorite,
       backLabel: back?.label ?? null,
       now: new Date(),
     }),
   );
-  bindFavorite(offer);
+  bindFavorite(offer, isFavorite);
   if (back) $('#dialogBack').addEventListener('click', back.open);
 }
 
-function openCollection() {
-  const state = catalog.get();
-  if (state.status !== 'ready') {
-    // Resolving against an empty catalog would report every card as expired.
-    showView(
-      collectionUnavailableDialog(
-        state.status === 'error'
-          ? describeError(state.error)
-          : '福利目录还在载入，请稍候再打开图鉴。',
-      ),
-    );
-    return;
-  }
-  const offers = state.offers;
-  const { found, missing } = resolveCollection(collection, offers);
-  showView(collectionDialog({ found, missing, total: offers.length, favorites }));
-  // Listen on the view's own root: it is replaced with each new view.
-  $('#dialogContent .dialog-inner').addEventListener('click', (event) => {
-    const item = event.target instanceof Element ? event.target.closest('.collection-item') : null;
-    const offer = item && found.find((o) => o.id === item.getAttribute('data-offer-id'));
-    if (offer) showDetail(offer, { label: '返回图鉴', open: openCollection });
-  });
-}
+const collectionView = createCollectionView({
+  me: meClient,
+  showView,
+  root: () => $('#dialogContent .dialog-inner'),
+  poolLabel,
+  showDetail,
+  toast,
+});
 
 function openOdds() {
   const state = catalog.get();
@@ -263,7 +258,11 @@ function openOdds() {
   showView(probabilityDialog({ base: RARITIES, pools }));
 }
 
-const NAV_ACTIONS = { collection: openCollection };
+function openDaily() {
+  showView(dailyDialog(quotaCounts()));
+}
+
+const NAV_ACTIONS = { collection: collectionView.open };
 
 function onKeydown(event) {
   if (dialog.isOpen()) {
@@ -275,13 +274,9 @@ function onKeydown(event) {
   if (event.key === 'ArrowRight') cycle(1);
 }
 
-function onStorage(event) {
-  // key is null when another tab calls localStorage.clear().
-  if (event.key !== null && !Object.values(STORAGE_KEYS).includes(event.key)) return;
-  daily = readDaily(store);
-  collection = loadCollection(store);
-  favorites = loadFavorites(store);
-  refresh();
+/** Pick up a new quota day and other tabs' draws when the page comes back into view. */
+function onVisible() {
+  if (!document.hidden) me.refresh();
 }
 
 function bindEvents() {
@@ -296,10 +291,7 @@ function bindEvents() {
   $('#openPack').addEventListener('click', draw);
   $('#catalogRetry').addEventListener('click', () => catalog.refresh());
   $('#probabilityButton').addEventListener('click', guarded(openOdds));
-  $('#headerCount').addEventListener(
-    'click',
-    guarded(() => showView(dailyDialog({ remaining: remaining(), max: MAX_DRAWS }))),
-  );
+  $('#headerCount').addEventListener('click', guarded(openDaily));
   for (const button of document.querySelectorAll('[data-nav]')) {
     button.addEventListener('click', () => {
       const action = NAV_ACTIONS[button.dataset.nav];
@@ -312,14 +304,22 @@ function bindEvents() {
     if (action && !dialog.isOpen()) guarded(action)();
   });
   document.addEventListener('keydown', onKeydown);
-  // Keep counts correct across tabs, across local midnight, and after reconnecting.
-  window.addEventListener('storage', onStorage);
   window.addEventListener('online', () => {
     if (catalog.get().status === 'error') catalog.refresh();
+    if (me.get().status !== 'ready') me.refresh();
   });
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) refresh();
+  document.addEventListener('visibilitychange', onVisible);
+}
+
+/** Load the quota, then move any pre-account browser data to the server once. */
+async function loadUser() {
+  await me.refresh();
+  if (me.get().status !== 'ready') return;
+  const imported = await importLegacyOnce({
+    store: createStore(getBrowserStorage()),
+    importLegacy: (payload) => meClient.importLegacy(payload),
   });
+  if (imported) toast(`已把本机记录的 ${imported} 张卡迁入你的图鉴。`);
 }
 
 renderPacks(scene, POOLS);
@@ -329,3 +329,7 @@ bindEvents();
 document.body.classList.add('is-intro');
 setTimeout(() => document.body.classList.remove('is-intro'), TIMINGS.introMs);
 catalog.refresh();
+userLoaded = loadUser();
+// The collection no longer depends on the catalog, so `/#collection` opens at once.
+const linked = NAV_ACTIONS[initialView(window.location.hash) ?? ''];
+if (linked) linked();

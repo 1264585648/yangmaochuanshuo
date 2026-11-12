@@ -30,4 +30,6 @@ export const SESSION = Object.freeze({
 export const USER_LIMITS = Object.freeze({
   guestsPerIp: Object.freeze({ max: 20, windowSeconds: 60 * 60 }),
   drawsPerIp: Object.freeze({ max: 120, windowSeconds: 60 * 60 }),
+  /** Favorite toggles and imports per user. */
+  writesPerUser: Object.freeze({ max: 60, windowSeconds: 60 }),
 });

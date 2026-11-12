@@ -22,6 +22,7 @@ describe('openButtonState', () => {
     ['idle', { catalog: { ...ready, status: 'idle' }, poolCount: null }, '载入卡池…', true],
     ['error', { catalog: { ...ready, status: 'error' }, poolCount: null }, '暂不可用', true],
     ['empty pool', { poolCount: 0 }, '卡池补充中', true],
+    ['quota not loaded yet', { remaining: null }, '打开卡包', false],
   ])('%s', (_name, patch, label, disabled) => {
     expect(openButtonState(view(patch))).toEqual({ label, disabled });
   });

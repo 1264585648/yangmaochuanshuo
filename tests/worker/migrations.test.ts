@@ -51,6 +51,7 @@ describe('schema', () => {
       'api_clients',
       'audit_log',
       'draws',
+      'favorites',
       'idempotency_keys',
       'offer_changes',
       'offers',

@@ -2,7 +2,7 @@ import { utcDay } from './domain/visibility';
 import { fail, methodNotAllowed, notFound } from './http/respond';
 import { withSecurityHeaders } from './http/security';
 import { routeManage } from './routes/manage';
-import { type UserLimits } from './routes/draws';
+import { type UserLimits } from './users/context';
 import { isUserPath, routeUser } from './routes/me';
 import { cryptoRandom } from '../../src/domain/draw.js';
 import { USER_LIMITS } from './config';
