@@ -71,7 +71,7 @@ describe('social and icon metadata', () => {
       'og:title': /property="og:title"\s+content="[^"]+"/,
       'og:description': /property="og:description"\s+content="[^"]+"/,
       'og:type': /property="og:type"\s+content="website"/,
-      'og:site_name': /property="og:site_name"\s+content="DealDex"/,
+      'og:site_name': /property="og:site_name"\s+content="羊毛传说"/,
       'og:url': /property="og:url"\s+content="https:\/\/free\.vibe-show\.com\/"/,
       'og:image': /property="og:image"\s+content="https:\/\/free\.vibe-show\.com\/og-image\.png"/,
       'twitter:card': /name="twitter:card"\s+content="summary_large_image"/,

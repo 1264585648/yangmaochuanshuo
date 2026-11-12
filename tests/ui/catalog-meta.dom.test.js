@@ -17,7 +17,7 @@ describe('applyMeta', () => {
     expect(prop('og:url')).toBe(`${ORIGIN}/offers/deal-1`);
     expect(prop('og:image')).toBe(`${ORIGIN}/og-image.png`);
     expect(prop('og:type')).toBe('website');
-    expect(prop('og:site_name')).toBe('DealDex');
+    expect(prop('og:site_name')).toBe('羊毛传说');
     expect(doc.head.querySelector('meta[name="twitter:card"]')?.getAttribute('content')).toBe(
       'summary_large_image',
     );

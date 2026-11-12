@@ -222,7 +222,7 @@ describe('catalogResults / catalogList', () => {
 describe('catalogMeta', () => {
   it('describes the full catalog as indexable', () => {
     const meta = catalogMeta({ kind: 'list', filters: { page: 1 }, total: 12 });
-    expect(meta.title).toBe('发现优惠 · 数字福利目录 | DealDex');
+    expect(meta.title).toBe('发现优惠 · 数字福利目录 | 羊毛传说');
     expect(meta.description).toContain('12');
     expect(meta.path).toBe('/offers');
     expect(meta.robots).toBe('index, follow');
@@ -249,7 +249,7 @@ describe('catalogMeta', () => {
 
   it('names pool pages and later pages, and keeps them indexable', () => {
     const meta = catalogMeta({ kind: 'list', filters: { pool: 'ai', page: 2 }, total: 30 });
-    expect(meta.title).toBe('AI 福利目录 · 第 2 页 | DealDex');
+    expect(meta.title).toBe('AI 福利目录 · 第 2 页 | 羊毛传说');
     expect(meta.path).toBe('/offers?pool=ai&page=2');
     expect(meta.robots).toBe('index, follow');
   });
@@ -271,7 +271,7 @@ describe('catalogMeta', () => {
 
   it('describes one offer from its own fields', () => {
     const meta = catalogMeta({ kind: 'detail', offer: offer({ title: 'GPU', summary: 's' }) });
-    expect(meta.title).toBe('GPU · 示例提供方 | DealDex');
+    expect(meta.title).toBe('GPU · 示例提供方 | 羊毛传说');
     expect(meta.description).toContain('benefit');
     expect(meta.path).toBe('/offers/deal-1');
     expect(meta.robots).toBe('index, follow');
@@ -293,7 +293,7 @@ describe('headTags', () => {
   it('emits title, description, canonical, robots and Open Graph tags', () => {
     const meta = catalogMeta({ kind: 'list', filters: { pool: 'ai', page: 2 }, total: 30 });
     const html = headTags(meta, 'https://dealdex.test');
-    expect(html).toContain('<title>AI 福利目录 · 第 2 页 | DealDex</title>');
+    expect(html).toContain('<title>AI 福利目录 · 第 2 页 | 羊毛传说</title>');
     expect(html).toContain(
       '<link rel="canonical" href="https://dealdex.test/offers?pool=ai&amp;page=2">',
     );
@@ -309,7 +309,7 @@ describe('headTags', () => {
     const html = headTags(meta, 'https://dealdex.test');
     expect(html).toContain(`<meta property="og:url" content="https://dealdex.test${path}">`);
     expect(html).toContain('<meta property="og:type" content="website">');
-    expect(html).toContain('<meta property="og:site_name" content="DealDex">');
+    expect(html).toContain('<meta property="og:site_name" content="羊毛传说">');
     expect(html).toContain(`<meta property="og:title" content="${meta.title}">`);
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain(

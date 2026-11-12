@@ -55,7 +55,7 @@ describe('client rendering without server content', () => {
     expect(rows()).toEqual(['对话额度', 'API 试用金', '编程助手']);
     expect($('#catalogTitle').textContent).toBe('AI 福利目录');
     expect($('input[name="pool"][value="ai"]').checked).toBe(true);
-    expect(document.title).toBe('AI 福利目录 | DealDex');
+    expect(document.title).toBe('AI 福利目录 | 羊毛传说');
     expect($('link[rel="canonical"]').getAttribute('href')).toBe(
       `${window.location.origin}/offers?pool=ai`,
     );
@@ -74,7 +74,7 @@ describe('client rendering without server content', () => {
     await settle();
     expect(fake.calls[0]).toBe('/api/offers/ai-pro');
     expect($('[data-view="detail"] h1').textContent).toBe('编程助手');
-    expect(document.title).toBe('编程助手 · 示例提供方 | DealDex');
+    expect(document.title).toBe('编程助手 · 示例提供方 | 羊毛传说');
   });
 
   it('shows the withdrawn page for an unknown or malformed id', async () => {

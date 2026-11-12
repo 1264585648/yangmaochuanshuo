@@ -145,7 +145,7 @@ svg {
   font-family: var(--serif);
   font-size: 27px;
   font-weight: 700;
-  letter-spacing: -0.7px;
+  letter-spacing: 1px;
   color: #f9eac8;
   text-shadow: 0 2px 0 #0007;
 }
