@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFile, access } from 'node:fs/promises';
 import { POOLS } from '../src/data/pools.js';
-import { DEMO_OFFERS } from '../src/data/offers.js';
-import { RARITIES } from '../src/domain/draw.js';
 import { MAX_DRAWS } from '../src/config.js';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8');
@@ -23,6 +21,10 @@ const DOM_HOOKS = [
   'dialogContent',
   'closeDialog',
   'toast',
+  'openLabel',
+  'poolStatus',
+  'catalogRetry',
+  'discoverLink',
 ];
 
 describe('static smoke checks', () => {
@@ -40,13 +42,10 @@ describe('static smoke checks', () => {
     expect(POOLS.map((p) => p.id).sort()).toEqual([...POOL_IDS].sort());
   });
 
-  it('has a demo card for every pool and rarity, with unique ids', () => {
-    for (const pool of POOL_IDS) {
-      for (const { id: rarity } of RARITIES) {
-        expect(DEMO_OFFERS.some((o) => o.pool === pool && o.rarity === rarity)).toBe(true);
-      }
-    }
-    expect(new Set(DEMO_OFFERS.map((o) => o.id)).size).toBe(DEMO_OFFERS.length);
+  it('ships no hardcoded offer data in the bundle', async () => {
+    await expect(access(new URL('../src/data/offers.js', import.meta.url))).rejects.toThrow();
+    const main = await read('../src/main.js');
+    expect(main).not.toMatch(/DEMO_OFFERS|data\/offers/);
   });
 
   it('keeps the published daily quota', () => {
@@ -56,6 +55,26 @@ describe('static smoke checks', () => {
   it('styles the non-default pools explicitly', async () => {
     const css = await read('../styles.css');
     for (const id of POOL_IDS.filter((id) => id !== 'ai')) expect(css).toContain(`pack--${id}`);
+  });
+
+  it('ships the catalog page template with its render regions and entry', async () => {
+    const html = await read('../offers.html');
+    for (const marker of ['catalog-head', 'catalog-main']) {
+      expect(html).toContain(`<!--${marker}-->`);
+      expect(html).toContain(`<!--/${marker}-->`);
+    }
+    expect(html).toContain('id="catalogMain"');
+    expect(html).toContain('src="/src/catalog.js"');
+    expect(html).toContain('href="/styles/catalog.css"');
+    await access(new URL('../styles/catalog.css', import.meta.url));
+  });
+
+  it('links the component stylesheets', async () => {
+    const html = await read('../index.html');
+    for (const sheet of ['styles/offers.css', 'styles/motion.css']) {
+      expect(html).toContain(`href="./${sheet}"`);
+      await access(new URL(`../${sheet}`, import.meta.url));
+    }
   });
 
   it('honours reduced-motion preferences', async () => {

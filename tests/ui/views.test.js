@@ -4,22 +4,43 @@ import {
   probabilityDialog,
   dailyDialog,
   resultDialog,
+  detailDialog,
   favoriteLabel,
   collectionDialog,
-  offerRows,
 } from '../../src/ui/views.js';
+import { chipsHTML, errorState, externalLink, skeletonRows } from '../../src/ui/offer-views.js';
 import { packHTML, positionFor } from '../../src/ui/packs.js';
+import { poolIconSVG } from '../../src/ui/icons.js';
 import { RARITIES } from '../../src/domain/draw.js';
+import { normalizeOffer } from '../../src/domain/offer.js';
+import { apiOffer } from '../fixtures/offers.js';
 
+const NOW = new Date('2026-11-11T00:00:00Z');
 const EVIL = '<img src=x onerror="alert(1)">';
+const BREAKOUT = 'x" onmouseover="alert(1)';
+const RAW_ATTR = '" onmouseover=';
+
+const offer = (patch = {}) => normalizeOffer(apiOffer({ id: 'deal-1', ...patch }));
 const hostile = {
-  id: 'evil',
-  pool: 'ai',
-  rarity: 'SSR',
+  ...offer(),
+  id: BREAKOUT,
+  pool: BREAKOUT,
+  rarity: BREAKOUT,
   title: EVIL,
-  description: EVIL,
-  icon: EVIL,
-  requirement: EVIL,
+  summary: EVIL,
+  benefit: EVIL,
+  provider: { id: 'p', name: EVIL },
+  conditions: { ...offer().conditions, note: EVIL, regions: [] },
+  officialUrl: 'javascript:alert(1)',
+  sourceUrl: 'http://insecure.example.com',
+  validUntil: EVIL,
+  lastVerifiedAt: EVIL,
+};
+
+const assertSafe = (html) => {
+  expect(html).not.toContain('<img');
+  expect(html).not.toContain(RAW_ATTR);
+  expect(html).not.toContain('javascript:');
 };
 
 describe('basicDialog', () => {
@@ -32,12 +53,37 @@ describe('basicDialog', () => {
 });
 
 describe('probabilityDialog', () => {
-  it('shows each published rate as a whole percentage', () => {
-    const html = probabilityDialog(RARITIES);
+  it('shows the base table and per-pool odds with card counts', () => {
+    const html = probabilityDialog({
+      base: RARITIES,
+      pools: [
+        {
+          label: '云服务器',
+          odds: [
+            { id: 'A', chance: 0.7 / 0.95, count: 2 },
+            { id: 'S', chance: 0.25 / 0.95, count: 1 },
+          ],
+        },
+      ],
+    });
     expect(html).toContain('<strong>70%</strong>');
-    expect(html).toContain('<strong>25%</strong>');
     expect(html).toContain('<strong>5%</strong>');
-    expect(html).toContain('rarity-chip ssr');
+    expect(html).toContain('73.7%<small>2 张</small>');
+    expect(html).toContain('26.3%<small>1 张</small>');
+    expect(html).toContain('<td class="muted">—</td>');
+  });
+
+  it('omits the pool table while the catalog is not loaded', () => {
+    expect(probabilityDialog({ base: RARITIES, pools: null })).not.toContain('odds-table');
+  });
+
+  it('escapes rarity ids and pool labels', () => {
+    assertSafe(
+      probabilityDialog({
+        base: [{ id: BREAKOUT, chance: 1 }],
+        pools: [{ label: EVIL, odds: [] }],
+      }),
+    );
   });
 });
 
@@ -50,37 +96,70 @@ describe('dailyDialog', () => {
 });
 
 describe('resultDialog', () => {
-  it('escapes every data field', () => {
-    const html = resultDialog({
-      offer: hostile,
-      poolLabel: EVIL,
-      isFavorite: false,
-      canDrawAgain: true,
-    });
-    expect(html).not.toContain('<img');
-    expect(html).toContain('&lt;img');
+  const props = (patch) => ({
+    offer: offer(),
+    poolLabel: 'AI 福利',
+    isFavorite: false,
+    canDrawAgain: true,
+    now: NOW,
+    ...patch,
+  });
+
+  it('shows the real offer fields and a safe official link', () => {
+    const html = resultDialog(props());
+    expect(html).toContain('Offer deal-1');
+    expect(html).toContain('示例提供方');
+    expect(html).toContain('benefit');
+    expect(html).toContain('href="https://www.example.com/deal"');
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(html).toContain('来源：docs.example.com');
+    expect(html).toContain('1 天前核验');
+    expect(html).toContain('无特殊门槛');
+  });
+
+  it('escapes every data field and drops unsafe links', () => {
+    const html = resultDialog(props({ offer: hostile, poolLabel: EVIL }));
+    assertSafe(html);
+    expect(html).not.toContain('前往官方页面');
+    expect(html).not.toContain('insecure.example.com');
   });
 
   it('celebrates SSR and reflects favourite and quota state', () => {
-    const offer = { ...hostile, title: 't', description: 'd', icon: 'i' };
-    const html = resultDialog({
-      offer,
-      poolLabel: 'AI 福利',
-      isFavorite: true,
-      canDrawAgain: false,
-    });
+    const html = resultDialog(
+      props({ offer: offer({ rarity: 'SSR' }), isFavorite: true, canDrawAgain: false }),
+    );
     expect(html).toContain('发现了一张珍稀福利卡！');
     expect(html).toContain('rarity-ssr');
     expect(html).toContain('已收藏 ✓');
+    expect(html).toContain('aria-pressed="true"');
     expect(html).toContain('返回大厅');
   });
 
   it('uses the plain heading for non-SSR and offers another draw', () => {
-    const offer = { ...hostile, rarity: 'A', title: 't' };
-    const html = resultDialog({ offer, poolLabel: 'x', isFavorite: false, canDrawAgain: true });
+    const html = resultDialog(props());
     expect(html).toContain('发现一张新的福利卡');
     expect(html).toContain('☆ 收藏到图鉴');
     expect(html).toContain('继续抽卡');
+  });
+});
+
+describe('detailDialog', () => {
+  it('renders a back button only when asked', () => {
+    const base = { offer: offer(), poolLabel: 'AI', isFavorite: false, now: NOW };
+    expect(detailDialog({ ...base, backLabel: '返回图鉴' })).toContain('‹ 返回图鉴');
+    expect(detailDialog({ ...base, backLabel: null })).not.toContain('dialogBack');
+  });
+
+  it('escapes every data field', () => {
+    assertSafe(
+      detailDialog({
+        offer: hostile,
+        poolLabel: EVIL,
+        isFavorite: false,
+        backLabel: EVIL,
+        now: NOW,
+      }),
+    );
   });
 });
 
@@ -93,48 +172,40 @@ describe('favoriteLabel', () => {
 
 describe('collectionDialog', () => {
   it('shows the empty state', () => {
-    const html = collectionDialog({ seen: [], total: 12, favorites: [] });
+    const html = collectionDialog({ found: [], missing: 0, total: 12, favorites: [] });
     expect(html).toContain('图鉴里还没有卡牌');
-    expect(html).toContain('已发现 0 / 12 张演示卡牌 · 收藏 0 张');
+    expect(html).toContain('已发现 0 / 12 张有效福利 · 收藏 0 张');
   });
 
-  it('lists escaped cards with favourite markers', () => {
-    const html = collectionDialog({ seen: [hostile], total: 12, favorites: ['evil'] });
-    expect(html).not.toContain('<img');
-    expect(html).toContain('★ 已收藏');
-    expect(html).toContain('已发现 1 / 12');
-  });
-});
-
-describe('offerRows', () => {
-  it('escapes rows and shows an empty state', () => {
-    expect(offerRows([hostile])).not.toContain('<img');
-    expect(offerRows([])).toContain('没有找到匹配的演示卡牌');
-  });
-});
-
-describe('attribute-context escaping', () => {
-  const BREAKOUT = 'x" onmouseover="alert(1)';
-  const RAW_ATTR = '" onmouseover=';
-  const attrOffer = { ...hostile, rarity: BREAKOUT, pool: BREAKOUT };
-
-  it('escapes rarity used in class attributes', () => {
-    const result = resultDialog({
-      offer: attrOffer,
-      poolLabel: 'p',
-      isFavorite: false,
-      canDrawAgain: true,
+  it('lists cards, marks favourites and counts only live favourites', () => {
+    const html = collectionDialog({
+      found: [offer()],
+      missing: 2,
+      total: 5,
+      favorites: ['deal-1', 'expired-one'],
     });
-    expect(result).not.toContain(RAW_ATTR);
-    expect(offerRows([attrOffer])).not.toContain(RAW_ATTR);
-    expect(collectionDialog({ seen: [attrOffer], total: 1, favorites: [] })).not.toContain(
-      RAW_ATTR,
-    );
-    expect(probabilityDialog([{ id: BREAKOUT, chance: 1 }])).not.toContain(RAW_ATTR);
+    expect(html).toContain('data-offer-id="deal-1"');
+    expect(html).toContain('aria-label="已收藏"');
+    expect(html).toContain('已发现 1 / 5 张有效福利 · 收藏 1 张');
+    expect(html).toContain('另有 2 张曾抽到的卡已过期或下架');
   });
 
-  it('escapes the pool id used in the pack class', () => {
-    expect(packHTML({ id: BREAKOUT, title: 't', label: 'l' }, 0)).not.toContain(RAW_ATTR);
+  it('escapes every data field', () => {
+    assertSafe(collectionDialog({ found: [hostile], missing: 0, total: 1, favorites: [] }));
+  });
+});
+
+describe('offer-views helpers', () => {
+  it('renders chips, skeletons and errors safely', () => {
+    const chips = chipsHTML({ ...offer().conditions, autoRenews: true });
+    expect(chips).toContain('cond-chip warn');
+    expect(skeletonRows(3).match(/skeleton-row/g)).toHaveLength(3);
+    assertSafe(errorState(EVIL, BREAKOUT));
+  });
+
+  it('refuses to link anything but https', () => {
+    expect(externalLink('javascript:alert(1)', 'x', 'c')).toBe('');
+    expect(externalLink('https://example.com/"a', 'x', 'c')).toContain('%22a');
   });
 });
 
@@ -145,10 +216,16 @@ describe('packHTML', () => {
     expect(html).toContain('<svg viewBox="0 0 64 64"');
     expect(html).toContain('pack--cloud');
     expect(html).toContain('data-index="0"');
+    expect(html).toContain('class="pack-count"');
   });
 
-  it('marks the ai icon as filled', () => {
-    expect(packHTML({ id: 'ai', title: 't', label: 'l' }, 1)).toContain('class="fill-icon"');
+  it('escapes the pool id used in classes and data attributes', () => {
+    expect(packHTML({ id: BREAKOUT, title: 't', label: 'l' }, 0)).not.toContain(RAW_ATTR);
+  });
+
+  it('marks the ai icon as filled and ignores unknown or inherited keys', () => {
+    expect(packHTML({ id: 'ai', title: 't', label: 'l' }, 1)).toContain('fill-icon');
+    expect(poolIconSVG('constructor')).not.toContain('function');
   });
 });
 

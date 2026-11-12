@@ -1,6 +1,7 @@
 import { expect } from 'vitest';
 import { createHandler, type AppOptions } from '../../../worker/src/app';
 import { hashToken } from '../../../worker/src/auth/tokens';
+import { briefGuide } from '../guide-fixtures';
 import { createTestDb, type TestDb } from './db';
 
 type D1Database = Env['DB'];
@@ -120,6 +121,7 @@ export function offerInput(id: string, overrides: Record<string, unknown> = {}) 
     officialUrl: 'https://www.example.com/promo',
     sourceUrl: 'https://docs.example.com/terms',
     conditions: { newUsersOnly: true },
+    guide: briefGuide(),
     ...overrides,
   };
 }

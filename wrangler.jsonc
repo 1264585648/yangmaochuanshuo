@@ -3,18 +3,26 @@
   "name": "dealdex",
   "main": "worker/src/index.ts",
   "compatibility_date": "2026-10-01",
+  // Served only on the custom hostname; workers.dev stays off so search engines
+  // see one canonical origin. This route is more specific than vibe-show's
+  // *.vibe-show.com/* wildcard, so it wins for free.vibe-show.com.
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "free.vibe-show.com/*", "zone_name": "vibe-show.com" }],
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*"],
+    // Everything else is static. /offers pages, robots.txt and sitemap.xml are
+    // rendered by the Worker from D1 (worker/src/routes/pages.ts, seo.ts).
+    "run_worker_first": ["/api/*", "/offers", "/offers/*", "/robots.txt", "/sitemap.xml"],
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "dealdex",
-      // Placeholder for local development. Replace with the id from
-      // `wrangler d1 create dealdex` before the first remote deploy.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      // Cloudflare D1 `dealdex`. Local commands use a separate on-disk copy
+      // unless `--remote` is passed.
+      "database_id": "3b1efd7c-d8b3-40bc-9ccc-f1893e719864",
       "migrations_dir": "migrations",
     },
   ],

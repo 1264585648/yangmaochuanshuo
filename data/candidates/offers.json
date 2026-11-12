@@ -1,0 +1,2978 @@
+{
+  "fetchedAt": "2026-11-11",
+  "offers": [
+    {
+      "request": {
+        "id": "oracle-cloud-always-free",
+        "providerId": "oracle",
+        "pool": "cloud",
+        "rarity": "SSR",
+        "title": "Oracle 云 Always Free 长期免费资源",
+        "summary": "每个租户都可在主区域使用的长期免费资源，包括 Arm 架构的 Ampere A1 虚拟机、两台 AMD 微型虚拟机和 200 GB 块存储；新账号另有 300 美元、30 天试用额度。",
+        "benefit": "每月 1,500 OCPU 小时与 9,000 GB 小时 A1 算力（约 2 OCPU、12 GB 内存），2 台 AMD 微型 VM，200 GB 块存储",
+        "officialUrl": "https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm",
+        "sourceUrl": "https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": true,
+          "autoRenews": false,
+          "regions": [],
+          "note": "Always Free 计算实例与块存储须建在主区域（home region），其他区域按常规价格计费。注册需手机号和信用卡验证，不升级不扣费。闲置实例可能被回收。官方未说明中国大陆可用性，以注册页为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "full",
+          "phases": [
+            {
+              "title": "注册",
+              "steps": [
+                {
+                  "text": "打开 Oracle 官方 Free Tier 文档，确认 Always Free 额度、试用赠金与注册要求。",
+                  "link": {
+                    "label": "Free Tier 文档",
+                    "url": "https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier.htm"
+                  }
+                },
+                {
+                  "text": "注册 Oracle Cloud 账号，准备手机号和信用卡完成验证；不升级为付费账号不会扣费。"
+                },
+                {
+                  "text": "注册时选择的主区域（home region）决定 Always Free 资源所在区域，注册前想好要用哪个区域。"
+                }
+              ]
+            },
+            {
+              "title": "创建资源",
+              "steps": [
+                {
+                  "text": "在主区域创建计算实例，选择 `VM.Standard.A1.Flex`（Arm）或 `VM.Standard.E2.1.Micro`（AMD）形状（shape，即实例规格）。",
+                  "bullets": [
+                    "A1：每月前 1,500 OCPU 小时和 9,000 GB 小时免费，约等于 2 OCPU 与 12 GB 内存",
+                    "AMD：最多 2 台 E2.1.Micro 实例"
+                  ],
+                  "link": {
+                    "label": "Always Free 资源文档",
+                    "url": "https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm"
+                  }
+                },
+                {
+                  "text": "启动卷与块存储合计 200 GB 以内免费，并包含 5 个卷备份。",
+                  "notes": [
+                    {
+                      "tone": "warn",
+                      "title": "注意区域",
+                      "text": "在主区域之外创建的实例或卷按常规价格计费。"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "长期保留",
+              "steps": [
+                {
+                  "text": "30 天试用结束前，把 A1 实例总量缩到 2 OCPU、12 GB 内存以内。",
+                  "notes": [
+                    {
+                      "tone": "danger",
+                      "title": "超出会被停用",
+                      "text": "试用结束后，超出 Always Free 额度的 A1 实例会全部被停用，30 天后删除。"
+                    }
+                  ]
+                },
+                {
+                  "text": "让实例保持实际使用，避免被判定为闲置。",
+                  "notes": [
+                    {
+                      "tone": "warn",
+                      "title": "闲置回收",
+                      "text": "连续 7 天 CPU（95 分位）、网络（A1 还包括内存）利用率都低于 20% 的 Always Free 实例，可能被 Oracle 回收。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "facts": [
+            {
+              "label": "A1 算力",
+              "value": "1,500 OCPU 小时 / 月",
+              "note": "另含 9,000 GB 小时内存，约 2 OCPU、12 GB"
+            },
+            {
+              "label": "AMD 微型 VM",
+              "value": "最多 2 台",
+              "note": "VM.Standard.E2.1.Micro"
+            },
+            {
+              "label": "块存储",
+              "value": "合计 200 GB",
+              "note": "启动卷与块卷合计，含 5 个卷备份"
+            },
+            {
+              "label": "区域",
+              "value": "仅主区域"
+            },
+            {
+              "label": "注册验证",
+              "value": "手机号 + 信用卡",
+              "note": "不升级不扣费"
+            },
+            {
+              "label": "试用赠金",
+              "value": "300 美元",
+              "note": "最长 30 天有效"
+            }
+          ],
+          "faq": [
+            {
+              "question": "其他区域能用吗？",
+              "answer": "官方文档要求 Always Free 计算实例与块存储创建在主区域，其他区域按常规价格计费。",
+              "basis": "official"
+            },
+            {
+              "question": "注册需要信用卡吗？",
+              "answer": "官方文档说明，出于安全原因多数用户注册需要手机号和信用卡；不升级账号不会扣费。",
+              "basis": "official"
+            },
+            {
+              "question": "实例会被回收吗？",
+              "answer": "会。连续 7 天 CPU（95 分位）、网络（A1 还包括内存）利用率都低于 20% 的 Always Free 实例，可能被 Oracle 回收。",
+              "basis": "official"
+            },
+            {
+              "question": "试用结束后 A1 实例会怎样？",
+              "answer": "如果 A1 实例总量超出 Always Free 额度，所有 A1 实例会被停用，30 天后删除。试用结束前请缩到 2 OCPU、12 GB 内存以内。",
+              "basis": "official"
+            }
+          ],
+          "references": [
+            {
+              "title": "Always Free Resources（Oracle Cloud Infrastructure 文档）",
+              "url": "https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm",
+              "basis": "official"
+            },
+            {
+              "title": "Oracle Cloud Free Tier（Oracle Cloud Infrastructure 文档）",
+              "url": "https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier.htm",
+              "basis": "official"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm",
+          "https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier.htm"
+        ],
+        "quote": "\"All tenancies get the first 1,500 OCPU hours and 9,000 GB hours per month for free for VM instances using the VM.Standard.A1.Flex shape ... equivalent to 2 OCPUs and 12 GB of memory.\" / \"up to two Always Free VM instances using the VM.Standard.E2.1.Micro shape\" / \"a total of 200 GB of Block Volume storage\" / \"You must create the Always Free compute instances in your home region.\" / \"For security purposes, most users need a mobile phone number and a credit card to create an account. Your credit card will not be charged unless you upgrade your account.\" / \"Idle Always Free compute instances may be reclaimed by Oracle\" / \"$300 of cloud credits that are valid for up to 30 days\" / \"If you have more OCI Ampere A1 Compute instances provisioned than are available for an Always Free tenancy, all existing … instances are disabled and then deleted after 30 days\"",
+        "uncertainties": [
+          "付款方式已按 freetier.htm 确认，requiresPaymentMethod 改为 true。",
+          "oracle.com/cloud/free 及其 FAQ 仍返回 403，未能抓取，已改用 docs.oracle.com 核对；闲置判定细则（7 天、20%）为摘要转述。",
+          "官方未说明中国大陆可用性。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "google-cloud-free-trial-300",
+        "providerId": "google",
+        "pool": "cloud",
+        "rarity": "S",
+        "title": "Google Cloud 新用户 300 美元试用额度",
+        "summary": "从未付费使用过 Google Cloud、Google Maps Platform 或 Firebase、且未参加过免费试用的新用户，开通试用后获得 300 美元新用户赠金，90 天内有效。",
+        "benefit": "300 美元试用额度，90 天有效",
+        "officialUrl": "https://docs.cloud.google.com/free/docs/free-cloud-features",
+        "sourceUrl": "https://docs.cloud.google.com/free/docs/free-cloud-features",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": true,
+          "autoRenews": false,
+          "regions": [],
+          "note": "需绑定试用期内有效的信用卡或其他付款方式；到期不升级，项目和资源会停止，30 天后永久删除。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "用从未付费使用过 Google Cloud、Maps Platform 或 Firebase 的 Google 账号打开官方页面，开通免费试用。",
+              "link": {
+                "label": "免费试用说明",
+                "url": "https://docs.cloud.google.com/free/docs/free-cloud-features"
+              }
+            },
+            {
+              "text": "按提示绑定信用卡或其他付款方式，完成试用结算账号的创建。"
+            },
+            {
+              "text": "在结算页面查看剩余赠金与到期日，赠金 90 天后失效。"
+            },
+            {
+              "text": "到期前决定是否升级为付费账号；不升级的话项目和资源会停止，30 天后永久删除，重要数据请提前导出。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://docs.cloud.google.com/free/docs/free-cloud-features"],
+        "quote": "\"preloaded with $300 in free Welcome credit which is valid for 90 days\" / \"You've never been a paying user of Google Cloud, Google Maps Platform, or Firebase\" / \"must provide a credit card or other payment method\" / \"your Free Trial billing account will be closed and all of its associated projects and resources will be stopped\" / 30 天宽限期后 \"permanently deleted\"",
+        "uncertainties": [
+          "cloud.google.com/free 正文未能抓取，使用 301 跳转后的 docs.cloud.google.com 文档页（属 cloud.google.com 子域，可通过域名校验）。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "google-cloud-free-tier-e2-micro",
+        "providerId": "google",
+        "pool": "cloud",
+        "rarity": "A",
+        "title": "Google Cloud 免费套餐：e2-micro 虚拟机",
+        "summary": "Google Cloud 免费套餐（Free Tier）每月包含 1 台非抢占式（不会被随时回收）e2-micro 虚拟机、30 GB 标准磁盘和 1 GB 出站流量，虚拟机限美国俄勒冈、爱荷华、南卡罗来纳三个区域。",
+        "benefit": "每月 1 台 e2-micro 虚拟机、30 GB 标准磁盘、1 GB 出站流量（不含发往中国、澳大利亚的流量）",
+        "officialUrl": "https://docs.cloud.google.com/free/docs/free-cloud-features",
+        "sourceUrl": "https://docs.cloud.google.com/free/docs/free-cloud-features",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": true,
+          "autoRenews": false,
+          "regions": [],
+          "note": "虚拟机仅限 us-west1、us-central1、us-east1 三个区域；需开通结算账号。官方可调整额度，会提前 30 天通知。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方页面，注册 Google Cloud 并开通结算账号（免费套餐要求有结算账号）。",
+              "link": {
+                "label": "免费套餐说明",
+                "url": "https://docs.cloud.google.com/free/docs/free-cloud-features"
+              }
+            },
+            {
+              "text": "在 us-west1、us-central1 或 us-east1 区域创建 1 台 `e2-micro` 实例，磁盘选标准永久磁盘，总量 30 GB 以内。"
+            },
+            {
+              "text": "注意出站流量每月只免费 1 GB，且发往中国、澳大利亚的流量不在免费范围内；超出免费套餐的用量按标准价格计费。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://docs.cloud.google.com/free/docs/free-cloud-features"],
+        "quote": "\"1 non-preemptible e2-micro VM instance per month in one of the following US regions: Oregon: us-west1, Iowa: us-central1, South Carolina: us-east1\" / \"30 GB-months standard persistent disk\" / \"1 GB of outbound data transfer from North America to all region destinations (excluding China and Australia) per month\" / \"A Google Cloud billing account is required to access the Google Cloud Free Tier.\" / \"Google reserves the right to change the offering … with 30 days' advance notice\"",
+        "uncertainties": []
+      }
+    },
+    {
+      "request": {
+        "id": "aws-free-tier-credits",
+        "providerId": "aws",
+        "pool": "cloud",
+        "rarity": "S",
+        "title": "AWS 免费套餐：最高 200 美元额度",
+        "summary": "新建 AWS 账号并选择免费方案（Free plan）立即获得 100 美元额度，体验指定服务后最多再得 100 美元；6 个月后或额度用完时账号关闭，除非升级为付费方案。",
+        "benefit": "注册得 100 美元额度，完成指定体验最多再得 100 美元，免费方案最长 6 个月",
+        "officialUrl": "https://aws.amazon.com/free/",
+        "sourceUrl": "https://aws.amazon.com/free/",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "大多数新用户无需绑卡，部分账号可能被要求验证付款方式。6 个月后或额度用完时（以先到者为准）账号暂停；90 天内不升级为付费方案，账号和数据会被永久删除。不适用于 AWS 中国区域。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方页面创建 AWS 账号并选择免费方案（Free plan），可用邮箱或 Google、GitHub、Apple 账号注册。",
+              "link": {
+                "label": "AWS 免费套餐",
+                "url": "https://aws.amazon.com/free/"
+              }
+            },
+            {
+              "text": "开通后在控制台确认 100 美元额度，按提示体验指定服务，最多再得 100 美元。"
+            },
+            {
+              "text": "在 6 个月内或额度用完前决定是否升级为付费方案；不升级的话账号会暂停，90 天后连同数据永久删除，重要数据请提前导出。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://aws.amazon.com/free/",
+          "https://aws.amazon.com/free/faqs/",
+          "https://aws.amazon.com/about-aws/whats-new/2026/09/New-AWS-Builder-Experience"
+        ],
+        "quote": "\"When you create a new AWS Free Tier account, you get $100 in credits immediately.\" / \"you can earn up to $100 more\" / \"The account closes on its own 6 months after you open it or when your credits run out, whichever comes first.\" / \"You won't be charged unless you convert to a Paid plan.\" / FAQ: \"A payment method isn't required to sign up for most new customers\" / \"If you don't upgrade your account within 90 days, AWS will permanently erase your AWS account and all its content.\"",
+        "uncertainties": [
+          "付款方式已按 FAQ 确认：多数新用户无需绑卡，requiresPaymentMethod 保留 false。",
+          "完整条款在 Terms and Conditions 链接中，未抓取。",
+          "“不适用于 AWS 中国区域”指独立运营的 BJS/ZHY 区域，不代表大陆用户不能注册海外账号。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "azure-free-account-200",
+        "providerId": "microsoft",
+        "pool": "cloud",
+        "rarity": "S",
+        "title": "Azure 免费账户：200 美元额度与 12 个月免费服务",
+        "summary": "新 Azure 客户可获 200 美元额度（30 天内使用）；30 天内转为即用即付后，可继续享受 20 多项服务 12 个月免费额度，另有 65 项以上长期免费服务。",
+        "benefit": "200 美元额度 30 天内可用；转即用即付后 20+ 服务 12 个月免费；65+ 服务长期免费",
+        "officialUrl": "https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account",
+        "sourceUrl": "https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": true,
+          "autoRenews": false,
+          "regions": [],
+          "note": "需手机号和信用卡或借记卡（不支持预付卡），可能有 1 美元临时预授权并会撤销；不转即用即付不收费。12 个月免费优惠暂不适用于在中国、印度直接注册即用即付的客户。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方页面，用 Microsoft 或 GitHub 账号开始注册免费账户。",
+              "link": {
+                "label": "Azure 免费账户",
+                "url": "https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account"
+              }
+            },
+            {
+              "text": "填写手机号，绑定信用卡或借记卡（不支持预付卡）完成身份验证。"
+            },
+            {
+              "text": "30 天内使用 200 美元额度；想继续用 12 个月免费服务，需在 30 天内转为即用即付。"
+            },
+            {
+              "text": "不转为即用即付的话，30 天后或额度用完时账户与服务会被停用。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account",
+          "https://azure.microsoft.com/en-us/pricing/free-services"
+        ],
+        "quote": "\"$200 credit\" (30 days) / \"Free monthly amounts of 20+ popular services for 12 months (new Azure customers only)\" / \"Free monthly amounts of 65+ always-free services\" / \"We'll never charge you unless you decide to move to pay-as-you-go pricing.\" / \"a credit card or a debit card (non-prepaid)\" / \"It is not currently available to customers who sign up directly for pay as you go in China and India.\" / zh-cn 页面“转到即用即付定价，可在超过 30 天或额度用尽后继续使用”",
+        "uncertainties": [
+          "“30 天内转为即用即付才能继续享受 12 个月免费服务”为 free-services 页面的转述，发布前请人工核对原文。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "cloudflare-workers-free",
+        "providerId": "cloudflare",
+        "pool": "cloud",
+        "rarity": "S",
+        "title": "Cloudflare Workers 免费套餐",
+        "summary": "Cloudflare Workers（在 Cloudflare 全球网络上运行代码的无服务器平台）免费套餐每天 10 万次请求，附带免费的 D1 数据库与 KV 键值存储额度，适合个人项目和小型接口。",
+        "benefit": "每天 10 万次请求、每次 10 毫秒 CPU；D1 每天 500 万行读取、5 GB 存储；KV 每天 1,000 次写入、1 GB 存储",
+        "officialUrl": "https://developers.cloudflare.com/workers/platform/pricing/",
+        "sourceUrl": "https://developers.cloudflare.com/workers/platform/pricing/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "免费额度按天计算（UTC 0 点重置），超出后 Worker 不再处理请求（返回 Error 1027 或按路由设置直接放行）。官方未说明中国大陆可用性，以注册页为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册 Cloudflare 账号，按官方入门文档创建并部署第一个 Worker。",
+              "link": {
+                "label": "Workers 入门文档",
+                "url": "https://developers.cloudflare.com/workers/get-started/guide/"
+              }
+            },
+            {
+              "text": "需要存数据时，在控制台创建 D1 数据库或 KV 命名空间并绑定到 Worker。"
+            },
+            {
+              "text": "注意每日上限：Workers 每天 10 万次请求、每次 10 毫秒 CPU；D1 每天 500 万行读取、10 万行写入，共 5 GB；KV 每天 10 万次读取、1,000 次写入，共 1 GB。",
+              "link": {
+                "label": "价格与免费额度",
+                "url": "https://developers.cloudflare.com/workers/platform/pricing/"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://developers.cloudflare.com/workers/platform/pricing/",
+          "https://developers.cloudflare.com/workers/platform/limits/"
+        ],
+        "quote": "Workers Free: \"100,000 per day\" requests, \"10 milliseconds of CPU time per invocation\"; D1 Free: \"5 million / day\" rows read, \"100,000 / day\" rows written, \"5 GB (total)\"; KV Free: \"100,000 / day\" reads, \"1 GB\" stored. / KV Free: \"1,000 / day\" writes / limits: daily limit resets \"at midnight UTC\"; \"When a Worker exceeds this limit, Cloudflare returns Error 1027.\"（fail open 路由会直接放行）",
+        "uncertainties": ["官方只说超限会报错或放行，未说明“不扣费”，卡面不作此表述。"]
+      }
+    },
+    {
+      "request": {
+        "id": "cloudflare-free-plan",
+        "providerId": "cloudflare",
+        "pool": "cloud",
+        "rarity": "A",
+        "title": "Cloudflare 免费套餐：CDN、SSL 与 DDoS 防护",
+        "summary": "Cloudflare 免费套餐为网站提供 CDN 内容分发、SSL 证书（HTTPS）与 DDoS 攻击防护等基础能力，负载均衡等进阶功能另行付费。",
+        "benefit": "免费 CDN 内容分发、SSL 证书、DDoS 攻击防护等网站基础能力",
+        "officialUrl": "https://www.cloudflare.com/plans/free/",
+        "sourceUrl": "https://www.cloudflare.com/plans/free/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "需要将域名接入 Cloudflare；负载均衡、高级证书管理等为付费附加功能。官方未说明中国大陆可用性，以注册页为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方页面，注册 Cloudflare 账号。",
+              "link": {
+                "label": "Cloudflare 免费套餐",
+                "url": "https://www.cloudflare.com/plans/free/"
+              }
+            },
+            {
+              "text": "添加你的域名并选择免费套餐，按官方提示完成接入。"
+            },
+            {
+              "text": "负载均衡（5 美元/月起）、高级证书管理（10 美元/月起）为付费附加功能，按需另购。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://www.cloudflare.com/plans/free/"],
+        "quote": "\"The Free Plan provides free SSL, CDN, DDoS protection and more.\" / 付费附加项 Load Balancing（$5/月起）、Advanced Certificate Manager（$10/月起）",
+        "uncertainties": ["未找到官方对中国大陆访问效果的说明，卡面不写“加速”类效果描述。"]
+      }
+    },
+    {
+      "request": {
+        "id": "aliyun-ecs-free-trial",
+        "providerId": "alibaba-cloud",
+        "pool": "cloud",
+        "rarity": "S",
+        "title": "阿里云 ECS 新用户免费试用 3 个月",
+        "summary": "完成实名认证、未购买或试用过 ECS（云服务器）的新用户可免费试用 3 个月。个人认证额度 300 元，企业认证 660 元，可抵扣实例与系统盘费用。",
+        "benefit": "个人 300 元 / 企业 660 元试用额度，3 个月有效（每小时最多抵扣 0.833 元 / 1.833 元）",
+        "officialUrl": "https://free.aliyun.com/",
+        "sourceUrl": "https://help.aliyun.com/zh/ecs/ecs-free-trial",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "到期不会自动释放，将转为按量付费，请到期前手动释放。需实名认证且无欠费；同一实名主体限 1 次。按量付费实例不满足 ICP 备案要求。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开免费试用中心，完成阿里云个人或企业实名认证，确认账号未购买或试用过 ECS、无欠费。",
+              "link": {
+                "label": "阿里云免费试用",
+                "url": "https://free.aliyun.com/"
+              }
+            },
+            {
+              "text": "领取 ECS 试用并创建实例：个人最高 4 核 8 GiB（中国香港地域 2 核 8 GiB），创建后不能更换地域。"
+            },
+            {
+              "text": "注意每小时最多抵扣 0.833 元（企业 1.833 元），选高配可能用不满 3 个月；变更规格、挂数据盘或改固定带宽会产生费用。"
+            },
+            {
+              "text": "到期前手动释放实例，否则会转为按量付费并开始扣费。",
+              "link": {
+                "label": "ECS 免费试用说明",
+                "url": "https://help.aliyun.com/zh/ecs/ecs-free-trial"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://free.aliyun.com/",
+          "https://help.aliyun.com/zh/ecs/ecs-free-trial"
+        ],
+        "quote": "\"完成实名认证的云服务器ECS新用户，可免费试用ECS 3个月。\" 个人额度 300 元（每小时上限 0.833 元），企业 660 元；\"免费试用到期后，实例不会自动释放，会按照按量付费模式进行计费。\"",
+        "uncertainties": [
+          "autoRenews 已改为 false（到期转按量付费不是续费），风险已写入 note 与攻略。",
+          "free.aliyun.com 通用规则写“到期后未续费实例会被释放”（转述），与 ECS 帮助文档“不会自动释放”矛盾，以帮助文档为准。",
+          "每小时抵扣上限、中国香港地域规格、“同一证件号/手机号视为同一用户”均为摘要转述，发布前请人工核对。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "tencent-cloud-free-trial",
+        "providerId": "tencent-cloud",
+        "pool": "cloud",
+        "rarity": "A",
+        "title": "腾讯云新用户免费体验：轻量服务器与 CVM",
+        "summary": "腾讯云免费体验馆面向产品新用户，个人实名认证可免费体验 1 个月轻量应用服务器（2 核 2 GB）或云服务器 CVM 标准型（2 核 2 GB）等。",
+        "benefit": "轻量应用服务器 2 核 2 GB 免费 1 个月；云服务器 CVM 2 核 2 GB 免费 1 个月（个人认证，其他规格 7 天至 1 个月不等）",
+        "officialUrl": "https://cloud.tencent.com/act/free",
+        "sourceUrl": "https://cloud.tencent.com/act/free",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "仅对该产品新用户开放，需个人或企业实名认证；买过或试用过同一产品的不可参加；部分规格每日限量。到期前请在控制台确认续费或释放，以免产生费用。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册腾讯云账号，完成个人或企业实名认证。"
+            },
+            {
+              "text": "打开免费体验馆，选择一款产品和规格领取；名下有未支付订单会占用资格，需先支付或取消。",
+              "link": {
+                "label": "腾讯云免费体验馆",
+                "url": "https://cloud.tencent.com/act/free"
+              }
+            },
+            {
+              "text": "领取后记下到期日，到期前在控制台确认续费或释放实例，以免产生费用。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://cloud.tencent.com/act/free"],
+        "quote": "\"产品免费体验仅对产品新用户开放\"；轻量应用服务器 个人认证 1 个月 2 核 2G 3Mbps 40GB；CVM 个人认证 1 个月 2 核 2G 3Mbps 50GB。",
+        "uncertainties": [
+          "活动页规格与名额经常调整（4 核 8 GB 每日限量），建议发布后每月复核。",
+          "未说明到期后是否自动转为付费或释放，只提到可在控制台续费。",
+          "本次抓取为摘要，除“产品免费体验仅对产品新用户开放”外，规格与时长（CVM 蜂驰型 7 天、标准型 1 个月）均为转述，发布前请人工打开页面核对。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "akamai-linode-100-credit",
+        "providerId": "akamai",
+        "pool": "cloud",
+        "rarity": "A",
+        "title": "Akamai（Linode）新客户 100 美元额度",
+        "summary": "Akamai Cloud（原 Linode）向尚未参加过免费试用的新客户提供 100 美元促销额度，额度内不扣费，超出部分按标准价计费。",
+        "benefit": "新账户 100 美元额度，60 天内有效（不含 GPU）",
+        "officialUrl": "https://www.akamai.com/lp/free-credit-100",
+        "sourceUrl": "https://www.linode.com/lp/free-credit-100-5000/",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": true,
+          "autoRenews": false,
+          "regions": [],
+          "note": "需有效付款方式验证身份；额度内不扣费，超出部分按标准价计费；额度自激活起 60 天后失效，GPU 方案不参加活动。官方未说明中国大陆可用性，以注册页为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "通过官方活动页注册新账户，绑定付款方式完成身份验证。",
+              "link": {
+                "label": "Akamai 100 美元额度活动页",
+                "url": "https://www.akamai.com/lp/free-credit-100"
+              }
+            },
+            {
+              "text": "在控制台创建实例使用额度；GPU 方案不在活动范围内。"
+            },
+            {
+              "text": "在控制台查看额度余额和到期日，额度用完或 60 天到期前删除不需要的实例，避免按标准价计费。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://www.akamai.com/lp/free-credit-100",
+          "https://www.linode.com/lp/free-credit-100-5000/"
+        ],
+        "quote": "\"US$100 credit will be applied to your new account.\" / \"Promotional credits are available only to new customers who have not yet signed up for a free trial.\" / \"A valid payment method is required to confirm your identity, but we will not charge you during your trial.\" / \"the overage will be charged at standard rates\" / \"GPU plans are excluded from this promotion\" / linode.com: \"Credits expire 60 days from activation\"",
+        "uncertainties": [
+          "www.akamai.com 活动页只写“specified trial period”，60 天出自 www.linode.com 另一个落地页，两页是否适用同一条款未能确认，发布前请人工核对。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "vercel-hobby-free",
+        "providerId": "vercel",
+        "pool": "cloud",
+        "rarity": "A",
+        "title": "Vercel Hobby 免费套餐",
+        "summary": "Vercel Hobby 套餐 0 美元，适合个人项目，每月含 100 万次 CDN（内容分发网络）请求、100 GB 流量与 100 万次函数调用。仅限个人非商业用途。",
+        "benefit": "每月 100 万次 CDN 请求、100 GB 流量、100 万次函数调用、4 小时活跃 CPU 时间",
+        "officialUrl": "https://vercel.com/pricing",
+        "sourceUrl": "https://vercel.com/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "Hobby 仅限个人非商业用途；达到用量上限后不能购买额外用量。官方未说明中国大陆可用性，以注册页为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册 Vercel 账号，按官方入门文档部署第一个项目。",
+              "link": {
+                "label": "Vercel 入门文档",
+                "url": "https://vercel.com/docs/getting-started-with-vercel"
+              }
+            },
+            {
+              "text": "确认项目属于个人非商业用途；商业项目需改用付费方案。"
+            },
+            {
+              "text": "在控制台关注用量：每月 100 万次 CDN 请求、100 GB 流量、100 万次函数调用、4 小时活跃 CPU 时间，达到上限后不能购买额外用量。",
+              "link": {
+                "label": "价格与额度",
+                "url": "https://vercel.com/pricing"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://vercel.com/pricing",
+          "https://vercel.com/docs/getting-started-with-vercel"
+        ],
+        "quote": "\"$0/mo.\" / \"1M / month included\" CDN requests / \"100 GB / month included\" / \"Our Hobby plan is for personal, non-commercial use.\" / \"4 hours / month included\"（Fluid Active CPU） / \"cannot purchase additional usage\"",
+        "uncertainties": []
+      }
+    },
+    {
+      "request": {
+        "id": "supabase-free-plan",
+        "providerId": "supabase",
+        "pool": "cloud",
+        "rarity": "A",
+        "title": "Supabase 免费套餐",
+        "summary": "Supabase（基于 Postgres 数据库的后端服务）免费套餐提供 500 MB 数据库，支持 5 万月活跃用户登录，最多 2 个活跃项目；连续 1 周无活动的免费项目会被暂停。",
+        "benefit": "500 MB Postgres 数据库、5 万月活跃用户、2 个活跃项目、5 GB 出站流量、1 GB 文件存储",
+        "officialUrl": "https://supabase.com/pricing",
+        "sourceUrl": "https://supabase.com/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "免费项目 1 周无活动会被暂停；最多 2 个活跃项目。官方未说明中国大陆可用性，以注册页为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册 Supabase 账号并创建项目（免费套餐最多 2 个活跃项目）。",
+              "link": {
+                "label": "价格与额度",
+                "url": "https://supabase.com/pricing"
+              }
+            },
+            {
+              "text": "使用数据库与用户登录功能时，留意 500 MB 数据库、1 GB 文件存储与 5 GB 出站流量上限。"
+            },
+            {
+              "text": "定期使用项目，避免因 1 周无活动被暂停。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://supabase.com/pricing"],
+        "quote": "\"500 MB database size\" / \"50,000 monthly active users\" / \"Limit of 2 active projects.\" / \"Free projects are paused after 1 week of inactivity.\" / \"5 GB egress\" / \"1 GB file storage\"",
+        "uncertainties": []
+      }
+    },
+    {
+      "request": {
+        "id": "render-free-instances",
+        "providerId": "render",
+        "pool": "cloud",
+        "rarity": "A",
+        "title": "Render 免费实例",
+        "summary": "Render（应用托管平台）每个工作区每月有 750 小时免费实例时长；免费 Web 服务 15 分钟无流量会休眠，免费 Postgres 数据库创建 30 天后到期。",
+        "benefit": "每月 750 小时免费实例，另有免费 Postgres（30 天）",
+        "officialUrl": "https://render.com/docs/free",
+        "sourceUrl": "https://render.com/docs/free",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "官方明确免费实例不适合正式生产环境。免费 Web 服务 15 分钟无访问即休眠，下次访问约需 1 分钟唤醒；免费数据库 30 天后到期；免费 Key Value（键值存储）不持久化。官方未说明中国大陆可用性，以注册页为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册 Render 账号，创建 Web 服务时选择 Free 实例类型，只用于个人或测试项目。",
+              "link": {
+                "label": "免费实例说明",
+                "url": "https://render.com/docs/free"
+              }
+            },
+            {
+              "text": "注意每月 750 小时免费时长，用完后免费 Web 服务会暂停到下月初。"
+            },
+            {
+              "text": "免费数据库创建 30 天后到期，再过 14 天未升级会被删除，请提前导出数据。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://render.com/docs/free"],
+        "quote": "\"750 Free instance hours\" / spin down after it \"goes 15 minutes without receiving any inbound traffic\" / free databases \"expire 30 days after creation\" / \"Do not use them for production applications.\" / \"This process takes about one minute.\" / \"Render suspends all of your Free web services until the start of the next month.\" / \"After a Free database expires, you have a grace period of 14 days to upgrade it\" / \"After the grace period, Render deletes the database\"",
+        "uncertainties": []
+      }
+    },
+    {
+      "request": {
+        "id": "gemini-api-free-tier",
+        "providerId": "google",
+        "pool": "ai",
+        "rarity": "S",
+        "title": "Gemini API 免费套餐",
+        "summary": "Google Gemini API 设有免费套餐，部分 Gemini Flash、Flash-Lite 与 Embedding（文本向量）模型的输入输出 Token 免费，适合原型与小项目。中国内地、香港、澳门不在官方支持地区内。",
+        "benefit": "部分 Gemini 模型输入与输出 Token 免费",
+        "officialUrl": "https://aistudio.google.com/docs/pricing",
+        "sourceUrl": "https://aistudio.google.com/docs/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "中国内地、香港、澳门不在官方支持地区内。免费套餐的内容可能被用于改进 Google 产品；最新 Pro 级、图像与音乐模型不提供免费套餐。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方支持地区列表，确认你所在的国家或地区在列表内（中国内地、香港、澳门不在其中）。",
+              "link": {
+                "label": "支持地区列表",
+                "url": "https://aistudio.google.com/docs/available-regions"
+              }
+            },
+            {
+              "text": "登录 Google AI Studio，创建 API Key。"
+            },
+            {
+              "text": "打开定价页，确认要用的模型在免费套餐一栏显示 `Free of charge`，再开始调用。",
+              "link": {
+                "label": "官方定价页",
+                "url": "https://aistudio.google.com/docs/pricing"
+              }
+            },
+            {
+              "text": "免费套餐的输入输出可能被用于改进 Google 产品，不要提交敏感数据。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://aistudio.google.com/docs/pricing",
+          "https://aistudio.google.com/docs/available-regions"
+        ],
+        "quote": "\"For developers and small projects getting started with the Gemini API.\" / \"Free input & output tokens\" / \"Content used to improve our products\" / 地区页：\"The Gemini API and Google AI Studio are available in the following countries and territories.\"（列表不含中国内地、香港、澳门）",
+        "uncertainties": [
+          "免费模型列表变化快，卡面不列具体型号。定价页没有写通用速率限制，已删去“有速率限制”的说法。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "aliyun-bailian-new-user-quota",
+        "providerId": "alibaba-cloud",
+        "pool": "ai",
+        "rarity": "S",
+        "title": "阿里云百炼新人免费额度",
+        "summary": "首次开通阿里云百炼并完成实名认证后，每个模型自动发放独立的新人免费额度（通常 100 万 Token），各模型有效期 90 天（自开通或模型上线起算），仅限华北2（北京）地域。",
+        "benefit": "每个模型通常 100 万 Token，90 天有效",
+        "officialUrl": "https://help.aliyun.com/zh/model-studio/new-free-quota",
+        "sourceUrl": "https://help.aliyun.com/zh/model-studio/new-free-quota",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "需实名认证；仅华北2（北京）地域模型有免费额度。免费额度用完后自动转为按量付费，可开启“用完即停”（默认关闭）。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "完成阿里云账号实名认证（未实名不发放免费额度）。",
+              "link": {
+                "label": "免费额度说明",
+                "url": "https://help.aliyun.com/zh/model-studio/new-free-quota"
+              }
+            },
+            {
+              "text": "首次开通百炼，选择华北2（北京）地域的模型调用，免费额度会自动发放。"
+            },
+            {
+              "text": "在控制台开启“用完即停”（默认关闭），避免额度用完后自动转为按量付费。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://help.aliyun.com/zh/model-studio/new-free-quota"],
+        "quote": "\"每个模型均有独立的免费额度（通常为 100 万 Token）\" / \"免费额度的有效期为 90 天\" / \"仅华北2（北京）地域模型享有免费额度\" / \"免费额度用完后自动转为按量付费。\"",
+        "uncertainties": [
+          "已按审核意见改为 autoRenews=false：用完转按量付费不是订阅续费，说明保留在 note。有效期起算日官方为开通、模型发布或申请通过中较晚的一天，卡面简写为“自开通或模型上线起算”。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "github-copilot-free",
+        "providerId": "github",
+        "pool": "ai",
+        "rarity": "S",
+        "title": "GitHub Copilot 免费版",
+        "summary": "GitHub Copilot 免费套餐，每月 2,000 次代码补全，并含有限的对话与智能体（Agent）用量，可用 Claude Haiku 4.5、GPT-5 mini 等模型。",
+        "benefit": "每月 2,000 次代码补全，有限的对话与智能体用量",
+        "officialUrl": "https://github.com/features/copilot/plans",
+        "sourceUrl": "https://github.com/features/copilot/plans",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "仅限未通过组织或企业获得 Copilot 的个人开发者。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "登录 GitHub，打开 Copilot 页面，按提示开通 Copilot 免费套餐。",
+              "link": {
+                "label": "Copilot 页面",
+                "url": "https://github.com/copilot"
+              }
+            },
+            {
+              "text": "在 VS Code 等编辑器安装 GitHub Copilot 扩展，用同一个 GitHub 账号登录，即可使用代码补全。"
+            },
+            {
+              "text": "也可以直接在 GitHub.com 网页或 GitHub Mobile 里用 Copilot Chat 对话。"
+            },
+            {
+              "text": "用量不够时，可在方案页升级 Copilot Pro（10 美元/月）。",
+              "link": {
+                "label": "方案对比",
+                "url": "https://github.com/features/copilot/plans"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://github.com/features/copilot/plans",
+          "https://docs.github.com/en/copilot/get-started/plans"
+        ],
+        "quote": "\"$0USD\" / \"2,000 completions per month\" / \"Limited chat and agent usage\" / \"Access to Haiku 4.5, GPT-5 mini, and more\" / 文档：\"Start using Copilot Free\"（链接 github.com/copilot），免费用户可在 GitHub.com 与 GitHub Mobile 使用 Copilot Chat，仅面向未通过组织或企业获得 Copilot 的个人开发者。",
+        "uncertainties": [
+          "“每月”是否按自然月重置未核实；对话与智能体用量页面未给具体数字，按 GitHub AI Credits 计。编辑器扩展安装步骤为通用说明，未逐字对照文档。地区可用性未核实。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "github-copilot-pro-teachers-maintainers",
+        "providerId": "github",
+        "pool": "ai",
+        "rarity": "S",
+        "title": "Copilot Pro 免费：认证教师与热门开源维护者",
+        "summary": "GitHub Education 认证教师与热门开源仓库的维护者可免费使用 Copilot Pro，GitHub 每月重新评估资格。",
+        "benefit": "Copilot Pro 免费使用（原价 10 美元/月）",
+        "officialUrl": "https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro",
+        "sourceUrl": "https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "需通过 GitHub Education 教师认证，或为热门开源仓库维护者（官方未公开“热门”标准）；每月重新评估资格；获得免费资格后不能自行取消。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "教师先在 GitHub Education 申请并通过教师认证；热门开源仓库维护者无需申请，由 GitHub 判定。",
+              "link": {
+                "label": "官方说明",
+                "url": "https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro"
+              }
+            },
+            {
+              "text": "登录 GitHub，打开 Copilot 设置页，查看是否出现可免费使用 `GitHub Copilot Pro` 的提示。"
+            },
+            {
+              "text": "符合条件时点击 `Get access to GitHub Copilot` 领取。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro",
+          "https://github.com/features/copilot/plans"
+        ],
+        "quote": "\"As a verified teacher on GitHub Education.\" / \"As a maintainer of a popular open-source repository.\" / \"GitHub reevaluates your eligibility every month.\" / \"you won’t be able to cancel your plan.\" Pro 价格见 plans 页 \"$10USD per user / month\".",
+        "uncertainties": [
+          "学生已改为 Copilot Student 方案，单独成卡（education 池）。面向人群较窄，稀有度保持 S，审核时可考虑降为 A。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "cloudflare-workers-ai-free",
+        "providerId": "cloudflare",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "Cloudflare Workers AI 每日免费额度",
+        "summary": "Workers AI 在免费与付费计划下都提供每天 10,000 Neurons 的免费额度（Neurons 是 Cloudflare 的 AI 计算用量单位），可调用平台上的开源模型。",
+        "benefit": "每天 10,000 Neurons 免费",
+        "officialUrl": "https://developers.cloudflare.com/workers-ai/platform/pricing/",
+        "sourceUrl": "https://developers.cloudflare.com/workers-ai/platform/pricing/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "免费计划超额后调用失败；付费计划超出部分按 0.011 美元/1,000 Neurons 计费；额度每天北京时间 8:00（00:00 UTC）重置。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册 Cloudflare 账号，在 Workers 中绑定 Workers AI。"
+            },
+            {
+              "text": "在控制台查看当天的 Neurons 用量，额度每天北京时间 8:00 重置。"
+            },
+            {
+              "text": "免费计划用完当天额度后调用会失败；需要更多用量可升级付费计划，超出部分按量计费。",
+              "link": {
+                "label": "官方定价说明",
+                "url": "https://developers.cloudflare.com/workers-ai/platform/pricing/"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://developers.cloudflare.com/workers-ai/platform/pricing/"],
+        "quote": "\"Our free allocation allows anyone to use a total of 10,000 Neurons per day at no charge.\" / 免费计划超额后 \"further operations will fail with an error\"；付费计划 $0.011 / 1,000 Neurons；每天 00:00 UTC 重置。",
+        "uncertainties": ["地区可用性未核实。"]
+      }
+    },
+    {
+      "request": {
+        "id": "openrouter-free-models",
+        "providerId": "openrouter",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "OpenRouter 免费模型",
+        "summary": "OpenRouter 上带 :free 后缀的模型可免费调用，每分钟 20 次；累计购买不足 10 credits（OpenRouter 的预付额度）时每天 50 次，满 10 credits 后提升到每天 1,000 次。",
+        "benefit": ":free 模型免费调用，每天 50 次（购买 10 credits 后 1,000 次）",
+        "officialUrl": "https://openrouter.ai/docs/api-reference/limits",
+        "sourceUrl": "https://openrouter.ai/docs/api-reference/limits",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "提升到每天 1,000 次需先累计充值至少 10 credits。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册 OpenRouter 并创建 API Key。"
+            },
+            {
+              "text": "调用模型 ID 带 `:free` 后缀的版本，注意每分钟 20 次、每天 50 次的上限。",
+              "link": {
+                "label": "官方限额说明",
+                "url": "https://openrouter.ai/docs/api-reference/limits"
+              }
+            },
+            {
+              "text": "需要更多次数时，累计充值至少 10 credits，每日上限提升到 1,000 次。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://openrouter.ai/docs/api-reference/limits"],
+        "quote": "free models: 20 requests per minute; \"50\" per day with less than 10 credits purchased, \"1,000\" with at least 10; \"purchase at least 10 credits to raise your daily limit\"",
+        "uncertainties": ["地区可用性未核实。"]
+      }
+    },
+    {
+      "request": {
+        "id": "zhipu-glm-4-flash-free",
+        "providerId": "zhipu",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "智谱 GLM Flash 系列免费模型 API",
+        "summary": "智谱开放平台的模型总览页把 GLM-4.7-Flash（200K 上下文）等多款 Flash 模型标为免费，覆盖文本、视觉理解、生图与视频生成。",
+        "benefit": "GLM-4.7-Flash 等多款 Flash 模型免费调用（文本、视觉、生图、视频）",
+        "officialUrl": "https://docs.bigmodel.cn/cn/guide/start/model-overview",
+        "sourceUrl": "https://docs.bigmodel.cn/cn/guide/start/model-overview",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "免费模型列表会调整，以模型总览页为准；有调用速率限制，详见开放平台速率限制说明。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册智谱开放平台并创建 API Key。"
+            },
+            {
+              "text": "打开模型总览页，查看当前标为免费的模型。",
+              "link": {
+                "label": "模型总览",
+                "url": "https://docs.bigmodel.cn/cn/guide/start/model-overview"
+              }
+            },
+            {
+              "text": "调用模型 `glm-4.7-flash`（免费），注意速率限制。",
+              "link": {
+                "label": "GLM-4.7-Flash 文档",
+                "url": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4.7-flash"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://docs.bigmodel.cn/cn/guide/start/model-overview",
+          "https://docs.bigmodel.cn/cn/guide/models/free/glm-4.7-flash",
+          "https://docs.bigmodel.cn/cn/guide/models/free/glm-4.5-flash"
+        ],
+        "quote": "模型总览：GLM-4.7-Flash（200K 上下文）、GLM-4.5-Flash、GLM-4-Flash-250414 标为\"免费文本模型\"；GLM-4.6V-Flash、GLM-4.1V-Thinking-Flash、GLM-4V-Flash 为免费视觉模型；CogView-3-Flash \"免费模型\"；CogVideoX-Flash \"免费视频生成模型\"。GLM-4.7-Flash 文档示例 \"model\": \"glm-4.7-flash\"。",
+        "uncertainties": [
+          "GLM-4.7-Flash 单页本身未写“免费”，免费依据为模型总览页。GLM-4.5-Flash 已于 2026-01-30 下线并转到 GLM-4.7-Flash。媒体所说“限 1 个并发”无官方来源，未写入。页面未说明免费用量上限。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "volcengine-ark-free-quota",
+        "providerId": "volcengine",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "火山方舟新用户免费推理额度",
+        "summary": "火山方舟为新注册用户提供大模型推理的免费试用额度，额度按模型分别计算；“安心体验模式”下用完即停，不会额外扣费。",
+        "benefit": "每个模型单独发放免费推理额度，具体数额以控制台为准",
+        "officialUrl": "https://docs.volcengine.com/docs/82379/1399514",
+        "sourceUrl": "https://docs.volcengine.com/docs/82379/1399514",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "免费额度耗尽后调用失败，继续使用需实名认证并手动开通模型服务。具体额度以控制台为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册火山引擎账号，进入火山方舟控制台。",
+              "link": {
+                "label": "免费额度说明",
+                "url": "https://docs.volcengine.com/docs/82379/1399514"
+              }
+            },
+            {
+              "text": "在“开通管理”页查看各模型剩余的免费额度。"
+            },
+            {
+              "text": "开启“安心体验模式”，调用只消耗免费额度，用完即停。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://docs.volcengine.com/docs/82379/1399514"],
+        "quote": "\"方舟为新用户提供免费推理试用额度\" / \"免费额度耗尽，调用将会失败\"；额度按模型分别计算、主账号与子账号共享，实时额度在“开通管理”页查看；安心体验模式适用于未开通模型服务且未开启或关闭过该模式的账号。",
+        "uncertainties": [
+          "页面未给出每个模型的具体额度与有效期（只有示例数字），卡面未写具体数量。原链接 www.volcengine.com 301 跳转至 docs.volcengine.com。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "claude-free-plan",
+        "providerId": "anthropic",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "Claude 免费版",
+        "summary": "Claude 免费版可在网页、桌面与移动端对话，支持联网搜索、创建文件、运行代码、跨对话记忆与可交互的作品（Artifacts），用量按 5 小时与每周限额。中国内地、香港、澳门不在官方支持地区内。",
+        "benefit": "免费使用 Claude 对话、联网搜索、文件与代码运行（有用量上限）",
+        "officialUrl": "https://claude.com/pricing",
+        "sourceUrl": "https://claude.com/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "中国内地、香港、澳门不在 Anthropic 官方支持地区内，无法正常注册使用。用量有 5 小时与每周上限，消耗速度取决于模型、对话长度与文件大小。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方支持地区列表，确认你所在的国家或地区在列表内（中国内地、香港、澳门不在其中）。",
+              "link": {
+                "label": "支持地区列表",
+                "url": "https://support.claude.com/en/articles/8461763-where-can-i-access-claude"
+              }
+            },
+            {
+              "text": "在支持地区注册 Claude 账号，即可使用免费版。",
+              "link": {
+                "label": "官方定价页",
+                "url": "https://claude.com/pricing"
+              }
+            },
+            {
+              "text": "达到用量上限后需等待重置，或升级付费方案。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://claude.com/pricing",
+          "https://support.claude.com/en/articles/8461763-where-can-i-access-claude",
+          "https://www.anthropic.com/supported-countries"
+        ],
+        "quote": "\"$0\" \"Free for everyone\" / \"Limited usage\" every 5 hours and every week / \"Chat on web, desktop, and mobile\" / \"Search the web, create files, and run code\" / \"Memory across conversations\" / 支持地区页：\"You can access Claude in the following locations:\"（不含中国内地、香港、澳门）；anthropic.com：\"Any country or region not listed is unsupported.\"",
+        "uncertainties": [
+          "支持地区链接改用 claude.com 下的帮助中心页面（support.claude.com），无需在 providers.json 新增 anthropic.com。regions 只能表达“限于”，地区排除写在 note 与 summary。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "chatgpt-free-plan",
+        "providerId": "openai",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "ChatGPT 免费版",
+        "summary": "ChatGPT 免费版使用 GPT-6 模型，提供不限次数的文字对话（受防滥用限制），以及有限次数的上传、生图、语音、深度研究与 Codex 编程助手。中国内地、香港、澳门不在官方支持地区内。",
+        "benefit": "文字对话不限次数（受防滥用限制），上传、生图、语音、深度研究等有次数限制",
+        "officialUrl": "https://chatgpt.com/pricing",
+        "sourceUrl": "https://chatgpt.com/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "中国内地、香港、澳门不在 OpenAI 官方支持地区内，在不支持地区使用可能导致账号被封。“不限次数”受防滥用规则限制。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "确认你所在的国家或地区在 OpenAI 官方支持范围内（中国内地、香港、澳门不在其中），在不支持地区使用可能导致账号被封。"
+            },
+            {
+              "text": "在支持地区注册 ChatGPT 账号，即可使用免费版。",
+              "link": {
+                "label": "官方定价页",
+                "url": "https://chatgpt.com/pricing"
+              }
+            },
+            {
+              "text": "上传、生图等功能用完次数后需等待重置，或升级付费方案。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://chatgpt.com/pricing",
+          "https://developers.openai.com/api/docs/supported-countries"
+        ],
+        "quote": "\"Unlimited text chats with GPT-6\" (subject to abuse guardrails) / \"Limited messages with uploads\" / \"Limited image creation\" / \"Limited voice chats\" / \"Limited deep research\" / \"Limited Codex access\"；API 支持地区页不含中国内地、香港、澳门，并提示在列表外使用可能导致账号 \"blocked or suspended\"。",
+        "uncertainties": [
+          "ChatGPT 支持国家页（help.openai.com）抓取返回 403，地区依据为 API 支持地区列表。攻略第 1 步未附地区链接：OpenAI 的官方域名只登记了 chatgpt.com。页面未显示免费版价格数字，按“Free”方案理解为 0 元。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "mistral-le-chat-free",
+        "providerId": "mistral",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "Mistral Vibe 免费版（原 Le Chat）",
+        "summary": "Mistral 的 AI 助手 Vibe（原 Le Chat，2026-05-28 更名）免费套餐可在网页与移动端使用，含有限的消息与联网搜索、有限的编程会话、基础生图与改图，以及 100 多个第三方应用连接器。",
+        "benefit": "有限消息与联网搜索、基础生图、100 多个第三方应用连接器",
+        "officialUrl": "https://mistral.ai/pricing",
+        "sourceUrl": "https://mistral.ai/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": ""
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册 Mistral 账号，在网页或移动端打开 Vibe（原 Le Chat）。",
+              "link": {
+                "label": "官方定价页",
+                "url": "https://mistral.ai/pricing"
+              }
+            },
+            {
+              "text": "在 Vibe 中对话、联网搜索或生图，免费套餐的用量有限。"
+            },
+            {
+              "text": "需要开发者功能时进入 Mistral Studio 控制台，免费套餐也可使用。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://mistral.ai/pricing", "https://mistral.ai/news/vibe-agent"],
+        "quote": "\"Le Chat is now Vibe—one agent and one licence across work and code, with every conversation, setting, and plan carried over.\" / 免费方案：\"Access on web and mobile.\" / \"Limited messages and web searches.\" / \"Limited coding sessions.\" / \"Basic image generation and editing.\" / \"100+ connectors.\" / \"On the Free plan, you also get access to Mistral Studio.\"",
+        "uncertainties": [
+          "id 保留旧名 mistral-le-chat-free。定价页没有免费 API 层，未纳入。地区可用性未核实。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "siliconflow-free-models",
+        "providerId": "siliconflow",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "硅基流动免费模型",
+        "summary": "硅基流动价格页中有多款模型标注为免费，如 Hunyuan-MT-7B 翻译、PaddleOCR-VL 文字识别、bge-m3 向量（Embedding）、Kolors 生图与 SenseVoiceSmall 语音识别。",
+        "benefit": "多款模型免费调用（翻译、文字识别、向量、生图、语音识别）",
+        "officialUrl": "https://www.siliconflow.cn/pricing",
+        "sourceUrl": "https://www.siliconflow.cn/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "免费模型列表会调整，调用限制以官方文档为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册硅基流动并创建 API Key。"
+            },
+            {
+              "text": "打开价格页，找到标注“免费”的模型（列表较长，可点“展开更多”）。",
+              "link": {
+                "label": "官方价格页",
+                "url": "https://www.siliconflow.cn/pricing"
+              }
+            },
+            {
+              "text": "调用时把模型名换成所选的免费模型。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://www.siliconflow.cn/pricing"],
+        "quote": "Hunyuan-MT-7B 输入输出\"免费\"；PaddleOCR-VL \"免费\"；bge-m3 输入\"免费\"；Kolors \"生成图片每图片免费\"；SenseVoiceSmall \"免费\"",
+        "uncertainties": [
+          "免费模型中含中国电信 Xing4.0-29B 等，无法确认都开源，benefit 已去掉“开源”。示例只取自价格页首屏。页面未说明新用户赠金与实名认证要求。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "google-ai-ultra-turkey-app-store",
+        "providerId": "google",
+        "pool": "ai",
+        "rarity": "SSR",
+        "title": "土区 App Store 内购 Google AI Ultra 5x（社区方案）",
+        "summary": "社区实测：用土耳其区 Apple ID 在 Gemini App 内购 Google AI Ultra 5x，以 Apple 礼品卡余额付款。社区实测价格 ₺1,989.99/月，以 App 内弹窗为准；先验价再买卡，付款后立即取消自动续费。",
+        "benefit": "Google AI Ultra 5x 一个月：Gemini 用量为 AI Pro 的 5 倍、20 TB 存储（社区实测约 ₺1,989.99/月）",
+        "officialUrl": "https://one.google.com/about/google-ai-plans/",
+        "sourceUrl": "https://one.google.com/about/google-ai-plans/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": true,
+          "autoRenews": true,
+          "regions": ["TR"],
+          "note": "依赖土耳其区 Apple ID 与土区礼品卡余额，可能与 Apple、Google 的地区条款冲突，是否收录由审核人决定。价格为社区实测，以 App 内弹窗为准；订阅默认自动续费。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "full",
+          "phases": [
+            {
+              "title": "准备",
+              "note": "先比价，再切区",
+              "steps": [
+                {
+                  "text": "先在电脑上打开 Google AI 方案官网比价：如果账号能拿到网页端新客优惠（社区反馈有首月免费或前几个月折扣），直接网页付款更省心，不必走土区。",
+                  "link": {
+                    "label": "Google AI 方案官网",
+                    "url": "https://one.google.com/about/google-ai-plans/"
+                  }
+                },
+                {
+                  "text": "准备一个地区为 **土耳其（Türkiye）**、付款方式为 `None（无）` 的 Apple ID。建议注册新号：旧号充入礼品卡后余额未清零到 `₺0.00` 将无法切回原地区。",
+                  "notes": [
+                    {
+                      "tone": "danger",
+                      "title": "地区条款风险",
+                      "text": "本方案依赖非本人所在地区的 Apple ID 与礼品卡，可能违反 Apple 媒体服务条款或 Google 的地区条款，账号存在被限制的风险，请自行判断。"
+                    }
+                  ]
+                },
+                {
+                  "text": "在 iPhone 打开 `设置 → 顶部头像 → 媒体与购买项目 → 退出登录`，只在这里登录土区 Apple ID。**不要退出整机的 iCloud 账号。**"
+                },
+                {
+                  "text": "在 App Store 下载或更新最新版 **Google Gemini** 与 **Google One**。"
+                }
+              ]
+            },
+            {
+              "title": "买卡前验价",
+              "note": "没看到里拉价格前不要买卡",
+              "steps": [
+                {
+                  "text": "打开 iPhone 上的 Gemini App，登录要开通订阅的 Google 账号（确认该账号没有其他进行中的 Google One 订阅）。点右上角头像 → `Upgrade`（升级至 Google AI Ultra），查看弹窗里的币种与金额。",
+                  "bullets": [
+                    "显示 `₺1,989.99/月`（Ultra 5x 档，社区实测价格）：可以继续买卡",
+                    "显示 `₺8,999.99/月`：这是 20x 档全价，比美区直付更贵，立即停止",
+                    "显示美元价格或按钮灰色：该 Google 账号绑有其他国家的旧付款资料，需先在 `pay.google.com` 关闭旧资料"
+                  ],
+                  "notes": [
+                    {
+                      "tone": "danger",
+                      "title": "先验价，后买卡",
+                      "text": "礼品卡余额充进 Apple ID 后无法退款。必须先在 App 内亲眼看到里拉低价，再去买卡。"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "买卡充值",
+              "steps": [
+                {
+                  "text": "通过正规渠道购买 **土耳其区 Apple 礼品卡（TR）**，面额刚好覆盖一个月月费即可，例如目标 `₺1,989.99` 就买 `₺2,000` 面额。",
+                  "notes": [
+                    {
+                      "tone": "warn",
+                      "title": "只买一个月、只买正规卡",
+                      "text": "不要一次囤几个月；不要买来路不明的低价卡，可能导致 Apple ID 被封。礼品卡相对面值的溢价因渠道而异。"
+                    }
+                  ]
+                },
+                {
+                  "text": "打开 App Store → 右上角头像 → `Redeem Gift Card or Code`（`Kodu Kullan`），输入卡密，核对账户里拉余额。"
+                }
+              ]
+            },
+            {
+              "title": "订阅并取消续费",
+              "steps": [
+                {
+                  "text": "回到 Gemini App 点击订阅，用 Apple ID 余额完成支付。"
+                },
+                {
+                  "text": "扣款成功后 Google One 仍显示免费版时，在 Gemini 设置页点击 `Restore Purchases`（恢复购买）刷新订阅状态。"
+                },
+                {
+                  "text": "**立即关闭自动续费：**进入 iPhone `设置 → 顶部 Apple ID → 订阅（Abonelikler）`，找到 Google One 点击取消订阅。当月已付的权益不受影响。",
+                  "notes": [
+                    {
+                      "tone": "warn",
+                      "title": "默认自动续费",
+                      "text": "不取消的话，下个月会按当时的 App 内价格从余额扣费，余额不足则订阅中断。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "facts": [
+            {
+              "label": "方案",
+              "value": "Google AI Ultra 5x",
+              "note": "官网：Gemini 用量为 AI Pro 的 5 倍，20 TB 存储"
+            },
+            {
+              "label": "社区实测价格",
+              "value": "₺1,989.99 / 月",
+              "note": "社区 2026-11-08 实测，以 App 内弹窗为准，官网未列里拉价格"
+            },
+            {
+              "label": "放弃信号",
+              "value": "₺8,999.99 / 月",
+              "note": "20x 档全价，比美区直付更贵"
+            },
+            {
+              "label": "付款方式",
+              "value": "土区 Apple 礼品卡余额",
+              "note": "无需海外银行卡"
+            },
+            {
+              "label": "续费",
+              "value": "默认自动续费",
+              "note": "付款后立即在 iPhone 订阅设置里取消"
+            }
+          ],
+          "faq": [
+            {
+              "question": "额度是无限的吗？",
+              "answer": "不是。官网写明 Ultra 5x 的 Gemini 用量为 AI Pro 的 5 倍；社区反馈在 Antigravity 中配额按 5 小时滚动刷新。",
+              "basis": "community"
+            },
+            {
+              "question": "能拉国区或美区账号进家庭组吗？",
+              "answer": "社区反馈 Google 家庭组要求所有成员属于同一国家，跨区账号无法加入；附带的 YouTube Premium 跨区通常也无法激活。",
+              "basis": "community"
+            },
+            {
+              "question": "提示“无法完成你的购买”怎么办？",
+              "answer": "社区反馈多为 Apple 新号风控。不要频繁重试，在 Apple ID 中补全土耳其地址，静置 24–48 小时后再试。",
+              "basis": "community"
+            },
+            {
+              "question": "为什么显示美元价格？",
+              "answer": "社区反馈是该 Google 账号绑有其他国家的旧付款资料，需在 `pay.google.com` 关闭后再查看。",
+              "basis": "community"
+            },
+            {
+              "question": "Google AI Ultra 包含什么？",
+              "answer": "官网列出：Gemini 用量为 AI Pro 的 5 倍（5x 档）、起步 20 TB 存储、YouTube Premium 个人方案（部分国家）、最多与 5 人家庭共享；在 150 多个国家提供。",
+              "basis": "official"
+            }
+          ],
+          "references": [
+            {
+              "title": "Google AI 方案（Google One 官网）",
+              "url": "https://one.google.com/about/google-ai-plans/",
+              "basis": "official"
+            },
+            {
+              "title": "土区 App Store 内购 Google AI Ultra (5x) 实操流程（社区实测，2026-11-08 核验）",
+              "url": "https://vibe-show.com/tutorials/turkey-ultra-5x",
+              "basis": "community"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://one.google.com/about/google-ai-plans/",
+          "https://vibe-show.com/tutorials/turkey-ultra-5x"
+        ],
+        "quote": "\"Accelerate your workflows with 5x higher usage limits in Gemini than the AI Pro plan.\" / \"Starting at 20 TB of storage.\" / \"Family sharing with up to five others.\" / \"Google AI Ultra is available in more than 150 countries\"",
+        "uncertainties": [
+          "里拉价格（₺1,989.99 / ₺8,999.99 等）全部来自社区教程（vibe-show.com，2026-11-08 实测），官网（美国地区）只显示美元价格，未见里拉价格，请以 App 内弹窗为准。",
+          "合规风险：方案依赖土耳其区 Apple ID 与土区礼品卡，可能违反 Apple 媒体服务条款或 Google 的地区条款；regions 填 TR 表示方案依赖土区账号，并非官方地区优惠。是否收录请审核人决定。",
+          "礼品卡相对面值的溢价因渠道而异，社区教程按约 ¥22.8 / ₺100 折算，实际到手成本可能更高。",
+          "家庭组同国要求、5 小时滚动配额、Antigravity 可用模型、网页端新客优惠均为社区说法，本次抓取官网未确认（官网未见 Ultra 新客优惠）。",
+          "卡面是付费订阅的省钱方案，不是免费福利；SSR 稀有度由完整攻略要求决定，见 REVIEW.md。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "visual-studio-community",
+        "providerId": "microsoft",
+        "pool": "software",
+        "rarity": "S",
+        "title": "Visual Studio Community 免费 IDE",
+        "summary": "Visual Studio Community 是微软的完整 IDE（集成开发环境）。个人开发者可免费用于开发免费或付费应用；非企业组织最多 5 人使用；课堂教学、学术研究和参与开源项目不限人数。",
+        "benefit": "完整 IDE 免费使用（个人、参与开源、教学研究，或不超过 5 人的非企业团队）",
+        "officialUrl": "https://visualstudio.microsoft.com/vs/community/",
+        "sourceUrl": "https://visualstudio.microsoft.com/vs/community/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "企业（超过 250 台 PC 或年收入超过 1,000,000 美元）仅可在开源、学术研究与课堂教学场景使用。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Visual Studio Community 官方页面，阅读许可说明，确认自己属于个人开发者、参与开源项目、课堂教学与学术研究，或不超过 5 人的非企业组织。",
+              "link": {
+                "label": "Visual Studio Community",
+                "url": "https://visualstudio.microsoft.com/vs/community/"
+              }
+            },
+            {
+              "text": "如果所在企业超过 250 台 PC 或年收入超过 1,000,000 美元，只在开源、学术研究或课堂教学场景中使用 Community。"
+            },
+            {
+              "text": "在同一页面下载 Visual Studio Community 安装程序并完成安装。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://visualstudio.microsoft.com/vs/community/"],
+        "quote": "\"Any individual developer can use Visual Studio Community to create their own free or paid apps.\" / \"In non-enterprise organizations, up to five users can use Visual Studio Community.\" / \"in a classroom learning environment, for academic research, or for contributing to open source projects.\" / \"enterprise organizations (meaning those with >250 PCs or >$1 Million US Dollars in annual revenue)\"",
+        "uncertainties": [
+          "官方页面未写明支持的操作系统；Visual Studio for Mac 已停止支持属于既有知识，未写入卡面，请人工确认是否补“仅支持 Windows”。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "github-free-plan",
+        "providerId": "github",
+        "pool": "software",
+        "rarity": "S",
+        "title": "GitHub 免费套餐",
+        "summary": "GitHub Free 提供无限公开与私有仓库、私有仓库每月约 2,000 分钟自动构建与测试（GitHub Actions，按 Linux 计）、500 MB 软件包存储，个人账号另有 Codespaces 云端开发环境免费时长；另含 Copilot Free，每月 2,000 次代码补全。",
+        "benefit": "无限仓库；私有仓库每月约 2,000 分钟自动构建（Linux）；500 MB 软件包存储",
+        "officialUrl": "https://github.com/pricing",
+        "sourceUrl": "https://github.com/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "Actions 额度按 Linux 计价，Windows、macOS 消耗更快；公开仓库用标准 Runner（构建机）免费。Codespaces 每月 120 小时折算额度和 15 GB 存储，机器核数越多消耗越快，只给个人账号，组织账号没有。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "在 github.com 注册账号，即可使用免费套餐。",
+              "link": {
+                "label": "GitHub 定价页",
+                "url": "https://github.com/pricing"
+              }
+            },
+            {
+              "text": "在仓库的 `Actions` 标签页启用自动构建，在账号设置的账单页面查看本月用量。",
+              "link": {
+                "label": "Actions 计费说明",
+                "url": "https://docs.github.com/en/billing/concepts/product-billing/github-actions"
+              }
+            },
+            {
+              "text": "需要云端开发环境时，在仓库页点击 `Code` → `Codespaces` 创建。",
+              "link": {
+                "label": "Codespaces 计费说明",
+                "url": "https://docs.github.com/en/billing/concepts/product-billing/github-codespaces"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://github.com/pricing",
+          "https://docs.github.com/en/billing/concepts/product-billing/github-actions",
+          "https://docs.github.com/en/billing/concepts/product-billing/github-codespaces"
+        ],
+        "quote": "\"Unlimited public/private repositories\" / \"500MB of Packages storage\" / \"Get started for free with up to 2,000 completions per month\" (pricing) / Actions: \"$12 USD\" included, \"expressed as a monetary amount, not a fixed number of minutes\", Linux 2-core \"$0.006/min\", \"jobs that run on Windows and macOS runners hosted by GitHub cost more to run than jobs on Linux runners\", \"Standard GitHub-hosted runners in public repositories\" are free / Codespaces: \"GitHub Free for personal accounts | 15 GB-month | 120 hrs\", \"GitHub plans for organizations and enterprises do not include a free quota for GitHub Codespaces.\"",
+        "uncertainties": [
+          "Actions 文档以每月 12 美元计，约 2,000 分钟为按 Linux 2 核（0.006 美元/分钟）换算。",
+          "Codespaces 文档写“120 hrs”计算时长，并说明 “The compute cost is proportional to the number of processor cores”，未再写“2 核约 60 小时”，卡面不写具体小时换算。",
+          "Actions 文档未限定免费额度只用于私有仓库；“私有仓库约 2,000 分钟”是由“公开仓库标准 Runner 免费”推断，请人工确认。",
+          "注册是否无需绑卡页面未逐字写明，攻略已删去该说法。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "gitlab-free-tier",
+        "providerId": "gitlab",
+        "pool": "software",
+        "rarity": "A",
+        "title": "GitLab 免费版",
+        "summary": "GitLab.com 免费版无需信用卡，每月 400 分钟计算时长，10 GiB 存储；私有顶级群组最多 5 名用户。",
+        "benefit": "每月 400 分钟 CI 计算时长、10 GiB 存储",
+        "officialUrl": "https://about.gitlab.com/pricing/",
+        "sourceUrl": "https://about.gitlab.com/pricing/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "GitLab.com 免费版私有顶级群组限 5 名用户。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方页面，核对当前额度、适用对象与地区限制，以页面为准。",
+              "link": {
+                "label": "官方页面",
+                "url": "https://about.gitlab.com/pricing/"
+              }
+            },
+            {
+              "text": "注册 GitLab.com 账号，无需信用卡。"
+            },
+            {
+              "text": "注意私有顶级群组最多 5 名用户，超出需升级。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-11",
+        "evidenceUrls": ["https://about.gitlab.com/pricing/"],
+        "quote": "\"$ 0\" per user/month, \"No credit card required\" / \"5 users per top-level group\" / \"400 compute minutes per month\" / \"10 GiB adjustable storage\"",
+        "uncertainties": []
+      }
+    },
+    {
+      "request": {
+        "id": "figma-starter-free",
+        "providerId": "figma",
+        "pool": "software",
+        "rarity": "A",
+        "title": "Figma Starter 免费套餐",
+        "summary": "Figma Starter 免费套餐提供不限数量的草稿、UI 套件与模板，以及每天 150、每月最多 500 个 AI 额度；团队空间只有 1 个文件夹、3 个文件。",
+        "benefit": "不限数量的草稿、UI 套件与模板、每月最多 500 个 AI 额度",
+        "officialUrl": "https://www.figma.com/pricing/",
+        "sourceUrl": "https://www.figma.com/pricing/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "团队空间仅 1 个文件夹、3 个文件；草稿不限数量。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Figma 定价页，确认 Starter 免费套餐包含的内容与 AI 额度。",
+              "link": {
+                "label": "Figma 定价页",
+                "url": "https://www.figma.com/pricing/"
+              }
+            },
+            {
+              "text": "注册 Figma 账号，使用 Starter 免费套餐。"
+            },
+            {
+              "text": "个人设计放在草稿中；团队空间超过 3 个文件时需升级 Professional。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://www.figma.com/pricing/",
+          "https://help.figma.com/hc/en-us/articles/360040328273-Figma-plans-and-features"
+        ],
+        "quote": "\"Free limited access to Figma products.\" / \"Unlimited drafts\" / \"UI kits and templates\" / \"150 AI credits/day, up to 500 AI credits/mo\" / 帮助中心：\"A single team with one folder and 3 files\"",
+        "uncertainties": [
+          "团队空间 3 个文件是否同时计入 FigJam 文件未确认。",
+          "版本历史、协作人数等限制在对比表中无法对应列，未写入。",
+          "“注册即为 Starter”未在页面逐字写明，请人工点一遍。",
+          "help.figma.com 不在登记的官方域名内，仅作证据，未用作攻略链接。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "notion-free-plan",
+        "providerId": "notion",
+        "pool": "software",
+        "rarity": "A",
+        "title": "Notion 免费套餐",
+        "summary": "Notion 免费套餐含数据库、基础表单与网站发布、Notion Calendar，以及 Notion AI 试用；个人使用不限页面和内容块数量。",
+        "benefit": "个人使用不限页面数量，含数据库、基础表单、网站发布与 AI 试用",
+        "officialUrl": "https://www.notion.com/pricing",
+        "sourceUrl": "https://www.notion.com/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "2 人及以上的工作区内容块数量有限制；单个文件上传最大 5 MB；页面历史保留 7 天。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Notion 定价页，确认免费套餐包含的功能与多人协作限制。",
+              "link": {
+                "label": "Notion 定价页",
+                "url": "https://www.notion.com/pricing"
+              }
+            },
+            {
+              "text": "注册 Notion 账号并创建工作区，即可使用免费套餐。"
+            },
+            {
+              "text": "邀请他人加入工作区前，先确认内容块数量限制是否够用。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://www.notion.com/pricing"],
+        "quote": "\"you'll be able to add as many pages and blocks as you like\" / Pages & blocks: \"Limited for 2+ members.\" / \"up to 5 MB each\" / Page history: \"7 days\" / \"Trial of Notion AI\"",
+        "uncertainties": ["2 人及以上工作区的具体块数上限、访客上限页面未写，未补数字。"]
+      }
+    },
+    {
+      "request": {
+        "id": "docker-personal-free",
+        "providerId": "docker",
+        "pool": "software",
+        "rarity": "A",
+        "title": "Docker Personal 免费套餐",
+        "summary": "Docker Personal 为 0 美元套餐，限 1 名用户，含 Docker Desktop、Docker Hub 等容器工具；在公司内免费使用 Docker Desktop 有企业规模限制。",
+        "benefit": "免费使用 Docker Desktop，含 1 个私有镜像仓库、每小时 100 次镜像拉取",
+        "officialUrl": "https://www.docker.com/pricing/",
+        "sourceUrl": "https://www.docker.com/pricing/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "免费使用 Docker Desktop 仅限：非商业开源项目，或员工少于 250 人且年收入低于 10,000,000 美元的企业；政府机构须购买订阅。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Docker 定价页，确认 Personal 免费套餐包含的工具与用量。",
+              "link": {
+                "label": "Docker 定价页",
+                "url": "https://www.docker.com/pricing/"
+              }
+            },
+            {
+              "text": "注册 Docker 账号，在电脑上安装 Docker Desktop 并登录。"
+            },
+            {
+              "text": "在公司或政府机构使用前，阅读官方 FAQ：只有员工少于 250 人且年收入低于 10,000,000 美元的企业可免费使用，政府机构须购买订阅。",
+              "link": {
+                "label": "Docker 定价 FAQ",
+                "url": "https://www.docker.com/pricing/faq/"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://www.docker.com/pricing/", "https://www.docker.com/pricing/faq/"],
+        "quote": "\"$0\" / \"1 user\" / \"Docker Desktop\" / \"1 private Docker Hub repo\" / \"100 Docker Hub pulls/hr*\" (*\"Access with reasonable use when logged in.\") / FAQ：\"restricted (i) to your use for a non-commercial open source project and/or (ii) use in a commercial undertaking with fewer than 250 employees and less than US $10,000,000… Government Entities shall not use Docker Desktop… without purchasing a Subscription\"",
+        "uncertainties": ["国内网络访问 Docker Hub 的稳定性无官方来源，未写入卡面，供人工判断。"]
+      }
+    },
+    {
+      "request": {
+        "id": "postman-free-plan",
+        "providerId": "postman",
+        "pool": "software",
+        "rarity": "A",
+        "title": "Postman 免费套餐",
+        "summary": "Postman 免费套餐面向个人开发者（仅 1 名用户），可发送请求、运行测试集合和使用模拟接口（Mock）服务，每月含 1,000 次接口监控。",
+        "benefit": "个人免费调试和测试 API，每月 1,000 次接口监控",
+        "officialUrl": "https://www.postman.com/pricing/",
+        "sourceUrl": "https://www.postman.com/pricing/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "限 1 名用户；每月 10,000 次 Postman API 调用；最多 5 个集成。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Postman 定价页，确认免费套餐的用户数与用量。",
+              "link": {
+                "label": "Postman 定价页",
+                "url": "https://www.postman.com/pricing/"
+              }
+            },
+            {
+              "text": "注册 Postman 账号并登录，即可使用免费套餐。"
+            },
+            {
+              "text": "需要多人协作时，再升级付费套餐。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://www.postman.com/pricing/"],
+        "quote": "\"$0\" \"per month\" / \"1 user\" / API monitoring \"1,000 requests\" / Integrations \"Up to 5\" / Calls to Postman API \"10,000\" / FAQ：\"Free and Solo are single-player plans\"",
+        "uncertainties": [
+          "AI 额度在价格卡（100）与对比表（50/月）不一致，卡面未写。",
+          "“注册即为免费套餐”未在页面逐字写明，请人工点一遍。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "obsidian-free",
+        "providerId": "obsidian",
+        "pool": "software",
+        "rarity": "A",
+        "title": "Obsidian 免费使用",
+        "summary": "Obsidian 笔记应用免费、无使用限制、无需注册；不强制购买商业许可，组织内使用时官方鼓励购买（50 美元/人/年）。Sync 与 Publish 为付费附加服务。",
+        "benefit": "笔记应用免费且无功能限制，无需注册",
+        "officialUrl": "https://obsidian.md/pricing",
+        "sourceUrl": "https://obsidian.md/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": ""
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Obsidian 定价页，确认个人和商业使用都不强制付费。",
+              "link": {
+                "label": "Obsidian 定价页",
+                "url": "https://obsidian.md/pricing"
+              }
+            },
+            {
+              "text": "从官方网站下载 Obsidian，无需注册。"
+            },
+            {
+              "text": "需要多设备同步（Sync，年付每月 4 美元起）或发布网站（Publish，年付每月 8 美元起）时再另购。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://obsidian.md/pricing"],
+        "quote": "\"Free without limits.\" / \"No sign-up required.\" / \"You are not required to pay for a commercial license.\" / Sync \"$4 USD\" \"Per user, per month, billed annually\" / Publish \"$8 USD\" \"Per site, per month, billed annually\"",
+        "uncertainties": []
+      }
+    },
+    {
+      "request": {
+        "id": "sentry-developer-free",
+        "providerId": "sentry",
+        "pool": "software",
+        "rarity": "A",
+        "title": "Sentry Developer 免费套餐",
+        "summary": "Sentry Developer 套餐免费，限 1 名用户，含错误监控、性能追踪和会话回放，另有 1 个定时任务（Cron）监控和 1 个在线状态监控，数据可回看 30 天。",
+        "benefit": "1 名用户，含 5,000 条错误事件、5,000,000 条性能追踪（span）、50 次会话回放",
+        "officialUrl": "https://sentry.io/pricing/",
+        "sourceUrl": "https://sentry.io/pricing/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "限 1 名用户。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Sentry 定价页，确认 Developer 免费套餐的各项额度。",
+              "link": {
+                "label": "Sentry 定价页",
+                "url": "https://sentry.io/pricing/"
+              }
+            },
+            {
+              "text": "注册 Sentry 并选择 Developer 套餐。"
+            },
+            {
+              "text": "在项目中接入 Sentry SDK（官方接入代码库），在后台留意错误事件用量。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://sentry.io/pricing/"],
+        "quote": "\"Developer (Free)\" / \"One user\" / \"5k errors\" / \"5M spans\" / \"50 replays\" / \"1 cron monitor\" / \"1 uptime monitor\" / \"30-day lookback\"",
+        "uncertainties": [
+          "对比表额度后无“/mo”，官方文档也未给 Developer 套餐数字，额度是否按月计算未确认，卡面不写“每月”。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "linear-free-plan",
+        "providerId": "linear",
+        "pool": "software",
+        "rarity": "A",
+        "title": "Linear 免费套餐",
+        "summary": "Linear 免费套餐不限成员数，最多 250 个任务（issue）和 2 个团队，适合小团队起步做项目管理。",
+        "benefit": "不限成员，最多 250 个任务（issue）、2 个团队",
+        "officialUrl": "https://linear.app/pricing",
+        "sourceUrl": "https://linear.app/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "单个附件最大 10 MB。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Linear 定价页，确认免费套餐的任务与团队上限。",
+              "link": {
+                "label": "Linear 定价页",
+                "url": "https://linear.app/pricing"
+              }
+            },
+            {
+              "text": "注册 Linear 并创建工作区，邀请成员加入。"
+            },
+            {
+              "text": "任务数接近 250 个时，考虑升级付费套餐。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://linear.app/pricing"],
+        "quote": "\"Unlimited members\" / \"250 issues\" / \"2 teams\" / 文件上传 \"10MB\"",
+        "uncertainties": ["归档的任务是否计入 250 个上限，页面未写。"]
+      }
+    },
+    {
+      "request": {
+        "id": "bitwarden-free",
+        "providerId": "bitwarden",
+        "pool": "software",
+        "rarity": "S",
+        "title": "Bitwarden 免费密码管理器",
+        "summary": "Bitwarden 免费套餐不限设备与密码数量，端到端加密（官方也看不到你的密码），支持通行密钥（passkey）、密码生成器、Bitwarden Send（加密分享文字），并可与 1 名用户免费共享。",
+        "benefit": "不限设备与密码数量的免费密码管理",
+        "officialUrl": "https://bitwarden.com/pricing/",
+        "sourceUrl": "https://bitwarden.com/pricing/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": ""
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Bitwarden 定价页，确认免费套餐包含的功能。",
+              "link": {
+                "label": "Bitwarden 定价页",
+                "url": "https://bitwarden.com/pricing/"
+              }
+            },
+            {
+              "text": "注册 Bitwarden 账号即可免费使用。"
+            },
+            {
+              "text": "安装浏览器扩展、桌面或移动端应用并开启两步登录。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://bitwarden.com/pricing/",
+          "https://bitwarden.com/help/about-send/"
+        ],
+        "quote": "\"Get basic password management today. Always free.\" / \"Unlimited devices, unlimited passwords\" / \"Zero-knowledge encryption\" / \"Free sharing with another user\" / 帮助页：\"Go premium for file Sends\"",
+        "uncertainties": []
+      }
+    },
+    {
+      "request": {
+        "id": "zed-editor-free",
+        "providerId": "zed",
+        "pool": "software",
+        "rarity": "A",
+        "title": "Zed 编辑器免费使用与 Pro 试用",
+        "summary": "Zed 代码编辑器个人版免费，可接入自己的 API Key（接口密钥）或外部 AI 编程工具；Pro 可免费试用 14 天，含 5 美元 GPT-6 Luna 模型用量和不限次 AI 代码补全（编辑预测）。",
+        "benefit": "编辑器个人版免费；Pro 试用 14 天，含 5 美元模型用量",
+        "officialUrl": "https://zed.dev/pricing",
+        "sourceUrl": "https://zed.dev/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "Pro 试用无需信用卡，14 天到期或 5 美元用完即结束（以先到者为准）；试用期间只能使用 GPT-6 Luna 模型。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Zed 定价页，确认个人版与 Pro 试用的区别。",
+              "link": {
+                "label": "Zed 定价页",
+                "url": "https://zed.dev/pricing"
+              }
+            },
+            {
+              "text": "从官方网站下载 Zed，个人版免费使用。"
+            },
+            {
+              "text": "需要时开启 Pro 试用（无需信用卡），留意 14 天与 5 美元两个上限。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://zed.dev/pricing"],
+        "quote": "\"Free forever.\" / \"Unlimited use with your API keys or external agents\" / \"We offer a 14-day free trial of Pro with $5 of GPT-6 Luna usage and unlimited accepted edit predictions.\" / \"The trial ends when you use the $5 balance or 14 days pass, whichever comes first.\" / \"No credit card is required.\" / \"GPT-6 Luna is the only hosted model available during the free trial\" / \"Your $5 trial balance is shared across Zed and Delta\"",
+        "uncertainties": [
+          "已确认试用无需信用卡；试用结束后是否转付费页面未写，因不绑卡暂填 autoRenews=false。",
+          "页面未说明每个账号是否仅可试用一次，newUsersOnly 暂填 false。",
+          "5 美元试用额度与 Delta 共用，Delta 是什么页面未解释，未写入卡面。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "github-student-developer-pack",
+        "providerId": "github",
+        "pool": "education",
+        "rarity": "SSR",
+        "title": "GitHub 学生开发者包",
+        "summary": "经认证的学生可免费领取 GitHub 学生开发者包，包括学生期间免费的 GitHub Pro、Copilot Student，以及 80+ 项合作方工具权益（免费、折扣或试用）。",
+        "benefit": "学生期间免费 GitHub Pro、Copilot Student 及 80+ 项合作方工具权益",
+        "officialUrl": "https://education.github.com/pack",
+        "sourceUrl": "https://education.github.com/pack",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": true,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "需年满 13 岁、在读学位或文凭项目，并通过 GitHub Education 学生认证；各合作方权益有各自的年龄、期限与地区条件。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "full",
+          "phases": [
+            {
+              "title": "申请认证",
+              "steps": [
+                {
+                  "text": "打开 GitHub 学生开发者包官方页面，了解当前包含的权益。",
+                  "link": {
+                    "label": "学生开发者包",
+                    "url": "https://education.github.com/pack"
+                  }
+                },
+                {
+                  "text": "在 GitHub 账号设置里添加并验证学校邮箱（如 .edu.cn 邮箱）。"
+                },
+                {
+                  "text": "打开学生认证申请页提交申请：浏览器允许获取位置，关闭代理，最好在校园附近提交。",
+                  "link": {
+                    "label": "学生认证申请页",
+                    "url": "https://github.com/settings/education/benefits"
+                  },
+                  "notes": [
+                    {
+                      "tone": "warn",
+                      "title": "位置会被核对",
+                      "text": "GitHub 社区 FAQ 要求申请时位于校园附近，且不能使用 VPN（代理）。"
+                    }
+                  ]
+                },
+                {
+                  "text": "没有学校邮箱时，上传带姓名、学校全称和当前日期的在读证明（如学信网学籍在线验证报告），非英文材料需附打字版英文翻译。"
+                }
+              ]
+            },
+            {
+              "title": "领取权益",
+              "steps": [
+                {
+                  "text": "认证通过后，在学生包页面逐项领取需要的权益，例如学生期间免费的 GitHub Pro 与 Copilot Student（Copilot 的用量说明见本站「GitHub Copilot Student」卡片）。"
+                },
+                {
+                  "text": "合作方权益各有条件，领取前阅读每项说明。",
+                  "notes": [
+                    {
+                      "tone": "warn",
+                      "title": "条件各不相同",
+                      "text": "部分权益限定年龄（如 13–17 岁或 18 岁以上）、期限或需要绑定合作方账号。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "facts": [
+            {
+              "label": "对象",
+              "value": "经认证的学生"
+            },
+            {
+              "label": "资格",
+              "value": "13 岁以上，在读学位或文凭项目",
+              "note": ""
+            },
+            {
+              "label": "权益数量",
+              "value": "80+ 项",
+              "note": "抓取时页面列出 83 项，会变动"
+            },
+            {
+              "label": "GitHub Pro",
+              "value": "学生期间免费"
+            }
+          ],
+          "faq": [
+            {
+              "question": "学生包里的权益都免费吗？",
+              "answer": "页面把各项权益描述为免费、折扣或试用，例如学生期间免费的 GitHub Pro；以每项说明为准。",
+              "basis": "official"
+            },
+            {
+              "question": "没有学校邮箱可以申请吗？",
+              "answer": "可以上传在读证明，需包含姓名、学校全称和当前日期；非英文材料需附打字版英文翻译。",
+              "basis": "community"
+            },
+            {
+              "question": "Copilot Student 有哪些限制？",
+              "answer": "Copilot Student 免费，含一定额度的 AI 用量（GitHub AI Credits），只能由系统自动选择模型；详见本站「GitHub Copilot Student」卡片。",
+              "basis": "official"
+            }
+          ],
+          "references": [
+            {
+              "title": "GitHub Student Developer Pack",
+              "url": "https://education.github.com/pack",
+              "basis": "official"
+            },
+            {
+              "title": "Apply to GitHub Education as a student",
+              "url": "https://docs.github.com/en/education/about-github-education/github-education-for-students/apply-to-github-education-as-a-student",
+              "basis": "official"
+            },
+            {
+              "title": "GitHub Education 社区 FAQ（#111352）",
+              "url": "https://github.com/orgs/community/discussions/111352",
+              "basis": "community"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://education.github.com/pack",
+          "https://docs.github.com/en/education/about-github-education/github-education-for-students/apply-to-github-education-as-a-student",
+          "https://github.com/orgs/community/discussions/111352"
+        ],
+        "quote": "\"GitHub Copilot Student is available to verified students.\" / \"Free GitHub Pro while you are a student.\" / 83 offer entries listed / 申请文档：\"at least 13 years old\"，在读学位或文凭项目，入口 github.com/settings/education/benefits / 社区 FAQ：\"located close to your campus\" \"You may not use a VPN\"，非英文材料需附英文翻译。",
+        "uncertainties": [
+          ".edu.cn 学校邮箱能否被自动识别未确认。",
+          "位置、VPN 与翻译要求出自 GitHub 社区 FAQ，不是官方条款正文，已在 FAQ 中标为社区来源。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "azure-for-students",
+        "providerId": "microsoft",
+        "pool": "education",
+        "rarity": "S",
+        "title": "Azure for Students：100 美元额度",
+        "summary": "年满 18 岁的全日制大学生无需信用卡即可获得 100 美元 Azure 额度，12 个月内使用；在读期间每年可续订。",
+        "benefit": "100 美元 Azure 额度，12 个月内有效，在读可每年续订",
+        "officialUrl": "https://azure.microsoft.com/en-us/free/students",
+        "sourceUrl": "https://azure.microsoft.com/pricing/offers/ms-azr-0170p/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": true,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "年满 18 岁、在经认可的大学全日制就读；用学校邮箱验证；无需信用卡。有用户反馈账单地区为中国的微软账号无法激活（单个反馈，未经官方确认），申请前请留意。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方页面，确认年龄（18 岁以上）与全日制在读要求，以页面为准。",
+              "link": {
+                "label": "官方页面",
+                "url": "https://azure.microsoft.com/en-us/free/students"
+              }
+            },
+            {
+              "text": "用学校邮箱完成学生身份验证，无需信用卡。"
+            },
+            {
+              "text": "额度需在 12 个月内用完，用完后订阅会停用（不会自动扣费）；仍在读时可每年续订。",
+              "link": {
+                "label": "优惠条款",
+                "url": "https://azure.microsoft.com/pricing/offers/ms-azr-0170p/"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://azure.microsoft.com/en-us/free/students",
+          "https://azure.microsoft.com/pricing/offers/ms-azr-0170p/",
+          "https://learn.microsoft.com/en-us/answers/questions/5780466/"
+        ],
+        "quote": "\"$100 credit\" / \"No credit card required\" / 条款页：\"You must affirm that you are age 18 or older\" / \"accredited, degree-granting two-year or four-year educational institution\" / \"If you exhaust your available credits, your Azure subscription will be disabled\" / 社区问答：\"the benefit is not available for accounts with a China billing region\"",
+        "uncertainties": [
+          "中国账单地区账号无法激活只见于微软问答社区的单个用户反馈，未经官方条款确认；卡面已注明是用户反馈。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "google-ai-student-offer-2026",
+        "providerId": "google",
+        "pool": "education",
+        "rarity": "A",
+        "title": "Google AI 学生优惠：免费一年 AI Pro / AI Plus",
+        "summary": "美国合资格学生免费一年 Google AI Pro；其他受支持地区的高校学生免费一年 Google AI Plus。2026 年 12 月 31 日前兑换，需绑定付款方式，到期自动扣费。中国大陆、香港、澳门的学生不适用。",
+        "benefit": "美国学生免费 1 年 AI Pro；其他市场学生免费 1 年 AI Plus",
+        "officialUrl": "https://blog.google/innovation-and-ai/products/gemini-app/student-offer-google-ai/",
+        "sourceUrl": "https://blog.google/innovation-and-ai/products/gemini-app/student-offer-google-ai/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": true,
+          "requiresPaymentMethod": true,
+          "autoRenews": true,
+          "regions": [],
+          "note": "仅限支持 AI Plus/Pro 的国家和地区的高校学生，中国大陆、港澳不在其内；需年满 18 岁，用个人 Gmail 账号通过 SheerID（第三方学籍验证服务）认证。到期后 AI Pro 按 19.99 美元/月、AI Plus 按 4.99 美元/月自动扣费，除非提前取消。"
+        },
+        "validFrom": null,
+        "validUntil": "2026-12-31",
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "阅读官方公告，确认所在地区适用 AI Pro 还是 AI Plus；中国大陆、香港、澳门不在支持范围内。",
+              "link": {
+                "label": "官方公告",
+                "url": "https://blog.google/innovation-and-ai/products/gemini-app/student-offer-google-ai/"
+              }
+            },
+            {
+              "text": "确认自己年满 18 岁、在受支持地区的高校就读，用个人 Gmail 账号（不能用学校账号）通过 SheerID 认证学生身份；通常每 12 个月需重新认证。"
+            },
+            {
+              "text": "在 2026 年 12 月 31 日前打开兑换页领取，需绑定有效付款方式。",
+              "link": {
+                "label": "兑换页",
+                "url": "https://one.google.com/ai-student"
+              }
+            },
+            {
+              "text": "在免费期结束前决定是否取消，否则会按月自动扣费。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://blog.google/innovation-and-ai/products/gemini-app/student-offer-google-ai/",
+          "https://support.google.com/googleone/answer/17422238",
+          "https://support.google.com/gemini/answer/13575153"
+        ],
+        "quote": "博客：\"Redeem until December 31, 2026.\" / \"Valid form of payment required at sign-up.\" / 帮助页：\"Be a student at a higher education institution in a country or region where Google AI Plus and Google AI Pro are supported\" \"excluding Hong Kong, Macau, and Tunisia\" \"You must be 18 or older\" \"Verify your student status and eligibility through SheerID\" \"You must be signed in to a personal Gmail account\" / Gemini 地区列表：\"Mainland China (Workspace only)\"",
+        "uncertainties": [
+          "兑换页 one.google.com/ai-student 需登录，未能抓取；条件以帮助中心页为准。",
+          "博客与帮助页列出的排除地区不一致（博客另含美国、玻利维亚、阿尔巴尼亚、加拿大），卡面以帮助页为准，只点名中国大陆与港澳。",
+          "regions 字段无法表达“排除”，已写入 summary 与 note。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "figma-education",
+        "providerId": "figma",
+        "pool": "education",
+        "rarity": "S",
+        "title": "Figma 教育版：学生与教师免费",
+        "summary": "在校学生与教师可通过 Figma 教育计划免费使用 Figma Professional 层级，适用于高校、职校、在线课程、训练营等有组织的课程。",
+        "benefit": "免费使用 Figma Professional 层级",
+        "officialUrl": "https://www.figma.com/education/",
+        "sourceUrl": "https://www.figma.com/education/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": true,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "面向学校或课程中结构化课堂的学生与教师，自学者不符合条件；13 岁以上可自行申请，13 岁以下需学校联系 Figma。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Figma 教育计划页面，确认自己是在结构化课堂中的学生或教师，以页面为准。",
+              "link": {
+                "label": "官方页面",
+                "url": "https://www.figma.com/education/"
+              }
+            },
+            {
+              "text": "在申请页提交教育身份验证，按页面要求填写学校与课程信息。",
+              "link": {
+                "label": "申请页",
+                "url": "https://www.figma.com/education/apply"
+              }
+            },
+            {
+              "text": "验证通过后创建 Education 团队使用。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://www.figma.com/education/"],
+        "quote": "\"free access to the Figma Professional tier\" / \"Figma & FigJam are 100% free for students, educators and schools.\" / \"Go to Figma.com/education/apply, verify education status, and create an Education team\" / 要求处在 \"structured classroom\" 中",
+        "uncertainties": [
+          "页面未说明有效期、复核周期与验证所需材料。教师也可申请，studentOnly=true 表示“需要教育身份”，标题已写“学生与教师”。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "notion-education-plan",
+        "providerId": "notion",
+        "pool": "education",
+        "rarity": "A",
+        "title": "Notion 学生与教师免费教育方案",
+        "summary": "高校学生与教师用学校邮箱即可免费使用教育版方案（相当于单人 Plus 方案）；K-12（中小学）不适用。",
+        "benefit": "免费的教育版方案（相当于单人 Plus 方案）",
+        "officialUrl": "https://www.notion.com/product/notion-for-education",
+        "sourceUrl": "https://www.notion.com/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": true,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "面向高校学生与教师；需以学校邮箱为账号主邮箱，不接受学生证等证件；K-12（中小学）不适用；每年需用学校邮箱复核一次。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "用学校邮箱作为账号主邮箱登录 Notion；官方称数千个学校邮箱域名可用，不限 .edu。",
+              "link": {
+                "label": "官方页面",
+                "url": "https://www.notion.com/product/notion-for-education"
+              }
+            },
+            {
+              "text": "在侧边栏打开设置，选择升级方案，选免费教育方案；学校邮箱被识别后自动开通。"
+            },
+            {
+              "text": "如果学校邮箱未被识别，就无法开通教育方案，可以继续使用免费版。"
+            },
+            {
+              "text": "开通后每年用学校邮箱复核一次，以保留教育方案。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://www.notion.com/product/notion-for-education",
+          "https://www.notion.com/pricing"
+        ],
+        "quote": "价格页：\"The Plus Plan (with a 1-member limit) is free for students and educators\" / \"Thousands of school email domains are eligible, not just .edu!\" / Plus 方案含 \"Trial of Notion AI\" / 教育页：设置 → 升级方案 → 免费教育方案，每年用学校邮箱复核；\"Student IDs and other documents aren't accepted\"",
+        "uncertainties": [
+          "官方未点名 .edu.cn 是否在可识别名单内。",
+          "Plus 方案只含 Notion AI 试用，卡面不写含 AI。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "office-365-a1-education",
+        "providerId": "microsoft",
+        "pool": "education",
+        "rarity": "A",
+        "title": "Office 365 A1：学生与教师免费网页版 Office",
+        "summary": "学校符合条件的学生和教师，用学校邮箱可免费使用 Office 365 A1（网页版 Word、Excel、PowerPoint、OneNote、Outlook）；能否开通取决于学校是否在微软认可名单内。",
+        "benefit": "免费使用网页版 Word、Excel、PowerPoint、OneNote、Outlook",
+        "officialUrl": "https://www.microsoft.com/en-us/education/products/office",
+        "sourceUrl": "https://www.microsoft.com/en-us/education/products/office",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": true,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "面向学生与教师；需学校在微软认可名单内并使用学校邮箱；学校认证最长可能需要一个月，资格可能随时复核。另含仅限 Windows 电脑的 Access。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方页面，用学校邮箱按页面指引申请，学生与教师均可。",
+              "link": {
+                "label": "官方页面",
+                "url": "https://www.microsoft.com/en-us/education/products/office"
+              }
+            },
+            {
+              "text": "如果学校邮箱不被认可，说明学校暂不在名单内；可以改用人人可用的免费网页版 Microsoft 365（Word、Excel、PowerPoint）。"
+            },
+            {
+              "text": "开通后在浏览器里使用 Outlook、Word、Excel、PowerPoint、OneNote；Windows 电脑还可使用 Access。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://www.microsoft.com/en-us/education/products/office",
+          "https://support.microsoft.com/en-us/publisher/microsoft-publisher-will-no-longer-be-supported-after-october-2026"
+        ],
+        "quote": "\"Educators and students with an eligible education email address can get Office 365 A1 for free.\" / \"Includes the web-based versions of core apps (Outlook, Word, Excel, PowerPoint, OneNote).\" / 向 \"eligible institutions\" 捐赠，学校认证 \"may take up to a month\"，\"Your eligibility may be re-verified at any time\" / Publisher 公告：\"Microsoft 365 subscribers will not be able to access Publisher on or shortly after October 1, 2026\"",
+        "uncertainties": [
+          "产品页仍列出 Publisher，但官方公告称 2026-10-01 起订阅用户无法使用，卡面已删去。",
+          "国内高校是否在认可名单内需逐校确认。studentOnly=true 表示“需要教育身份”，标题已写“学生与教师”。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "unity-student-plan",
+        "providerId": "unity",
+        "pool": "education",
+        "rarity": "S",
+        "title": "Unity Student 学生免费方案",
+        "summary": "在读学生可免费使用 Unity Student 方案，含最新 Unity Pro 编辑器、Unity Cloud 与部分资源包，供个人电脑使用。",
+        "benefit": "免费使用 Unity Pro 编辑器与学生资源包",
+        "officialUrl": "https://unity.com/products/unity-student",
+        "sourceUrl": "https://unity.com/products/unity-student",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": true,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "高等院校学生，或 16 岁以上在读中学生；仅限个人电脑，课堂与机房使用需另申请教育授权。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方页面，核对当前额度、适用对象与地区限制，以页面为准。",
+              "link": {
+                "label": "官方页面",
+                "url": "https://unity.com/products/unity-student"
+              }
+            },
+            {
+              "text": "确认资格：高等院校在读学生，或 16 岁以上在读中学生。"
+            },
+            {
+              "text": "Student 方案仅供个人电脑使用；课堂与机房需另行申请 Education Grant License。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-11",
+        "evidenceUrls": ["https://unity.com/products/unity-student"],
+        "quote": "\"The Unity Student plan is free and intended for individual students to use on their personal computers.\" / \"The latest version of the Unity Pro Editor.\" / secondary students must be 16 or older",
+        "uncertainties": []
+      }
+    },
+    {
+      "request": {
+        "id": "aws-educate",
+        "providerId": "aws",
+        "pool": "education",
+        "rarity": "A",
+        "title": "AWS Educate 免费云技能学习",
+        "summary": "AWS Educate 对所有人免费开放，提供自学课程、实时动手实验与可分享的数字徽章，13 岁起可用邮箱注册，无需信用卡。",
+        "benefit": "免费云计算课程、动手实验与数字徽章",
+        "officialUrl": "https://aws.amazon.com/education/awseducate/",
+        "sourceUrl": "https://aws.amazon.com/education/awseducate/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "13 岁起可注册；无需信用卡；18 岁以上可使用招聘板。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方页面，点击 `Register now` 用邮箱注册（13 岁起可注册，无需信用卡）。",
+              "link": {
+                "label": "官方页面",
+                "url": "https://aws.amazon.com/education/awseducate/"
+              }
+            },
+            {
+              "text": "登录后选择自学课程或动手实验开始学习。"
+            },
+            {
+              "text": "完成学习后获取可分享的数字徽章；18 岁以上还可使用招聘板。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://aws.amazon.com/education/awseducate/"],
+        "quote": "\"open to any individual\" / learners \"as young as 13\" can register / \"No credit card needed\" / 18 岁以上可使用招聘板 / free hands-on labs, self-paced training, digital badges",
+        "uncertainties": ["课程是否以英文为主未逐页核对，卡面未写。"]
+      }
+    },
+    {
+      "request": {
+        "id": "github-copilot-student",
+        "providerId": "github",
+        "pool": "education",
+        "rarity": "A",
+        "title": "GitHub Copilot Student：学生免费 AI 编程助手",
+        "summary": "GitHub Copilot 是 GitHub 的 AI 编程助手。通过学生认证后可免费使用 Copilot Student 方案：不限次代码补全，另含一定 AI 用量额度；只能由系统自动选择模型，不含第三方智能体。认证流程见「GitHub 学生开发者包」卡片。",
+        "benefit": "不限次代码补全，每月含一定 AI 用量额度（GitHub AI Credits，官方未公开具体数额）",
+        "officialUrl": "https://github.com/features/copilot/plans",
+        "sourceUrl": "https://docs.github.com/en/copilot/get-started/plans",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": true,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "需先通过 GitHub Education 学生认证（与学生开发者包相同）；只能由系统自动选择模型；不含第三方智能体。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "先按「GitHub 学生开发者包」卡片的步骤完成学生认证；Copilot Student 只对认证学生开放。",
+              "link": {
+                "label": "学生认证申请页",
+                "url": "https://github.com/settings/education/benefits"
+              }
+            },
+            {
+              "text": "认证通过后，在学生包页面领取 Copilot Student。",
+              "link": {
+                "label": "学生开发者包",
+                "url": "https://education.github.com/pack"
+              }
+            },
+            {
+              "text": "阅读官方方案说明，了解用量规则：AI 用量按 GitHub AI Credits 计（1 credit = 0.01 美元），学生方案只能自动选择模型。",
+              "link": {
+                "label": "方案说明",
+                "url": "https://docs.github.com/en/copilot/get-started/plans"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://docs.github.com/en/copilot/get-started/plans",
+          "https://education.github.com/pack",
+          "https://github.com/features/copilot/plans",
+          "https://github.blog/changelog/2026-06-17-copilot-individual-plan-sign-ups-are-reopening/"
+        ],
+        "quote": "Plans 文档：\"Copilot Student | Free | An allowance of GitHub AI Credits | Excludes third-party agents | Auto model selection only\" / \"1 AI credit = $0.01 USD\" / 学生包页：\"GitHub Copilot Student is available to verified students.\"，含 \"unlimited code completions\"",
+        "uncertainties": [
+          "AI Credits 具体额度官方未公开；文档前半部分未写每月额度是否结转，卡面未写。",
+          "2026-04-20 至 06-17 曾暂停新注册，06-17 起逐步恢复；发布前建议再看一眼 changelog。",
+          "与学生开发者包认证流程相同，已改为只讲 Copilot 本身并互相引用；是否移到 AI 池与其他 Copilot 卡并列，待负责人决定。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "obsidian-education-discount",
+        "providerId": "obsidian",
+        "pool": "education",
+        "rarity": "A",
+        "title": "Obsidian Sync 与 Publish 教育优惠：立减 40%",
+        "summary": "学生、教师（教职员工）与非营利组织员工订阅 Obsidian Sync（多设备同步）与 Publish（把笔记发布成网站）可享 40% 折扣。",
+        "benefit": "Sync 与 Publish 优惠 40%",
+        "officialUrl": "https://obsidian.md/pricing",
+        "sourceUrl": "https://obsidian.md/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": true,
+          "requiresPaymentMethod": true,
+          "autoRenews": false,
+          "regions": [],
+          "note": "学生、教师（教职员工）与非营利组织员工适用；需付费订阅。折扣有有效期，到期前一周会收到邮件提醒，需要重新申请。按年付计，折后约 Sync 2.4 美元/月、Publish 4.8 美元/月。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开官方定价页，确认 Sync 与 Publish 的当前价格。",
+              "link": {
+                "label": "官方定价页",
+                "url": "https://obsidian.md/pricing"
+              }
+            },
+            {
+              "text": "登录 Obsidian 账户面板，在 `Billing` → `Discount` 点 `Apply`，填写学校邮箱（不是账号邮箱）并点击验证链接；没有学校邮箱的，可以把学生证、成绩单或工牌发给客服。",
+              "link": {
+                "label": "折扣申请说明",
+                "url": "https://obsidian.md/help/discounts"
+              }
+            },
+            {
+              "text": "折扣生效后订阅 Sync 或 Publish 并付款。"
+            },
+            {
+              "text": "到期前一周会收到提醒邮件，按邮件重新申请折扣。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://obsidian.md/pricing", "https://obsidian.md/help/discounts"],
+        "quote": "\"Students, faculty members, and nonprofit employees are eligible for a 40% discount on Obsidian Sync and Publish.\" / 帮助页：\"Go to your account dashboard\" \"Under Billing, find the Discount section, and click on the Apply link\" \"educational or organization email (not your account email)\" \"student ID card, transcript, or employee ID card\" \"A week before your discount expires, you will get an email reminder to renew it\" / 定价页：Sync 年付 4 美元/月、Publish 年付 8 美元/月",
+        "uncertainties": [
+          "定价页没有自动续费的说明，autoRenews 改为 false；购买需付款，requiresPaymentMethod 改为 true。",
+          "折后价按定价页年付价格 × 0.6 估算，未见页面直接列出。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "mit-opencourseware",
+        "providerId": "mit-ocw",
+        "pool": "education",
+        "rarity": "A",
+        "title": "MIT OpenCourseWare 免费课程",
+        "summary": "MIT OpenCourseWare 免费公开 2,500+ 门 MIT 课程资料，无需注册账号；不提供学分或证书。",
+        "benefit": "2,500+ 门 MIT 课程资料免费学习，无需注册",
+        "officialUrl": "https://ocw.mit.edu/",
+        "sourceUrl": "https://ocw.mit.edu/about/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "不提供学分或证书；课程资料采用 CC BY-NC-SA 许可（可免费非商业使用，需注明出处并以相同许可分享）。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 MIT OpenCourseWare 首页，按主题或课程名搜索课程。",
+              "link": {
+                "label": "OCW 首页",
+                "url": "https://ocw.mit.edu/"
+              }
+            },
+            {
+              "text": "进入课程页在线学习或下载课程资料，无需注册。"
+            },
+            {
+              "text": "转载或二次使用资料时注明出处，仅限非商业用途，并以相同许可分享。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": ["https://ocw.mit.edu/about/", "https://ocw.mit.edu/"],
+        "quote": "\"over 2,500 MIT courses\" / \"no requirement to create an account\" / \"MIT does not offer credit or certification to users of OCW\" / Creative Commons BY-NC-SA 4.0",
+        "uncertainties": []
+      }
+    },
+    {
+      "request": {
+        "id": "freecodecamp-free-certifications",
+        "providerId": "freecodecamp",
+        "pool": "education",
+        "rarity": "A",
+        "title": "freeCodeCamp 免费编程课程与认证",
+        "summary": "freeCodeCamp 是美国的非营利组织，编程课程、练习项目和认证全部免费。",
+        "benefit": "编程课程、练习项目与认证全部免费",
+        "officialUrl": "https://www.freecodecamp.org/learn",
+        "sourceUrl": "https://www.freecodecamp.org/news/freecodecamp-turns-10-major-curriculum-updates",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "新版认证需完成课程项目并通过有监考的结业考试（90 题），有效期 3 年；旧版认证将于 2027-12-31 失效。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 freeCodeCamp 学习页，注册并登录账号。",
+              "link": {
+                "label": "学习页",
+                "url": "https://www.freecodecamp.org/learn"
+              }
+            },
+            {
+              "text": "选择课程开始学习，完成课程中的练习与项目。"
+            },
+            {
+              "text": "新版认证还需在 freeCodeCamp 的考试环境中通过有监考的结业考试（90 题），未通过可每 24 小时重考一次；认证本身免费。",
+              "link": {
+                "label": "课程更新说明",
+                "url": "https://www.freecodecamp.org/news/freecodecamp-turns-10-major-curriculum-updates"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-12",
+        "evidenceUrls": [
+          "https://www.freecodecamp.org/news/freecodecamp-turns-10-major-curriculum-updates",
+          "https://www.freecodecamp.org/learn"
+        ],
+        "quote": "\"a comprehensive proctored 90-question certification exam taken within freeCodeCamp's exam environment\" / \"retake it once every 24 hours\" / 新认证 \"valid for 3 years, with a path to renewal\" / \"All of these legacy certs will expire on December 31, 2027.\" / \"these certifications will remain completely free\"",
+        "uncertainties": [
+          "文章未单独写明考试是否收费，只写认证保持免费；卡面写“认证本身免费”。",
+          "/learn 为客户端渲染，抓取时正文为空，链接本身可用。中文课程是否与英文同步未核实，卡面未写。"
+        ]
+      }
+    }
+  ]
+}

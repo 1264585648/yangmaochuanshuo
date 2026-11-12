@@ -1,6 +1,7 @@
 import { fail } from './respond';
 
-export const MAX_BODY_BYTES = 16 * 1024;
+/** Room for a full guide (capped at 32 KB as JSON) plus the rest of the offer. */
+export const MAX_BODY_BYTES = 64 * 1024;
 
 export type BodyResult =
   { ok: true; value: unknown; raw: string } | { ok: false; response: Response };

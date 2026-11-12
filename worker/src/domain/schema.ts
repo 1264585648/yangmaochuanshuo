@@ -1,5 +1,9 @@
 import { z } from 'zod';
+import { guideSchema } from './guide';
 import { isSharedHost } from './shared-hosts';
+import { httpsUrl } from './urls-schema';
+
+export { httpsUrl };
 
 export const POOLS = ['ai', 'cloud', 'software', 'education'] as const;
 export const RARITIES = ['A', 'S', 'SSR'] as const;
@@ -11,7 +15,6 @@ const LIMITS = {
   summary: 200,
   benefit: 120,
   note: 200,
-  url: 500,
   name: 80,
   domains: 10,
   regions: 50,
@@ -24,22 +27,6 @@ export const slugSchema = z
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'lowercase letters, digits and single hyphens');
 
 const text = (max: number) => z.string().trim().min(1).max(max);
-
-/** https only, no embedded credentials; stored in canonical `href` form. */
-export const httpsUrl = z
-  .string()
-  .trim()
-  .max(LIMITS.url)
-  .refine((value) => {
-    try {
-      const url = new URL(value);
-      return url.protocol === 'https:' && !url.username && !url.password;
-    } catch {
-      return false;
-    }
-  }, 'must be an https URL without credentials')
-  .transform((value) => new URL(value).href)
-  .pipe(z.string().max(LIMITS.url));
 
 const isoDate = z.iso.date();
 
@@ -67,6 +54,7 @@ const contentShape = {
   conditions: conditionsSchema,
   validFrom: isoDate.nullable().default(null),
   validUntil: isoDate.nullable().default(null),
+  guide: guideSchema.nullable().default(null),
 };
 
 const validWindow = (v: { validFrom?: string | null; validUntil?: string | null }) =>
@@ -90,6 +78,7 @@ export const offerPatchSchema = z
     conditions: conditionsSchema.optional(),
     validFrom: isoDate.nullable().optional(),
     validUntil: isoDate.nullable().optional(),
+    guide: guideSchema.nullable().optional(),
   })
   .refine((patch) => Object.keys(patch).length > 0, 'patch must change at least one field')
   .refine(validWindow, windowError);

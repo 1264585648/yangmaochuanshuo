@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type { Client } from '../../auth/tokens';
 import { INSPECTOR_PENDING_CAP, MAX_OFFSET } from '../../config';
+import { guideOfficialUrls, guideRuleViolation } from '../../domain/guide';
 import { offerCreateSchema, type OfferPatch } from '../../domain/schema';
 import { isOfficialUrl } from '../../domain/urls';
 import { fail } from '../../http/respond';
@@ -100,6 +101,21 @@ export function mergeContent(
 export function isUnchanged(row: FullOfferRow, content: OfferContent): boolean {
   const cols = contentColumns(content);
   return CONTENT_COLUMNS.every((c) => cols[c] === row[c]);
+}
+
+/** Every URL in the content that must sit on the provider's official domains. */
+export function officialUrlsOf(content: OfferContent): Record<string, string> {
+  return {
+    officialUrl: content.officialUrl,
+    sourceUrl: content.sourceUrl,
+    ...guideOfficialUrls(content.guide),
+  };
+}
+
+/** Rejects content that a published offer may not carry; null when fine. */
+export function guideRule(content: OfferContent): Response | null {
+  const violation = guideRuleViolation(content.rarity, content.guide);
+  return violation ? fail(422, violation.code, violation.message) : null;
 }
 
 export const noChanges = () =>

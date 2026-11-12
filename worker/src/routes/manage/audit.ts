@@ -6,9 +6,11 @@ import {
   checkOfficial,
   contentUpdate,
   forbidden,
+  guideRule,
   invalid,
   isUnchanged,
   noChanges,
+  officialUrlsOf,
   parseIntParam,
   type Handler,
 } from './shared';
@@ -59,10 +61,11 @@ export const revertAuditEntry: Handler = async ({ db, client, now }, [idParam]) 
   if (!parsed.success) return invalid(parsed.error);
   const { id: _id, providerId: _providerId, ...content } = parsed.data;
   if (isUnchanged(row, content)) return noChanges();
-  const official = await checkOfficial(db, row.provider_id, {
-    officialUrl: content.officialUrl,
-    sourceUrl: content.sourceUrl,
-  });
+  if (row.status === 'published') {
+    const broken = guideRule(content);
+    if (broken) return broken;
+  }
+  const official = await checkOfficial(db, row.provider_id, officialUrlsOf(content));
   if (!official.ok) return official.response;
 
   const update = contentUpdate(db, row, content, now.toISOString());

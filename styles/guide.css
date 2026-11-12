@@ -1,0 +1,269 @@
+/* 领取攻略 on the single-offer page (/offers/<id>). Builds on styles.css tokens
+   and styles/offers.css (section titles, external link icon). */
+.guide {
+  margin-top: 26px;
+  padding-top: 4px;
+  border-top: 1px solid var(--outline);
+  scroll-margin-top: 80px;
+  color: var(--ink);
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.guide-lead {
+  margin: -4px 0 12px;
+  font-size: 12px;
+  color: var(--dim);
+}
+.guide code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: #ffffff12;
+  color: var(--gold-light);
+  font-size: 0.92em;
+}
+.guide strong {
+  color: var(--gold-light);
+}
+
+/* ── phases & numbered steps ── */
+.guide-phase + .guide-phase {
+  margin-top: 18px;
+}
+.guide-phase-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 14px 0 4px;
+  font-size: 15px;
+  color: var(--ink);
+}
+.guide-phase-index {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--gold);
+}
+.guide-phase-note {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.guide-steps {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.guide-step {
+  position: relative;
+  padding: 0 0 14px 38px;
+  font-size: 14px;
+}
+.guide-step::before {
+  content: counter(list-item);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--outline);
+  background: #c3904826;
+  color: var(--gold-light);
+  font-size: 12px;
+  font-weight: 700;
+}
+.guide-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 30px;
+  bottom: 2px;
+  width: 1px;
+  background: #ffffff17;
+}
+.guide-step-text {
+  margin: 0;
+}
+.guide-bullets {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.guide-bullets li + li {
+  margin-top: 2px;
+}
+.guide-step-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #d9c9f9;
+  border-bottom: 1px dotted #d9c9f980;
+}
+.guide-step-link:hover {
+  color: var(--ink);
+}
+.guide-code {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid #ffffff17;
+  background: #0b101b;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre;
+  overflow-wrap: normal;
+}
+.guide-code code {
+  padding: 0;
+  background: none;
+  color: var(--ink);
+}
+
+/* ── notes ── */
+.guide-note {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: 1px solid #e7a76b70;
+  border-left-width: 3px;
+  background: #e7a76b14;
+  font-size: 13px;
+}
+.guide-note.is-danger {
+  border-color: #e0727270;
+  background: #e0727218;
+}
+.guide-note p {
+  margin: 2px 0 0;
+  color: var(--muted);
+}
+.guide-note-title {
+  display: block;
+  color: #f2c99c;
+}
+.guide-note.is-danger .guide-note-title {
+  color: #f4b0a8;
+}
+.guide-note-tone {
+  margin-right: 6px;
+  font-size: 11px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: #ffffff14;
+}
+
+/* ── facts, FAQ, references ── */
+.guide-subtitle {
+  margin: 22px 0 8px;
+  font-size: 14px;
+  color: var(--gold);
+}
+.guide-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.guide-facts div {
+  border: 1px solid #ffffff17;
+  border-radius: 9px;
+  padding: 8px 11px;
+  background: #ffffff06;
+}
+.guide-facts dt {
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: 1px;
+}
+.guide-facts dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+.guide-facts small {
+  display: block;
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.5;
+}
+.guide-faq details {
+  border: 1px solid #ffffff17;
+  border-radius: 9px;
+  background: #ffffff06;
+}
+.guide-faq details + details {
+  margin-top: 6px;
+}
+.guide-faq summary {
+  cursor: pointer;
+  padding: 9px 12px;
+  font-size: 14px;
+}
+.guide-faq summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.guide-faq-answer {
+  padding: 0 12px 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.guide-faq-answer p {
+  margin: 4px 0 0;
+}
+.guide-basis {
+  display: inline-block;
+  font-size: 11px;
+  padding: 0 7px;
+  border-radius: 5px;
+  border: 1px solid #79b99470;
+  color: #c6ecd4;
+  white-space: nowrap;
+}
+.guide-basis.is-community {
+  border-color: #a18aff70;
+  color: #d9c9f9;
+}
+.guide-refs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+.guide-refs li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  padding: 4px 0;
+  color: var(--muted);
+}
+.guide-ref-link {
+  color: #b9a88f;
+  border-bottom: 1px dotted #b9a88f80;
+}
+.guide-ref-link:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 480px) {
+  .guide-step {
+    padding-left: 32px;
+  }
+  .guide-step::before {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+  .guide-step:not(:last-child)::after {
+    left: 11px;
+    top: 26px;
+  }
+  .guide-facts {
+    grid-template-columns: 1fr 1fr;
+  }
+}

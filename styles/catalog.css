@@ -1,0 +1,348 @@
+/* Standalone catalog page (/offers, /offers/<id>). Builds on styles.css (scene,
+   header, buttons) and styles/offers.css (chips, facts, source links). */
+
+/* The scene (.world) is fixed to the viewport. Behind it, use the tabletop's
+   floor tone instead of the default near-black so long pages (overscroll,
+   full-page captures) continue the scene rather than turning flat. */
+body.catalog-page {
+  background-color: #1f1719;
+}
+
+/* The lobby clips to one screen; the catalog scrolls like a document. */
+.catalog-app {
+  overflow: visible;
+}
+
+/* ── header: same items as the lobby; short labels appear on mobile ── */
+.catalog-page .nav-short {
+  display: none;
+}
+.catalog-main {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 40px) 48px;
+  flex: 1;
+}
+.catalog-loading {
+  text-align: center;
+  color: #cbbda6;
+  padding: 48px 0;
+}
+.catalog-hero {
+  text-align: center;
+  margin-bottom: 22px;
+}
+.catalog-title {
+  font-family:
+    Georgia, 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', 'STSong',
+    serif;
+  font-weight: 800;
+  color: #f7dfa9;
+  font-size: clamp(26px, 4vw, 36px);
+  margin: 9px 0;
+  outline: none;
+}
+.catalog-hero .dialog-lead {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ── filters ── */
+.catalog-filters {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #a9815666;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #1e2434e6, #131a28eb);
+  box-shadow: inset 0 1px #e2ba7d30;
+}
+.catalog-filters fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.catalog-filters .search-input {
+  width: 100%;
+}
+.pool-radio {
+  position: relative;
+  display: inline-flex;
+}
+.pool-radio input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.pool-radio input:checked + .filter-chip {
+  background: linear-gradient(180deg, #efd19a, #c89042);
+  border-color: #c79a54;
+  color: #352416;
+  font-weight: 700;
+}
+.pool-radio input:focus-visible + .filter-chip {
+  outline: 3px solid #d0bcff;
+  outline-offset: 2px;
+}
+.catalog-selects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+.catalog-select {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  color: #a99d8b;
+}
+.catalog-select select {
+  font: inherit;
+  font-size: 14px;
+  color: #f2e3c8;
+  background: #10141f;
+  border: 1px solid #8b745d;
+  border-radius: 9px;
+  padding: 8px 10px;
+}
+.catalog-select select:focus-visible {
+  outline: 3px solid #d0bcff;
+  outline-offset: 1px;
+}
+.catalog-submit {
+  justify-self: start;
+}
+
+/* 更多筛选: a plain disclosure on narrow screens. On wider screens the
+   summary is hidden and the content always shown, where the browser lets CSS
+   reveal a closed <details>; elsewhere it stays a working disclosure. */
+.catalog-more-body {
+  display: grid;
+  gap: 14px;
+}
+.catalog-more-toggle {
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.catalog-more-toggle::-webkit-details-marker {
+  display: none;
+}
+.catalog-more-toggle::after {
+  content: ' ▾';
+}
+.catalog-more[open] > .catalog-more-toggle {
+  margin-bottom: 12px;
+}
+.catalog-more[open] > .catalog-more-toggle::after {
+  content: ' ▴';
+}
+.catalog-more-toggle:focus-visible {
+  outline: 3px solid #d0bcff;
+  outline-offset: 2px;
+}
+@supports selector(::details-content) {
+  @media (min-width: 641px) {
+    .catalog-more > .catalog-more-toggle {
+      display: none;
+    }
+    .catalog-more::details-content {
+      display: block;
+      content-visibility: visible;
+    }
+  }
+}
+
+/* ── results ── */
+.catalog-results {
+  margin-top: 6px;
+}
+.catalog-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 14px;
+}
+.catalog-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid #ffffff1c;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #232a3bdd, #161c2adf);
+  transition: border-color 0.18s;
+}
+.catalog-card:hover,
+.catalog-card:focus-within {
+  border-color: #c79a5499;
+}
+.catalog-card.rarity-ssr {
+  border-color: #e0b56a80;
+}
+.catalog-card-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.catalog-card-heading {
+  min-width: 0;
+}
+.catalog-card-title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #f5e7ca;
+}
+.catalog-card-title a:hover {
+  color: #ffe3a3;
+  text-decoration: underline;
+}
+.catalog-card-provider {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: #a99d8b;
+}
+.catalog-card-benefit {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f0d39b;
+}
+.catalog-card .cond-chips {
+  margin: 0;
+}
+.catalog-card-foot {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+  font-size: 12px;
+  color: #a99d8b;
+  border-top: 1px solid #ffffff12;
+  padding-top: 10px;
+}
+.catalog-verified time {
+  color: #b6d8bf;
+}
+.is-stale {
+  color: #e7b46a;
+}
+.catalog-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-left: auto;
+}
+.catalog-links .source-link {
+  margin: 0;
+}
+.catalog-official {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #f0d39b;
+}
+.catalog-official:hover {
+  text-decoration: underline;
+}
+.catalog-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+}
+.page-status {
+  color: #a99d8b;
+  font-size: 13px;
+}
+
+/* ── offer page ── */
+.catalog-detail,
+.catalog-missing {
+  max-width: 680px;
+  margin: 12px auto 0;
+  padding: clamp(22px, 4vw, 40px);
+  border: 2px solid #a98156;
+  border-radius: 19px;
+  background: radial-gradient(ellipse at 30% 0%, #333048, #1e2434 44%, #131a28 100%);
+  box-shadow:
+    inset 0 2px #e2ba7d50,
+    0 22px 60px #0008;
+  text-align: left;
+}
+.catalog-detail .catalog-title,
+.catalog-detail .dialog-kicker,
+.catalog-missing {
+  text-align: center;
+}
+.catalog-missing .dialog-lead {
+  margin-bottom: 20px;
+}
+.catalog-main .back-button {
+  display: inline-block;
+}
+
+@media (max-width: 700px) {
+  /* styles.css hides lobby nav text (font-size: 0) from 700px down; here each
+     item stacks its icon over a short label instead. */
+  .catalog-page .main-nav {
+    gap: 2px;
+  }
+  .catalog-page .nav-link {
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    padding: 0 10px;
+  }
+  .catalog-page .nav-link svg {
+    width: 20px;
+    height: 20px;
+  }
+  .catalog-page .nav-full {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .catalog-page .nav-short {
+    display: block;
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 0.5px;
+  }
+  .catalog-page .nav-link.is-active:before {
+    inset: 8px 0;
+  }
+  .catalog-page .nav-link.is-active:after {
+    bottom: 5px;
+  }
+  .catalog-main {
+    padding-top: 18px;
+  }
+  .catalog-links {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .catalog-filters {
+    gap: 12px;
+    padding: 14px;
+  }
+  .catalog-selects {
+    grid-template-columns: 1fr 1fr;
+  }
+  .catalog-submit {
+    justify-self: stretch;
+  }
+}

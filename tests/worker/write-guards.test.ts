@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createHarness, insertClient, offerInput, PROVIDER, type Harness } from './helpers/api';
 import { generateToken, hashToken, parseBearer } from '../../worker/src/auth/tokens';
+import { MAX_BODY_BYTES } from '../../worker/src/http/body';
 
 let h: Harness;
 
@@ -97,7 +98,7 @@ describe('request validation', () => {
   it('rejects oversized bodies', async () => {
     const res = await h.call('POST', '/api/manage/offers', {
       token: h.tokens.admin2,
-      rawBody: JSON.stringify({ padding: 'x'.repeat(40_000) }),
+      rawBody: JSON.stringify({ padding: 'x'.repeat(MAX_BODY_BYTES) }),
     });
     expect(res.status).toBe(413);
   });

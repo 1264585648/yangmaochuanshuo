@@ -15,6 +15,7 @@ import { fail, notFound, ok } from '../../http/respond';
 import {
   CONTENT_COLUMNS,
   contentColumns,
+  contentOf,
   getOfferRow,
   listOfferRows,
   nextRow,
@@ -29,10 +30,12 @@ import {
   contentUpdate,
   evidenceMatchesOffer,
   forbidden,
+  guideRule,
   invalid,
   isUnchanged,
   mergeContent,
   noChanges,
+  officialUrlsOf,
   parseIntParam,
   parseOffset,
   reviewQueueFull,
@@ -44,19 +47,24 @@ const editSchema = z.strictObject({
   changes: offerPatchSchema,
 });
 
-const actionSchema = z.strictObject({ sourceUrl: httpsUrl.optional() });
+const actionSchema = z.strictObject({
+  sourceUrl: httpsUrl.optional(),
+  /** publish only: also record a verification, under the same evidence rules as `verify`. */
+  verified: z.literal(true).optional(),
+});
 
 /** Actions that change what users see based on outside evidence. */
 const EVIDENCE_REQUIRED: readonly Action[] = ['verify', 'expire'];
+
+/** Whether this request records a verification (and so needs matching evidence). */
+const recordsVerification = (action: Action, verified: boolean) =>
+  action === 'verify' || (action === 'publish' && verified);
 
 export const createOffer: Handler = async ({ db, client, now, body }) => {
   const parsed = offerCreateSchema.safeParse(body);
   if (!parsed.success) return invalid(parsed.error);
   const { id, providerId, ...content } = parsed.data;
-  const official = await checkOfficial(db, providerId, {
-    officialUrl: content.officialUrl,
-    sourceUrl: content.sourceUrl,
-  });
+  const official = await checkOfficial(db, providerId, officialUrlsOf(content));
   if (!official.ok) return official.response;
   const queueFull = await reviewQueueFull(db, client);
   if (queueFull) return queueFull;
@@ -116,10 +124,11 @@ export const editOffer: Handler = async ({ db, client, now, body }, [id]) => {
   const merged = mergeContent(row, parsed.data.changes);
   if (!merged.ok) return merged.response;
   if (isUnchanged(row, merged.content)) return noChanges();
-  const official = await checkOfficial(db, row.provider_id, {
-    officialUrl: merged.content.officialUrl,
-    sourceUrl: merged.content.sourceUrl,
-  });
+  if (row.status === 'published') {
+    const broken = guideRule(merged.content);
+    if (broken) return broken;
+  }
+  const official = await checkOfficial(db, row.provider_id, officialUrlsOf(merged.content));
   if (!official.ok) return official.response;
   const update = contentUpdate(db, row, merged.content, now.toISOString());
   return plan({
@@ -143,15 +152,17 @@ async function checkEvidence(
   row: FullOfferRow,
   action: Action,
   sourceUrl: string | undefined,
+  verifies: boolean,
 ): Promise<Response | null> {
+  const required = verifies || EVIDENCE_REQUIRED.includes(action);
   if (!sourceUrl) {
-    return EVIDENCE_REQUIRED.includes(action)
+    return required
       ? fail(400, 'source_required', `${action} requires a sourceUrl as evidence`)
       : null;
   }
   const official = await checkOfficial(db, row.provider_id, { sourceUrl });
   if (!official.ok) return official.response;
-  if (EVIDENCE_REQUIRED.includes(action) && !evidenceMatchesOffer(sourceUrl, row)) {
+  if (required && !evidenceMatchesOffer(sourceUrl, row)) {
     return fail(
       422,
       'evidence_mismatch',
@@ -167,6 +178,12 @@ export const transitionOffer: Handler = async ({ db, client, now, body }, [id, a
   if (!scopeMayAttempt(client.scope, action)) return forbidden();
   const parsed = actionSchema.safeParse(body);
   if (!parsed.success) return invalid(parsed.error);
+  const { sourceUrl, verified = false } = parsed.data;
+  if (verified && action !== 'publish') {
+    return fail(400, 'invalid_body', 'verified is only accepted by publish', {
+      details: [{ path: 'verified', message: 'Only allowed for publish' }],
+    });
+  }
   const row = await getOfferRow(db, id ?? '');
   if (!row) return notFound();
   const result = planTransition(client.scope, action, row.status);
@@ -175,8 +192,13 @@ export const transitionOffer: Handler = async ({ db, client, now, body }, [id, a
       ? forbidden()
       : fail(409, 'invalid_state', `Cannot ${action} an offer that is ${row.status}`);
   }
-  const { sourceUrl } = parsed.data;
-  const badEvidence = await checkEvidence(db, row, action, sourceUrl);
+  // verify only refreshes the date, so legacy offers without a guide can still be verified.
+  if (result.to === 'published' && action !== 'verify') {
+    const broken = guideRule(contentOf(toManagedOffer(row)));
+    if (broken) return broken;
+  }
+  const verifies = recordsVerification(action, verified);
+  const badEvidence = await checkEvidence(db, row, action, sourceUrl, verifies);
   if (badEvidence) return badEvidence;
   if (action === 'expire' && client.scope === 'inspector') {
     const limited = await consumeRateLimit(db, `${client.id}:expire`, now, INSPECTOR_EXPIRE_LIMIT);
@@ -188,7 +210,7 @@ export const transitionOffer: Handler = async ({ db, client, now, body }, [id, a
   }
 
   const at = now.toISOString();
-  const verifiedAt = action === 'verify' ? at : row.last_verified_at;
+  const verifiedAt = verifies ? at : row.last_verified_at;
   const statement = db
     .prepare(
       `UPDATE offers SET status = ?, last_verified_at = ?, updated_at = ?

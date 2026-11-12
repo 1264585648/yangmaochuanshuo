@@ -13,10 +13,12 @@ import {
   checkOfficial,
   contentUpdate,
   forbidden,
+  guideRule,
   invalid,
   isUnchanged,
   mergeContent,
   noChanges,
+  officialUrlsOf,
   parseIntParam,
   reviewQueueFull,
   type DB,
@@ -70,10 +72,11 @@ export const proposeChange: Handler = async ({ db, client, now, body }, [offerId
   const merged = mergeContent(row, parsed.data.changes);
   if (!merged.ok) return merged.response;
   if (isUnchanged(row, merged.content)) return noChanges();
+  const { sourceUrl: contentSource, ...contentUrls } = officialUrlsOf(merged.content);
   const official = await checkOfficial(db, row.provider_id, {
     sourceUrl: parsed.data.sourceUrl,
-    officialUrl: merged.content.officialUrl,
-    'changes.sourceUrl': merged.content.sourceUrl,
+    ...contentUrls,
+    'changes.sourceUrl': contentSource,
   });
   if (!official.ok) return official.response;
   const queueFull = await reviewQueueFull(db, client);
@@ -136,11 +139,12 @@ export const applyChange: Handler = async ({ db, client, now }, [changeId]) => {
   const merged = mergeContent(row, patch.data);
   if (!merged.ok) return merged.response;
   if (isUnchanged(row, merged.content)) return noChanges();
+  if (row.status === 'published') {
+    const broken = guideRule(merged.content);
+    if (broken) return broken;
+  }
   // Domains may have changed since the proposal was made.
-  const official = await checkOfficial(db, row.provider_id, {
-    officialUrl: merged.content.officialUrl,
-    sourceUrl: merged.content.sourceUrl,
-  });
+  const official = await checkOfficial(db, row.provider_id, officialUrlsOf(merged.content));
   if (!official.ok) return official.response;
 
   const at = now.toISOString();

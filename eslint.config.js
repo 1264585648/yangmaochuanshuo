@@ -17,7 +17,12 @@ export default tseslint.config(
     languageOptions: { ecmaVersion: 2023, sourceType: 'module', globals: globals.node },
   },
   {
-    files: ['tests/**/*.integration.test.js'],
+    // Tests that run under jsdom.
+    files: [
+      'tests/**/*.integration.test.js',
+      'tests/app/motion.test.js',
+      'tests/app/discover.test.js',
+    ],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   {

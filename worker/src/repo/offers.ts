@@ -1,4 +1,5 @@
 import type { ListQuery } from '../domain/query';
+import { parseStoredGuide, type Guide } from '../domain/guide';
 import type { Conditions } from '../domain/schema';
 import type { Status } from '../domain/status';
 import { PUBLIC_OFFER_SQL } from '../domain/visibility';
@@ -28,6 +29,7 @@ export interface OfferRow {
   valid_until: string | null;
   last_verified_at: string | null;
   version: number;
+  guide: string | null;
 }
 
 export interface PublicOffer {
@@ -44,6 +46,15 @@ export interface PublicOffer {
   validFrom: string | null;
   validUntil: string | null;
   lastVerifiedAt: string | null;
+}
+
+/** Detail view: list responses leave the guide out to stay small. */
+export interface PublicOfferDetail extends PublicOffer {
+  guide: Guide | null;
+}
+
+export function toPublicOfferDetail(row: OfferRow): PublicOfferDetail {
+  return { ...toPublicOffer(row), guide: parseStoredGuide(row.guide) };
 }
 
 function parseRegions(raw: string): string[] {
@@ -148,10 +159,45 @@ export async function getPublicOffer(
   db: DB,
   id: string,
   today: string,
-): Promise<PublicOffer | null> {
+): Promise<PublicOfferDetail | null> {
   const row = await db
     .prepare(`${SELECT_OFFER} WHERE ${PUBLIC_WHERE} AND o.id = ?2`)
     .bind(today, id)
     .first<OfferRow>();
-  return row ? toPublicOffer(row) : null;
+  return row ? toPublicOfferDetail(row) : null;
+}
+
+/** What the sitemap needs per visible offer; kept out of the public API shape. */
+export interface SitemapOffer {
+  id: string;
+  /** Later of the last content/status change and the last verification. */
+  lastModified: string;
+}
+
+interface SitemapRow {
+  id: string;
+  updated_at: string;
+  last_verified_at: string | null;
+}
+
+/** Every publicly visible offer, capped at `limit`, same visibility as the list API. */
+export async function listSitemapOffers(
+  db: DB,
+  today: string,
+  limit: number,
+): Promise<SitemapOffer[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT o.id, o.updated_at, o.last_verified_at FROM offers o JOIN providers p ON p.id = o.provider_id
+       WHERE ${PUBLIC_WHERE} ORDER BY o.id LIMIT ?2`,
+    )
+    .bind(today, limit)
+    .all<SitemapRow>();
+  return results.map((row) => ({
+    id: row.id,
+    lastModified:
+      row.last_verified_at && row.last_verified_at > row.updated_at
+        ? row.last_verified_at
+        : row.updated_at,
+  }));
 }

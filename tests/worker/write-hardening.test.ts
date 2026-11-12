@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createHarness, NOW, offerInput, PROVIDER, type Harness } from './helpers/api';
 import { providerSchema } from '../../worker/src/domain/schema';
 import { INSPECTOR_EXPIRE_LIMIT, INSPECTOR_PENDING_CAP } from '../../worker/src/config';
-import { readJsonBody } from '../../worker/src/http/body';
+import { MAX_BODY_BYTES, readJsonBody } from '../../worker/src/http/body';
 
 let h: Harness;
 
@@ -174,7 +174,7 @@ describe('transport hardening', () => {
   it('cuts off a body without Content-Length once it passes the cap', async () => {
     const request = new Request('https://x.test/', {
       method: 'POST',
-      body: streamOf(64 * 1024),
+      body: streamOf(MAX_BODY_BYTES + 1024),
       headers: { 'content-type': 'application/json' },
       duplex: 'half',
     } as RequestInit);

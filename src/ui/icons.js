@@ -6,3 +6,17 @@ export const ICONS = Object.freeze({
     '<rect x="8" y="8" width="19" height="19" rx="2"/><rect x="37" y="8" width="19" height="19" rx="2"/><rect x="8" y="37" width="19" height="19" rx="2"/><rect x="37" y="37" width="19" height="19" rx="2"/>',
   education: '<path d="M3 22 32 9l29 13-29 13L3 22Zm11 8v15c12 10 24 10 36 0V30M61 22v18"/>',
 });
+
+/**
+ * @param {string} poolId
+ * @param {string} [className]
+ * @returns {string} Trusted inline SVG; unknown pools render an empty icon.
+ */
+export function poolIconSVG(poolId, className = '') {
+  const markup = Object.hasOwn(ICONS, poolId) ? ICONS[poolId] : '';
+  const fill = poolId === 'ai' ? ' fill-icon' : '';
+  return `<svg viewBox="0 0 64 64" aria-hidden="true" class="pool-icon${fill} ${className}">${markup}</svg>`;
+}
+
+export const EXTERNAL_ICON =
+  '<svg viewBox="0 0 24 24" aria-hidden="true" class="inline-icon"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';

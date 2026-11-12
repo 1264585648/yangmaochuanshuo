@@ -1,0 +1,334 @@
+{
+  "fetchedAt": "2026-11-11",
+  "providers": [
+    {
+      "request": {
+        "id": "aws",
+        "name": "Amazon Web Services",
+        "officialDomains": ["aws.amazon.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "google",
+        "name": "Google",
+        "officialDomains": [
+          "cloud.google.com",
+          "aistudio.google.com",
+          "blog.google",
+          "one.google.com"
+        ]
+      },
+      "review": {
+        "notes": "只登记具体主机，未登记 google.com（其下 sites.google.com 等允许用户发布内容）。2026-11-12 为 Google AI Ultra 卡新增 one.google.com（Google One 官方方案页）。"
+      }
+    },
+    {
+      "request": {
+        "id": "microsoft",
+        "name": "Microsoft",
+        "officialDomains": [
+          "azure.microsoft.com",
+          "visualstudio.microsoft.com",
+          "www.microsoft.com"
+        ]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "oracle",
+        "name": "Oracle",
+        "officialDomains": ["docs.oracle.com", "www.oracle.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "cloudflare",
+        "name": "Cloudflare",
+        "officialDomains": ["www.cloudflare.com", "developers.cloudflare.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "tencent-cloud",
+        "name": "腾讯云",
+        "officialDomains": ["cloud.tencent.com"]
+      },
+      "review": {
+        "notes": "cloud.tencent.com/developer 下有社区文章（用户内容），审核时注意来源路径。"
+      }
+    },
+    {
+      "request": {
+        "id": "alibaba-cloud",
+        "name": "阿里云",
+        "officialDomains": ["help.aliyun.com", "free.aliyun.com"]
+      },
+      "review": {
+        "notes": "未登记 aliyun.com：developer.aliyun.com 为社区文章（用户内容）。"
+      }
+    },
+    {
+      "request": {
+        "id": "akamai",
+        "name": "Akamai (Linode)",
+        "officialDomains": ["www.akamai.com", "www.linode.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "vercel",
+        "name": "Vercel",
+        "officialDomains": ["vercel.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "supabase",
+        "name": "Supabase",
+        "officialDomains": ["supabase.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "render",
+        "name": "Render",
+        "officialDomains": ["render.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "github",
+        "name": "GitHub",
+        "officialDomains": ["github.com", "docs.github.com", "education.github.com"]
+      },
+      "review": {
+        "notes": "github.com 本身托管用户仓库（github.com/<user>/...），域名校验只按主机匹配，无法排除；人工审核时注意来源路径必须是 GitHub 官方页面。"
+      }
+    },
+    {
+      "request": {
+        "id": "openrouter",
+        "name": "OpenRouter",
+        "officialDomains": ["openrouter.ai"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "zhipu",
+        "name": "智谱 AI 开放平台",
+        "officialDomains": ["docs.bigmodel.cn"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "volcengine",
+        "name": "火山引擎",
+        "officialDomains": ["docs.volcengine.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "anthropic",
+        "name": "Anthropic",
+        "officialDomains": ["claude.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "openai",
+        "name": "OpenAI",
+        "officialDomains": ["chatgpt.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "mistral",
+        "name": "Mistral AI",
+        "officialDomains": ["mistral.ai"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "siliconflow",
+        "name": "硅基流动",
+        "officialDomains": ["www.siliconflow.cn"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "figma",
+        "name": "Figma",
+        "officialDomains": ["www.figma.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "notion",
+        "name": "Notion",
+        "officialDomains": ["www.notion.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "docker",
+        "name": "Docker",
+        "officialDomains": ["www.docker.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "postman",
+        "name": "Postman",
+        "officialDomains": ["www.postman.com"]
+      },
+      "review": {
+        "notes": "www.postman.com 下有公开工作区（用户内容），审核时注意来源路径。"
+      }
+    },
+    {
+      "request": {
+        "id": "obsidian",
+        "name": "Obsidian",
+        "officialDomains": ["obsidian.md"]
+      },
+      "review": {
+        "notes": "publish.obsidian.md 为用户发布站点，会被 obsidian.md 覆盖；审核时注意来源路径。"
+      }
+    },
+    {
+      "request": {
+        "id": "sentry",
+        "name": "Sentry",
+        "officialDomains": ["sentry.io"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "gitlab",
+        "name": "GitLab",
+        "officialDomains": ["about.gitlab.com"]
+      },
+      "review": {
+        "notes": "只登记 about.gitlab.com，未登记 gitlab.com（托管用户项目）。"
+      }
+    },
+    {
+      "request": {
+        "id": "linear",
+        "name": "Linear",
+        "officialDomains": ["linear.app"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "bitwarden",
+        "name": "Bitwarden",
+        "officialDomains": ["bitwarden.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "zed",
+        "name": "Zed",
+        "officialDomains": ["zed.dev"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "unity",
+        "name": "Unity",
+        "officialDomains": ["unity.com"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "mit-ocw",
+        "name": "MIT OpenCourseWare",
+        "officialDomains": ["ocw.mit.edu"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "freecodecamp",
+        "name": "freeCodeCamp",
+        "officialDomains": ["www.freecodecamp.org"]
+      },
+      "review": {
+        "notes": "www.freecodecamp.org/news 下有作者投稿文章，审核时注意来源路径。"
+      }
+    }
+  ]
+}

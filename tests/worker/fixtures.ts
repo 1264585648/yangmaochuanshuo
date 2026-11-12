@@ -1,3 +1,5 @@
+import { briefGuide } from './guide-fixtures';
+
 /** Fictional test data only; example.com is reserved for documentation. */
 export function validOffer(): Record<string, unknown> & { conditions: Record<string, unknown> } {
   return {
@@ -20,6 +22,7 @@ export function validOffer(): Record<string, unknown> & { conditions: Record<str
     },
     validFrom: null,
     validUntil: null,
+    guide: briefGuide(),
   };
 }
 

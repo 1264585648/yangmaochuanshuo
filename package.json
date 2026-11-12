@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "DealDex 数字福利抽卡大厅交互原型",
+  "description": "DealDex 数字福利抽卡大厅",
   "engines": {
     "node": "^22.13.0 || ^24.0.0 || >=26.0.0"
   },
@@ -19,8 +19,11 @@
     "format:check": "prettier --check .",
     "check": "npm run lint && npm run format:check && npm run typecheck && npm run coverage && npm run build",
     "typecheck": "wrangler types && tsc -p worker",
-    "dev:api": "vite build && wrangler dev",
-    "db:migrate:local": "wrangler d1 migrations apply dealdex --local"
+    "dev:api": "vite build && wrangler dev --port 8787",
+    "dev:remote": "vite build && wrangler dev --port 8787 --remote",
+    "db:migrate:local": "wrangler d1 migrations apply dealdex --local",
+    "db:migrate:remote": "wrangler d1 migrations apply dealdex --remote",
+    "db:seed:local": "node scripts/seed-local.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#161b2b" />
+    <!-- Template for /offers and /offers/<id>. The Worker replaces the two
+         catalog regions with server-rendered content; without it (Vite dev,
+         or a render failure) the browser script renders from /api/offers. -->
+    <!--catalog-head-->
+    <title>发现优惠 · 数字福利目录 | DealDex</title>
+    <meta
+      name="description"
+      content="DealDex 数字福利目录：AI、云服务器、软件工具与教育优惠，每张注明官方来源与最后核验日期，过期自动下架。"
+    />
+    <meta name="robots" content="index, follow" />
+    <!-- Fallback share tags; the Worker replaces this region with the full
+         set, including absolute og:url and og:image. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DealDex" />
+    <meta property="og:title" content="发现优惠 · 数字福利目录 | DealDex" />
+    <meta
+      property="og:description"
+      content="DealDex 数字福利目录：AI、云服务器、软件工具与教育优惠，每张注明官方来源与最后核验日期，过期自动下架。"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!--/catalog-head-->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles/offers.css" />
+    <link rel="stylesheet" href="/styles/motion.css" />
+    <link rel="stylesheet" href="/styles/catalog.css" />
+    <link rel="stylesheet" href="/styles/guide.css" />
+  </head>
+  <body class="catalog-page">
+    <div class="world" aria-hidden="true"></div>
+    <div class="screen-grain" aria-hidden="true"></div>
+    <div class="app catalog-app">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="DealDex 首页">
+          <span class="brand-mark" aria-hidden="true"
+            ><svg viewBox="0 0 48 48">
+              <path d="M24 2 44 13.4v21.2L24 46 4 34.6V13.4L24 2Z" fill="#6f63d3" />
+              <path d="m24 8 14 8.2v15.6L24 40 10 31.8V16.2L24 8Z" fill="#cec5fc" />
+              <path d="m24 8 14 8.2-14 7.9-14-7.9L24 8Z" fill="#f6f1ff" />
+              <path d="M24 24.1 38 16.2v15.6L24 40V24.1Z" fill="#9589ee" />
+              <path d="M10 16.2 24 24.1V40l-14-8.2V16.2Z" fill="#564bb2" /></svg
+          ></span>
+          <span class="brand-word">DealDex</span>
+          <span class="brand-sub">福利传说</span>
+        </a>
+        <nav class="main-nav" aria-label="主导航">
+          <a class="nav-link" href="/">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m4 7 8-4 8 4-8 4-8-4Zm0 5 8 4 8-4M4 17l8 4 8-4" /></svg
+            ><span class="nav-full">抽卡</span
+            ><span class="nav-short" aria-hidden="true">抽卡</span>
+          </a>
+          <a class="nav-link" href="/#collection">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 5.5C4 4 5 3 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Zm0 13.5c0-1.4 1-2.5 2.5-2.5H20"
+              /></svg
+            ><span class="nav-full">福利图鉴</span
+            ><span class="nav-short" aria-hidden="true">图鉴</span>
+          </a>
+          <a class="nav-link is-active" href="/offers" data-route aria-current="page">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z" /></svg
+            ><span class="nav-full">发现优惠</span
+            ><span class="nav-short" aria-hidden="true">发现</span>
+          </a>
+        </nav>
+      </header>
+
+      <main id="catalogMain" class="catalog-main">
+        <!--catalog-main-->
+        <p class="catalog-loading" role="status">正在载入福利目录…</p>
+        <noscript><p class="catalog-loading">目录暂时无法显示，请稍后刷新页面重试。</p></noscript>
+        <!--/catalog-main-->
+      </main>
+
+      <footer class="bottom-note">
+        <span class="note-ornament">✦</span> 本站只整理公开优惠信息，实际领取资格以官方活动规则为准
+        <span class="note-ornament">✦</span>
+      </footer>
+    </div>
+    <script type="module" src="/src/catalog.js"></script>
+  </body>
+</html>

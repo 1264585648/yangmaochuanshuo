@@ -81,6 +81,15 @@ describe('schema', () => {
     await expect(insertOffer(overrides)).rejects.toThrow();
   });
 
+  it('stores guides as JSON only', async () => {
+    await insertOffer({ id: 'guided' });
+    const setGuide = (value: string | null) =>
+      t.db.prepare('UPDATE offers SET guide = ? WHERE id = ?').bind(value, 'guided').run();
+    await expect(setGuide('{"kind":"brief","steps":[]}')).resolves.toBeTruthy();
+    await expect(setGuide(null)).resolves.toBeTruthy();
+    await expect(setGuide('{not json')).rejects.toThrow();
+  });
+
   it('keeps the audit log append-only', async () => {
     await t.db
       .prepare(

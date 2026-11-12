@@ -1,6 +1,6 @@
 import type { OfferCreate } from '../domain/schema';
 import type { Status } from '../domain/status';
-import { toPublicOffer, type OfferRow, type PublicOffer } from './offers';
+import { toPublicOfferDetail, type OfferRow, type PublicOfferDetail } from './offers';
 
 type DB = Env['DB'];
 
@@ -18,9 +18,10 @@ export const CONTENT_KEYS = [
   'conditions',
   'validFrom',
   'validUntil',
+  'guide',
 ] as const satisfies readonly (keyof OfferContent)[];
 
-export interface ManagedOffer extends PublicOffer {
+export interface ManagedOffer extends PublicOfferDetail {
   status: Status;
   version: number;
   createdBy: string;
@@ -36,7 +37,7 @@ interface FullOfferRow extends OfferRow {
 
 export function toManagedOffer(row: FullOfferRow): ManagedOffer {
   return {
-    ...toPublicOffer(row),
+    ...toPublicOfferDetail(row),
     status: row.status,
     version: row.version,
     createdBy: row.created_by,
@@ -45,7 +46,7 @@ export function toManagedOffer(row: FullOfferRow): ManagedOffer {
   };
 }
 
-export function contentOf(offer: PublicOffer): OfferContent {
+export function contentOf(offer: PublicOfferDetail): OfferContent {
   return {
     pool: offer.pool as OfferContent['pool'],
     rarity: offer.rarity as OfferContent['rarity'],
@@ -57,6 +58,7 @@ export function contentOf(offer: PublicOffer): OfferContent {
     conditions: offer.conditions,
     validFrom: offer.validFrom,
     validUntil: offer.validUntil,
+    guide: offer.guide,
   };
 }
 
@@ -77,6 +79,7 @@ export const CONTENT_COLUMNS = [
   'conditions_note',
   'valid_from',
   'valid_until',
+  'guide',
 ] as const;
 
 export function contentColumns(c: OfferContent) {
@@ -96,6 +99,7 @@ export function contentColumns(c: OfferContent) {
     conditions_note: c.conditions.note,
     valid_from: c.validFrom,
     valid_until: c.validUntil,
+    guide: c.guide === null ? null : JSON.stringify(c.guide),
   };
 }
 

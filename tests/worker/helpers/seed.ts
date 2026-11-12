@@ -1,3 +1,5 @@
+import { briefGuide, fullGuide } from '../guide-fixtures';
+
 type D1Database = Env['DB'];
 
 const TS = '2026-11-01T00:00:00Z';
@@ -18,6 +20,8 @@ export interface SeedOffer {
   autoRenews?: boolean;
   regions?: string[];
   lastVerifiedAt?: string | null;
+  /** Defaults to a guide matching the rarity; pass null for a legacy row without one. */
+  guide?: Record<string, unknown> | null;
 }
 
 export async function seedProvider(
@@ -34,14 +38,20 @@ export async function seedProvider(
     .run();
 }
 
+function guideJson(o: SeedOffer): string | null {
+  if (o.guide === null) return null;
+  const guide = o.guide ?? ((o.rarity ?? 'A') === 'SSR' ? fullGuide() : briefGuide());
+  return JSON.stringify(guide);
+}
+
 export async function seedOffers(db: D1Database, offers: SeedOffer[]): Promise<void> {
   const stmt = db.prepare(
     `INSERT INTO offers (id, provider_id, pool, rarity, title, summary, benefit, official_url,
        source_url, new_users_only, student_only, requires_payment_method, auto_renews, regions,
        conditions_note, status, valid_from, valid_until, last_verified_at, created_by, created_at,
-       updated_at)
+       updated_at, guide)
      VALUES (?, ?, ?, ?, ?, ?, 'benefit', 'https://www.example.com/deal',
-       'https://docs.example.com/deal', ?, ?, ?, ?, ?, '', ?, ?, ?, ?, 'seed', ?, ?)`,
+       'https://docs.example.com/deal', ?, ?, ?, ?, ?, '', ?, ?, ?, ?, 'seed', ?, ?, ?)`,
   );
   await db.batch(
     offers.map((o) =>
@@ -63,6 +73,7 @@ export async function seedOffers(db: D1Database, offers: SeedOffer[]): Promise<v
         o.lastVerifiedAt === undefined ? '2026-11-10T08:00:00Z' : o.lastVerifiedAt,
         TS,
         TS,
+        guideJson(o),
       ),
     ),
   );
