@@ -18,6 +18,8 @@ const DYNAMIC = ['.catalog-verified', '.catalog-validity', 'time'];
 const shot = (page, name, options = {}) =>
   expect(page).toHaveScreenshot(name, {
     fullPage: true,
+    // One image pixel per CSS pixel keeps phone and tablet baselines small.
+    scale: 'css',
     mask: DYNAMIC.map((selector) => page.locator(selector)),
     ...options,
   });
