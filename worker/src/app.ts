@@ -6,6 +6,7 @@ import { type UserLimits } from './users/context';
 import { isUserPath, routeUser } from './routes/me';
 import { cryptoRandom } from '../../src/domain/draw.js';
 import { USER_LIMITS } from './config';
+import { runCleanup } from './maintenance/cleanup';
 import { routeCatalogPage } from './routes/pages';
 import { getOffer, listOffers } from './routes/read';
 import { robotsTxt, sitemapXml } from './routes/seo';
@@ -99,6 +100,20 @@ export function createHandler({
     async fetch(request: Request, env: Env): Promise<Response> {
       // Every Worker response, including asset passthroughs, redirects and errors.
       return withSecurityHeaders(await route(request, env));
+    },
+
+    /** Daily maintenance (cron in wrangler.jsonc). Failures are logged and rethrown so the run shows as failed. */
+    async scheduled(controller: ScheduledController, env: Env): Promise<void> {
+      try {
+        const report = await runCleanup(env.DB, now());
+        console.info('cleanup_done', { cron: controller.cron, ...report });
+      } catch (error: unknown) {
+        console.error('cleanup_failed', {
+          cron: controller.cron,
+          error: error instanceof Error ? error.stack : String(error),
+        });
+        throw error;
+      }
     },
   } satisfies ExportedHandler<Env>;
 }
