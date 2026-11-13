@@ -2,6 +2,7 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { TIMINGS } from '../src/config.js';
 import { CATALOG, createFakeApi } from './fixtures/fake-api.js';
 
 const $ = (selector) => document.querySelector(selector);
@@ -111,7 +112,8 @@ describe('when a draw goes wrong', () => {
     expect(document.body.classList.contains('is-opening')).toBe(true);
     expect($('#overlay').hidden).toBe(true);
     release();
-    await settle();
+    // The pack bursts open once the draw is in, then the result appears.
+    await settle(TIMINGS.burstMs);
     expect($('#overlay').hidden).toBe(false);
     expect($('#dialogContent').textContent).toContain('VPS 折扣');
     await closeDialog();

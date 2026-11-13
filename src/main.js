@@ -111,6 +111,19 @@ function cycle(direction) {
 
 const openDelay = () => (prefersReducedMotion() ? TIMINGS.openReducedMotionMs : TIMINGS.openMs);
 
+/**
+ * Once the server has answered, the pack bursts open in the colour of the
+ * drawn rarity; a fresh pack then settles onto the table behind the dialog.
+ * @param {string} rarity
+ */
+async function burst(rarity) {
+  if (prefersReducedMotion()) return;
+  document.body.dataset.burst = rarity.toLowerCase();
+  await wait(TIMINGS.burstMs);
+  delete document.body.dataset.burst;
+  flashClass(scene, 'is-restock', TIMINGS.restockMs);
+}
+
 /** @param {import('./app/draw-flow.js').DrawOutcome} outcome */
 function reportFailure(outcome) {
   if (outcome.kind === 'empty') {
@@ -138,6 +151,9 @@ async function draw() {
   document.body.classList.add('is-opening');
   refresh();
   const outcome = await drawFlow.open(pool.id, wait(openDelay()));
+  if (outcome.kind === 'drawn' && !isRetired(outcome.result.offer)) {
+    await burst(outcome.result.offer.rarity);
+  }
   document.body.classList.remove('is-opening');
   opening = false;
   if (outcome.kind !== 'drawn') {

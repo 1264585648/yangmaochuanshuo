@@ -30,8 +30,12 @@ export const API = Object.freeze({
 export const TIMINGS = Object.freeze({
   toastMs: 2600,
   /** Minimum length of the pack-opening sequence. */
-  openMs: 1150,
+  openMs: 760,
   openReducedMotionMs: 80,
+  /** The pack bursts open in the drawn rarity's colour. Matches `pack-burst` in styles/motion.css. */
+  burstMs: 380,
+  /** A fresh pack settles back onto the table behind the result dialog. */
+  restockMs: 900,
   dialogExitMs: 200,
   /** Longest entrance animation, after which it is switched off. */
   introMs: 1200,

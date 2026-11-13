@@ -167,23 +167,102 @@ body.catalog-page {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: 14px;
 }
+/* Cards carry their rarity's light (the same colours as the pack burst): a
+   thin band along the top and, for S and SSR, a tinted rim. */
+.catalog-grid > li {
+  animation: rise-in 0.5s var(--ease-out) both;
+}
+.catalog-grid > li:nth-child(2) {
+  animation-delay: 0.04s;
+}
+.catalog-grid > li:nth-child(3) {
+  animation-delay: 0.08s;
+}
+.catalog-grid > li:nth-child(4) {
+  animation-delay: 0.12s;
+}
+.catalog-grid > li:nth-child(5) {
+  animation-delay: 0.16s;
+}
+.catalog-grid > li:nth-child(6) {
+  animation-delay: 0.2s;
+}
+.catalog-grid > li:nth-child(n + 7) {
+  animation-delay: 0.24s;
+}
 .catalog-card {
+  --rim: #ffffff1c;
+  --light: var(--rarity-a);
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 16px;
-  border: 1px solid #ffffff1c;
+  padding: 18px 16px 16px;
+  border: 1px solid var(--rim);
   border-radius: 14px;
-  background: linear-gradient(180deg, #232a3bdd, #161c2adf);
-  transition: border-color 0.18s;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      120% 60% at 50% 0%,
+      color-mix(in srgb, var(--light) 9%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, #232a3bee, #161c2aee);
+  box-shadow: 0 6px 18px #0006;
+  transition:
+    transform 0.25s var(--ease-out),
+    border-color 0.2s,
+    box-shadow 0.25s;
+}
+.catalog-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--light), transparent);
+  opacity: 0.55;
+}
+.catalog-card.rarity-s {
+  --rim: #b99bff40;
+  --light: var(--rarity-s);
+}
+.catalog-card.rarity-ssr {
+  --rim: #e0b56a8c;
+  --light: var(--rarity-ssr);
+  box-shadow:
+    0 6px 18px #0006,
+    inset 0 0 0 1px #ffe3a31a,
+    0 0 22px #ffcf7a14;
+}
+.catalog-card.rarity-ssr::before {
+  height: 3px;
+  opacity: 0.9;
 }
 .catalog-card:hover,
 .catalog-card:focus-within {
-  border-color: #c79a5499;
+  --rim: color-mix(in srgb, var(--light) 70%, transparent);
+  transform: translateY(-3px);
+  box-shadow:
+    0 14px 30px #000a,
+    0 0 24px color-mix(in srgb, var(--light) 18%, transparent);
 }
-.catalog-card.rarity-ssr {
-  border-color: #e0b56a80;
+/* The whole card opens the offer page; its other links stay on top. */
+.catalog-card-title a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.catalog-card .cond-chips,
+.catalog-card-foot {
+  position: relative;
+  z-index: 1;
+}
+@media (hover: none) {
+  .catalog-card:hover {
+    transform: none;
+  }
 }
 .catalog-card-head {
   display: flex;
@@ -211,8 +290,9 @@ body.catalog-page {
 .catalog-card-benefit {
   margin: 0;
   font-size: 14px;
-  font-weight: 700;
-  color: #f0d39b;
+  line-height: 1.6;
+  font-weight: 500;
+  color: #ead3a6;
 }
 .catalog-card .cond-chips {
   margin: 0;

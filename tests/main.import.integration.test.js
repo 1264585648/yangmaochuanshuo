@@ -2,6 +2,7 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { TIMINGS } from '../src/config.js';
 import { createFakeApi } from './fixtures/fake-api.js';
 
 const $ = (selector) => document.querySelector(selector);
@@ -46,7 +47,8 @@ describe('one-time import of pre-account browser data', () => {
     await settle(1200);
     expect(api.user.calls).not.toContain('POST /api/draws');
     releaseImport();
-    await settle();
+    // The pack bursts open once the draw is in, then the result appears.
+    await settle(TIMINGS.burstMs);
     expect(api.user.calls.indexOf('POST /api/draws')).toBeGreaterThan(
       api.user.calls.indexOf('POST /api/me/import'),
     );

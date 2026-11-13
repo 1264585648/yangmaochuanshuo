@@ -354,20 +354,6 @@ svg {
     0 0 0 8px #60492c3d,
     inset 0 0 15px #d2a05031;
 }
-.table-rune:before,
-.table-rune:after {
-  content: '✦';
-  color: #cca86b;
-  font-size: 21px;
-  position: absolute;
-  top: 42%;
-  left: 6%;
-  opacity: 0.7;
-}
-.table-rune:after {
-  left: auto;
-  right: 6%;
-}
 .pack-scene {
   height: 100%;
   position: relative;
@@ -414,13 +400,20 @@ svg {
   z-index: 3;
   transform: translateX(calc(-50% + 270px)) scale(0.84) rotate(5deg) translateY(38px);
 }
+/* The fourth pack waits hidden behind the front one: the stage stays
+   symmetric and a switch slides every pack along the same ring. */
 .pack[data-position='2'] {
-  z-index: 1;
-  transform: translateX(calc(-50% + 482px)) scale(0.77) rotate(7deg) translateY(47px);
-}
-.pack[data-position='-2'] {
-  z-index: 1;
-  transform: translateX(calc(-50% - 482px)) scale(0.77) rotate(-7deg) translateY(47px);
+  z-index: 0;
+  transform: translateX(-50%) scale(0.7) translateY(30px);
+  filter: brightness(0.4) saturate(0.6);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    transform 0.5s cubic-bezier(0.16, 0.8, 0.25, 1),
+    filter 0.4s,
+    opacity 0.3s,
+    visibility 0s 0.3s;
 }
 .pack:hover:not([data-position='0']) {
   filter: brightness(0.96) saturate(1);
@@ -1237,9 +1230,6 @@ svg {
   .pack[data-position='1'] {
     transform: translateX(calc(-50% + 212px)) scale(0.79) rotate(5deg) translateY(35px);
   }
-  .pack[data-position='2'] {
-    transform: translateX(calc(-50% + 370px)) scale(0.68) rotate(7deg) translateY(47px);
-  }
   .switch-arrow.prev {
     left: 0;
   }
@@ -1309,7 +1299,7 @@ svg {
     padding: 0 10px;
   }
   .hero {
-    margin-top: 35px;
+    margin-top: 24px;
   }
   .eyebrow {
     font-size: 12px;
@@ -1356,20 +1346,15 @@ svg {
     --front: translateX(-50%) scale(0.85) translateY(-6px);
     --front-hover: translateX(-50%) scale(0.87) translateY(-12px);
   }
+  /* Side packs sit high enough to clear the pool description below them. */
   .pack[data-position='-1'] {
-    transform: translateX(calc(-50% - 148px)) scale(0.58) rotate(-7deg) translateY(57px);
+    transform: translateX(calc(-50% - 148px)) scale(0.58) rotate(-7deg) translateY(0);
   }
   .pack[data-position='1'] {
-    transform: translateX(calc(-50% + 148px)) scale(0.58) rotate(7deg) translateY(57px);
-  }
-  .pack[data-position='2'] {
-    transform: translateX(calc(-50% + 265px)) scale(0.5) rotate(8deg) translateY(65px);
-  }
-  .pack[data-position='-2'] {
-    transform: translateX(calc(-50% - 265px)) scale(0.5) rotate(-8deg) translateY(65px);
+    transform: translateX(calc(-50% + 148px)) scale(0.58) rotate(7deg) translateY(0);
   }
   .switch-arrow {
-    top: 52%;
+    top: 46%;
     width: 35px;
     height: 35px;
     border-width: 1px;
@@ -1392,7 +1377,7 @@ svg {
   }
   .action-zone {
     gap: 12px;
-    margin-top: 0;
+    margin-top: 8px;
   }
   .open-button {
     height: 66px;
@@ -1450,10 +1435,10 @@ svg {
     width: 12px;
   }
   .pack[data-position='-1'] {
-    transform: translateX(calc(-50% - 137px)) scale(0.55) rotate(-7deg) translateY(57px);
+    transform: translateX(calc(-50% - 137px)) scale(0.55) rotate(-7deg) translateY(0);
   }
   .pack[data-position='1'] {
-    transform: translateX(calc(-50% + 137px)) scale(0.55) rotate(7deg) translateY(57px);
+    transform: translateX(calc(-50% + 137px)) scale(0.55) rotate(7deg) translateY(0);
   }
 }
 @media (max-width: 359px) {

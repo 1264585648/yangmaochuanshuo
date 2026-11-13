@@ -3,6 +3,10 @@
 :root {
   --ease-out: cubic-bezier(0.16, 0.8, 0.25, 1);
   --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  /* Light of each rarity: the pack bursts in it and the revealed card keeps it. */
+  --rarity-a: #b9cce4;
+  --rarity-s: #b99bff;
+  --rarity-ssr: #ffcf7a;
 }
 
 /* ── first paint ── */
@@ -146,22 +150,91 @@
   animation: bump 0.35s var(--ease-spring);
 }
 
-/* ── opening sequence ── */
+/* ── opening sequence ──
+   1. charge (TIMINGS.openMs, and as long as the server takes): the pack trembles
+      harder, its seam and strap light up, the room dims;
+   2. burst (TIMINGS.burstMs, body[data-burst]): it opens in the drawn rarity's
+      light — SSR also shakes the stage and sends a ring across the table;
+   3. restock (.is-restock): a fresh pack settles back behind the dialog. */
+.world {
+  transition: filter 0.6s ease;
+}
+body.is-opening .world {
+  filter: brightness(0.62) saturate(0.85);
+}
 body.is-opening .pack[data-position='0'] {
-  animation: pack-opening 1.15s cubic-bezier(0.5, 0, 0.75, 0) both;
+  animation:
+    pack-charge 0.76s cubic-bezier(0.5, 0, 0.75, 0) both,
+    pack-hum 0.16s linear 0.76s infinite;
+}
+body.is-opening .pack[data-position='0'] .pack-seam {
+  animation: seam-charge 0.76s ease-in both;
+}
+body.is-opening .pack[data-position='0'] .pack-strap {
+  animation: strap-charge 0.76s ease-in both;
+}
+body.is-opening .pack[data-position='0'] .pack-glyph {
+  animation: glyph-charge 0.76s ease-in both;
 }
 body.is-opening .pack:not([data-position='0']) {
-  filter: brightness(0.45) saturate(0.6);
+  filter: brightness(0.4) saturate(0.55);
 }
 body.is-opening .stage-aura {
-  animation: aura-charge 1.15s ease-in both;
+  animation: aura-charge 0.76s ease-in both;
 }
 body.is-opening .rune-ring {
-  animation: rune-charge 1.15s ease-in both;
+  animation: rune-charge 0.76s ease-in both;
 }
 body.is-opening .switch-arrow {
   opacity: 0.3;
   pointer-events: none;
+}
+body[data-burst='a'] {
+  --burst: var(--rarity-a);
+}
+body[data-burst='s'] {
+  --burst: var(--rarity-s);
+}
+body[data-burst='ssr'] {
+  --burst: var(--rarity-ssr);
+}
+body.is-opening[data-burst] .pack[data-position='0'] {
+  animation: pack-burst 0.38s cubic-bezier(0.3, 0, 0.6, 1) both;
+}
+.summon::before {
+  content: '';
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  top: 46%;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #fffaf0 0%,
+    var(--burst, #fff) 18%,
+    color-mix(in srgb, var(--burst, #fff) 35%, transparent) 42%,
+    transparent 68%
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+body[data-burst] .summon::before {
+  animation: burst-flash 0.38s ease-out both;
+}
+body[data-burst] .rune-ring {
+  animation: ring-burst 0.38s ease-out both;
+}
+body[data-burst='ssr'] .summon {
+  animation: stage-shake 0.38s linear;
+}
+body[data-burst='ssr'] .table-rune {
+  animation: table-flare 0.38s ease-out both;
+}
+.pack-scene.is-restock .pack[data-position='0'] {
+  animation: pack-restock 0.6s 0.3s var(--ease-out) both;
 }
 .pack-scene.is-fizzle .pack[data-position='0'] {
   animation: fizzle 0.45s ease-in-out;
@@ -203,10 +276,10 @@ body.is-opening .switch-arrow {
   --ray: #9fb3cc33;
 }
 .rarity-s .reveal-rays {
-  --ray: #b293ff4d;
+  --ray: #b293ff5c;
 }
 .rarity-ssr .reveal-rays {
-  --ray: #ffcf7a70;
+  --ray: #ffcf7a99;
   background:
     repeating-conic-gradient(from 0deg, #ffd88a1f 0deg 6deg, transparent 6deg 18deg),
     radial-gradient(circle, var(--ray) 0%, transparent 62%);
@@ -220,6 +293,41 @@ body.is-opening .switch-arrow {
   inset: 0;
   transform-style: preserve-3d;
   animation: card-flip 0.95s 0.12s var(--ease-out) both;
+}
+/* The card arrives still glowing in the light the pack burst with, and a ring
+   of that light leaves it as it turns face up. */
+.reveal {
+  --glow: var(--rarity-a);
+}
+.reveal.rarity-s {
+  --glow: var(--rarity-s);
+}
+.reveal.rarity-ssr {
+  --glow: var(--rarity-ssr);
+}
+.reveal::before,
+.reveal::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 18px;
+  border: 2px solid var(--glow);
+  box-shadow:
+    0 0 18px var(--glow),
+    inset 0 0 12px var(--glow);
+  opacity: 0;
+  pointer-events: none;
+  animation: reveal-ring 0.8s 0.5s ease-out both;
+}
+.reveal::after {
+  display: none;
+}
+.reveal.rarity-ssr::after {
+  display: block;
+  animation-delay: 0.68s;
+}
+.reveal-back {
+  animation: back-glow 0.6s ease-out both;
 }
 .reveal-face {
   position: absolute;
@@ -341,34 +449,148 @@ body.is-opening .switch-arrow {
     translate: 0 -4px;
   }
 }
-/* The pack grows mostly downward (scale is offset by translateY) so it never
-   rises into the hero subtitle above the stage. */
-@keyframes pack-opening {
+/* The pack trembles harder as it charges. It grows mostly downward (scale is
+   offset by translateY) so it never rises into the hero subtitle. */
+@keyframes pack-charge {
   0% {
     transform: var(--front);
   }
-  15% {
-    transform: var(--front) translateY(-2px) rotate(-1.5deg);
+  18% {
+    transform: var(--front) translateY(-2px) rotate(-1deg);
   }
-  30% {
-    transform: var(--front) translateY(-3px) rotate(2deg);
+  36% {
+    transform: var(--front) translateY(-3px) rotate(1.5deg);
   }
-  45% {
-    transform: var(--front) translateY(-3px) rotate(-2deg);
+  54% {
+    transform: var(--front) translateY(-3px) rotate(-2deg) scale(1.01);
+    filter: brightness(1.15);
   }
-  62% {
-    transform: var(--front) translateY(4px) rotate(1.5deg) scale(1.02);
-    filter: brightness(1.35);
+  72% {
+    transform: var(--front) translateY(2px) rotate(2deg) scale(1.02);
+    filter: brightness(1.3);
   }
-  82% {
-    transform: var(--front) translateY(8px) scale(1.05);
-    filter: brightness(1.9);
+  86% {
+    transform: var(--front) translateY(4px) rotate(-1.5deg) scale(1.03);
+  }
+  100% {
+    transform: var(--front) translateY(5px) scale(1.035);
+    filter: brightness(1.45);
+  }
+}
+/* Held while a slow server draw is still pending. */
+@keyframes pack-hum {
+  0%,
+  100% {
+    transform: var(--front) translateY(5px) scale(1.035) rotate(-1deg);
+    filter: brightness(1.45);
+  }
+  50% {
+    transform: var(--front) translateY(5px) scale(1.035) rotate(1deg);
+    filter: brightness(1.55);
+  }
+}
+@keyframes pack-burst {
+  0% {
+    transform: var(--front) translateY(5px) scale(1.035);
+    filter: brightness(1.5);
+    opacity: 1;
+  }
+  35% {
+    transform: var(--front) translateY(8px) scale(1.08);
+    filter: brightness(2.6) saturate(0.6);
     opacity: 1;
   }
   100% {
-    transform: var(--front) translateY(20px) scale(1.09);
-    filter: brightness(3);
+    transform: var(--front) translateY(18px) scale(1.16);
+    filter: brightness(3.2) saturate(0.3);
     opacity: 0;
+  }
+}
+@keyframes pack-restock {
+  from {
+    transform: var(--front) translateY(46px) scale(0.92);
+    filter: brightness(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: var(--front);
+    opacity: 1;
+  }
+}
+@keyframes seam-charge {
+  to {
+    border-color: #ffe3a3e6;
+    box-shadow:
+      0 0 10px #ffd58acc,
+      inset 0 0 12px #ffd58a88;
+  }
+}
+@keyframes strap-charge {
+  to {
+    filter: brightness(1.6);
+    box-shadow:
+      0 0 16px #ffcf7a99,
+      inset 0 1px 3px #fff0c8;
+  }
+}
+@keyframes glyph-charge {
+  to {
+    filter: brightness(1.8) drop-shadow(0 0 10px #fff4d6);
+  }
+}
+@keyframes burst-flash {
+  0% {
+    opacity: 0;
+    scale: 0.3;
+  }
+  30% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.7;
+  }
+}
+@keyframes ring-burst {
+  0% {
+    border-color: var(--burst);
+  }
+  100% {
+    border-color: var(--burst);
+    scale: 1.18;
+    opacity: 0;
+    box-shadow:
+      0 0 0 10px color-mix(in srgb, var(--burst) 40%, transparent),
+      0 0 50px var(--burst),
+      inset 0 0 30px var(--burst);
+  }
+}
+@keyframes table-flare {
+  40% {
+    border-color: #ffe3a3;
+    box-shadow:
+      0 0 0 13px #33292395,
+      0 0 0 16px #ffd58a99,
+      0 0 80px #ffcf7aaa,
+      inset 0 0 40px #ffcf7a88;
+  }
+}
+@keyframes stage-shake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  20% {
+    translate: -5px 2px;
+  }
+  40% {
+    translate: 4px -2px;
+  }
+  60% {
+    translate: -3px 1px;
+  }
+  80% {
+    translate: 2px 0;
   }
 }
 @keyframes aura-charge {
@@ -423,6 +645,25 @@ body.is-opening .switch-arrow {
   }
   100% {
     transform: rotateY(0deg);
+  }
+}
+@keyframes reveal-ring {
+  0% {
+    opacity: 0.9;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.55 1.4;
+  }
+}
+@keyframes back-glow {
+  from {
+    box-shadow:
+      inset 0 0 0 3px #382c31,
+      0 0 46px var(--glow),
+      0 0 14px var(--glow);
+    border-color: var(--glow);
   }
 }
 @keyframes rays-in {
