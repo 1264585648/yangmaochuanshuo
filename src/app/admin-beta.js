@@ -3,6 +3,7 @@
  * login, tabs and the offer workflow and calls in here for these tabs.
  * Same rules as the rest of the page: every dynamic value is escaped. */
 import { escapeHTML } from '../ui/escape.js';
+import { poolLabel } from '../data/pools.js';
 
 export const BETA_TABS = Object.freeze([
   { id: 'feedback', label: '用户反馈' },
@@ -31,6 +32,7 @@ const CATEGORY_LABELS = Object.freeze({
 /** Upload cap enforced by the server, minus headroom; larger files are re-encoded. */
 const QR_DIRECT_MAX_BYTES = 480 * 1024;
 const QR_MAX_EDGE = 720;
+const QR_JPEG_QUALITY = 0.92;
 const QR_WARN_HOURS = 24;
 
 const label = (labels, key) => (Object.hasOwn(labels, key) ? labels[key] : String(key));
@@ -135,7 +137,7 @@ function renderStatsTab(state) {
   const rows = stats.topOffers
     .map(
       (o) =>
-        `<tr><td><a class="admin-link" href="/offers/${encodeURIComponent(o.id)}" target="_blank" rel="noopener">${escapeHTML(o.title)}</a></td><td>${escapeHTML(o.pool)}</td><td>${escapeHTML(o.visitors)}</td><td>${escapeHTML(o.recentVisitors)}</td></tr>`,
+        `<tr><td><a class="admin-link" href="/offers/${encodeURIComponent(o.id)}" target="_blank" rel="noopener">${escapeHTML(o.title)}</a></td><td>${escapeHTML(poolLabel(o.pool) || o.pool)}</td><td>${escapeHTML(o.visitors)}</td><td>${escapeHTML(o.recentVisitors)}</td></tr>`,
     )
     .join('');
   return `
@@ -239,7 +241,23 @@ function blobToBase64(blob) {
   });
 }
 
-/** Shrink a large image to a PNG no wider or taller than QR_MAX_EDGE. */
+/**
+ * @param {HTMLCanvasElement} canvas
+ * @param {string} type
+ * @param {number} [quality]
+ * @returns {Promise<Blob>}
+ */
+function canvasToBlob(canvas, type, quality) {
+  return new Promise((resolve, reject) =>
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('encode failed'))), type, quality),
+  );
+}
+
+/**
+ * Shrink a large image to no wider or taller than QR_MAX_EDGE. PNG keeps a
+ * clean QR code; busy images (a phone screenshot of the group page) can stay
+ * too large as PNG, so those fall back to JPEG.
+ */
 async function downscale(file) {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, QR_MAX_EDGE / Math.max(bitmap.width, bitmap.height));
@@ -248,9 +266,9 @@ async function downscale(file) {
   canvas.height = Math.round(bitmap.height * scale);
   canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close?.();
-  return new Promise((resolve, reject) =>
-    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('encode failed'))), 'image/png'),
-  );
+  const png = await canvasToBlob(canvas, 'image/png');
+  if (png.size <= QR_DIRECT_MAX_BYTES) return png;
+  return canvasToBlob(canvas, 'image/jpeg', QR_JPEG_QUALITY);
 }
 
 /** @param {File} file */

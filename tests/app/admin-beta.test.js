@@ -74,6 +74,7 @@ describe('renderBetaTab', () => {
     });
     expect(html).toContain('<meter min="0" max="4" value="4">');
     expect(html).toContain('&lt;i&gt;A&lt;/i&gt;');
+    expect(html).toContain('<td>AI 福利</td>');
   });
 
   it('warns when the QR is about to expire or has expired', () => {
@@ -142,6 +143,61 @@ describe('buildCommunityBody', () => {
   it('refuses other file types', async () => {
     const svg = new File(['<svg/>'], 'qr.svg', { type: 'image/svg+xml' });
     await expect(buildCommunityBody(fields({ qrFile: svg }), NOW)).rejects.toThrow('PNG');
+  });
+
+  describe('large images', () => {
+    const big = () => new File([new Uint8Array(600 * 1024)], 'qr.png', { type: 'image/png' });
+    /** Stub the canvas pipeline; `sizes` maps output type to blob size. */
+    const stubCanvas = (sizes) => {
+      const types = [];
+      vi.stubGlobal(
+        'createImageBitmap',
+        vi.fn(async () => ({ width: 1440, height: 960, close: vi.fn() })),
+      );
+      vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ drawImage: vi.fn() });
+      vi.spyOn(HTMLCanvasElement.prototype, 'toBlob').mockImplementation(function (cb, type) {
+        types.push({ type, width: this.width, height: this.height });
+        cb(new Blob([new Uint8Array(sizes[type])], { type }));
+      });
+      return types;
+    };
+    const restore = () => {
+      vi.unstubAllGlobals();
+      vi.restoreAllMocks();
+    };
+
+    it('downscales to 720px and keeps PNG when it fits', async () => {
+      const calls = stubCanvas({ 'image/png': 100 * 1024 });
+      try {
+        const body = await buildCommunityBody(fields({ qrFile: big() }), NOW);
+        expect(calls).toEqual([{ type: 'image/png', width: 720, height: 480 }]);
+        expect(body.qr.base64.length).toBeGreaterThan(0);
+      } finally {
+        restore();
+      }
+    });
+
+    it('falls back to JPEG when the downscaled PNG is still too large', async () => {
+      const calls = stubCanvas({ 'image/png': 640 * 1024, 'image/jpeg': 70 * 1024 });
+      try {
+        const body = await buildCommunityBody(fields({ qrFile: big() }), NOW);
+        expect(calls.map((c) => c.type)).toEqual(['image/png', 'image/jpeg']);
+        expect(atob(body.qr.base64).length).toBe(70 * 1024);
+      } finally {
+        restore();
+      }
+    });
+
+    it('rejects when even the JPEG is too large', async () => {
+      stubCanvas({ 'image/png': 640 * 1024, 'image/jpeg': 500 * 1024 });
+      try {
+        await expect(buildCommunityBody(fields({ qrFile: big() }), NOW)).rejects.toThrow(
+          '图片太大',
+        );
+      } finally {
+        restore();
+      }
+    });
   });
 });
 
