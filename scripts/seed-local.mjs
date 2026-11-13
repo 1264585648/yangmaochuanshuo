@@ -13,6 +13,11 @@ if (process.argv.includes('--remote')) {
   process.exit(1);
 }
 
+// Optional `--persist-to <dir>` keeps a separate local database, e.g. for end-to-end tests.
+const persistAt = process.argv.indexOf('--persist-to');
+const persist =
+  persistAt > 0 && process.argv[persistAt + 1] ? ['--persist-to', process.argv[persistAt + 1]] : [];
+
 const TS = new Date().toISOString();
 const daysAgo = (n) => new Date(Date.now() - n * 864e5).toISOString();
 
@@ -172,8 +177,8 @@ const wranglerPkg = createRequire(import.meta.url).resolve('wrangler/package.jso
 const wrangler = resolve(dirname(wranglerPkg), 'bin/wrangler.js');
 const run = (args) => execFileSync(process.execPath, [wrangler, ...args], { stdio: 'inherit' });
 try {
-  run(['d1', 'migrations', 'apply', 'dealdex', '--local']);
-  run(['d1', 'execute', 'dealdex', '--local', `--file=${file}`]);
+  run(['d1', 'migrations', 'apply', 'dealdex', '--local', ...persist]);
+  run(['d1', 'execute', 'dealdex', '--local', ...persist, `--file=${file}`]);
   console.log(`Seeded ${PROVIDERS.length} providers and ${OFFERS.length} example offers locally.`);
 } finally {
   rmSync(dir, { recursive: true, force: true });
