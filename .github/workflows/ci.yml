@@ -36,12 +36,15 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium webkit
       # Builds the site, seeds a fresh local D1 and serves the Worker over HTTPS.
+      # Includes visual regression against the Linux baselines in e2e/*-snapshots/.
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: playwright-report
+          # New or changed visual baselines are written next to the spec.
           path: |
             playwright-report/
             test-results/
+            e2e/*-snapshots/
           retention-days: 7
