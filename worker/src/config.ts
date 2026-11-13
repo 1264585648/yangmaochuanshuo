@@ -53,3 +53,21 @@ export const FEEDBACK_LIMIT: RateLimit = Object.freeze({ max: 10, windowSeconds:
 /** Community QR image: decoded size cap, and the request cap for the base64 upload. */
 export const COMMUNITY_QR_MAX_BYTES = 512 * 1024;
 export const COMMUNITY_BODY_MAX_BYTES = 768 * 1024;
+
+/** Limited prizes (owner-held redemption codes rolled on each draw). */
+export const PRIZE_LIMITS = Object.freeze({
+  /** Highest chance per draw for one prize. */
+  maxChance: 0.2,
+  /** Highest sum of chances over active prizes; the rest of each roll is "no prize". */
+  maxTotalChance: 0.2,
+  title: 60,
+  description: 500,
+  valueNote: 60,
+  codeMax: 200,
+  codesPerUpload: 500,
+  /** Safety valve against farming: wins across all prizes per Beijing day. */
+  maxWinsPerDay: 30,
+});
+
+/** Request cap for a code upload (500 codes of up to 200 characters, JSON-encoded). */
+export const PRIZE_CODES_BODY_MAX_BYTES = 160 * 1024;

@@ -91,11 +91,12 @@
     "favorite": false
   },
   "offer": { "id": "…", "title": "…", "provider": { "id": "…", "name": "…" } },
-  "quota": { "max": 3, "used": 1, "day": "2026-11-12", "resetsAt": "2026-11-12T16:00:00.000Z" }
+  "quota": { "max": 3, "used": 1, "day": "2026-11-12", "resetsAt": "2026-11-12T16:00:00.000Z" },
+  "prize": null
 }
 ```
 
-`offer` 与 `GET /api/offers` 列表项同形（重放时若该卡已下架，则为下文的精简形式）。`isNew` 表示该用户第一次获得这张卡，`favorite` 表示已收藏。
+`prize` 为这次抽卡附带抽中的限定福利（含兑换码），没中为 `null`，见下文「限定福利」。`offer` 与 `GET /api/offers` 列表项同形（重放时若该卡已下架，则为下文的精简形式）。`isNew` 表示该用户第一次获得这张卡，`favorite` 表示已收藏。
 
 - 随机、扣次、记录都在服务端完成。扣次与写入是同一条条件语句，并发请求不会多扣。
 - 只从当前已发布且在有效期内的卡中抽取。稀有度先按基础概率（A 70% / S 25% / SSR 5%）在该池实际有卡的等级间重新归一，再在该等级内均匀选卡；与前端公示的概率由同一份代码（`src/domain/catalog.js`）计算。
@@ -105,6 +106,32 @@
 - 按 IP 限流：每个 IP（IPv6 按 /64 前缀合并计算）每小时最多新建 20 个匿名用户、抽卡 120 次，超出返回 `429 rate_limited` 与 `Retry-After`。已有会话的重放与「次数已用完」在限流之前直接回答，不占用该 IP 的额度。IP 只以 HMAC 哈希形式存放在限流计数中。
 
 **部署前需配置密钥** `IP_HASH_SECRET`（`wrangler secret put IP_HASH_SECRET`，至少 32 个字符的随机串）。缺失或过短时抽卡返回 `503 unavailable`，并在服务端日志记录 `config_error`。本地开发把 `.dev.vars.example` 复制为 `.dev.vars`；修改 `.dev.vars` 后需重启 `wrangler dev`。
+
+### 限定福利
+
+站长自己持有、数量有限的福利（兑换码、邀请链接），每个单位是一行兑换码。
+
+- **抽取**：每次真实抽卡（`POST /api/draws` 新建的记录）在正常出卡之外再抽一次。进行中、在时间窗口内且还有库存的限定福利各按自己公示的概率参与（按 id 顺序累加），剩下的概率为「不中」。进行中的概率合计不超过 20%（`PRIZE_LIMITS`）。某份福利抽完后不再参与，其余福利的概率不变。
+- **原子性**：领取一个单位的语句与抽卡记录在同一个 D1 批次里执行，且只在这次抽卡记录确实写入时生效。重放、次数已用完、并发抢最后一份都不会多发；抢不到时抽卡照常成功，`prize` 为 `null`。
+- **中奖上限**：每个用户终身最多中 1 次；同一网络每个北京日最多中 1 次（IPv4 按单个地址，IPv6 按 /48 前缀，比抽卡限流的 /64 更宽，防止轮换地址）；全站每个北京日合计最多发出 30 份（`PRIZE_LIMITS.maxWinsPerDay`）。查询条件与 `prize_codes` 上的两个部分唯一索引同时保证。达到上限后照常抽卡，只是不再中奖。
+- **兑换码只给中奖者**：抽卡响应与重放的 `prize`、以及 `GET /api/me/prizes` 返回完整兑换码，均为 `no-store`。公开接口、目录页、sitemap、抽卡记录、审计日志和管理接口都不包含完整兑换码（管理端中奖记录只显示后 4 位）。
+
+```json
+"prize": {
+  "id": "ai-vip-month",
+  "title": "某 AI 会员一个月",
+  "description": "打开兑换页登录后输入兑换码",
+  "redeemUrl": "https://example.com/redeem",
+  "code": "ABCD-1234-WXYZ",
+  "claimedAt": "2026-11-13T03:00:00.000Z"
+}
+```
+
+`GET /api/prizes`（公开，缓存 60 秒）：进行中且在时间窗口内的限定福利，含已抽完的，供公示：`[{ "id", "title", "description", "valueNote", "chance", "total", "remaining", "startsAt", "endsAt" }]`。
+
+`GET /api/me/prizes`：当前用户中过的限定福利 `{ "prizes": [ … ] }`，形如上面的 `prize`；没有会话时为空数组，不建用户。
+
+已知限制：匿名身份清 Cookie 即可重来，所以「每人 1 次」实际上由「每网络每天 1 次」兜底；拥有大量 IPv4 地址的人仍能多中，每日合计上限用于止损。新访客第一次抽卡的响应若在网络中丢失，重试时没有 Cookie，会新建另一个匿名用户；如果第一次恰好中奖，那份兑换码留在无法再访问的用户名下，需要站长在后台核对后补发。
 
 ### 已下架的卡
 
@@ -292,26 +319,32 @@ curl -X POST https://free.vibe-show.com/api/manage/offers/example-ai-credit/veri
 
 ### 接口列表
 
-| 方法与路径                                           | 权限   | 说明                                                                                  |
-| ---------------------------------------------------- | ------ | ------------------------------------------------------------------------------------- |
-| `GET /api/manage/offers?status=&limit=&offset=`      | 任意   | 任意状态的卡，含 `status`、`version` 等管理字段                                       |
-| `GET /api/manage/offers/:id`                         | 任意   | 单张卡，任意状态                                                                      |
-| `POST /api/manage/offers`                            | 任意   | 新增。admin 新增为草稿，inspector 新增直接进入待审核                                  |
-| `PATCH /api/manage/offers/:id`                       | admin  | 直接修改：`{ "baseVersion": 1, "changes": { ... } }`                                  |
-| `POST /api/manage/offers/:id/:action`                | 见上表 | 状态流转：`{ "sourceUrl": "https://..." }`，`publish` 另可带 `"verified": true`       |
-| `POST /api/manage/offers/:id/changes`                | 任意   | 提出变更：`{ "baseVersion": 1, "changes": { ... }, "sourceUrl": "https://..." }`      |
-| `GET /api/manage/changes?status=pending&offerId=`    | 任意   | 变更申请列表                                                                          |
-| `POST /api/manage/changes/:id/apply`                 | admin  | 采纳变更                                                                              |
-| `POST /api/manage/changes/:id/reject`                | admin  | 驳回变更                                                                              |
-| `POST /api/manage/providers`                         | admin  | 新增提供方：`{ "id", "name", "officialDomains": ["example.com"] }`                    |
-| `PATCH /api/manage/providers/:id`                    | admin  | 修改名称或官方域名                                                                    |
-| `GET /api/manage/audit?entityType=&entityId=&limit=` | admin  | 审计日志，最新在前，含变更前后完整快照                                                |
-| `POST /api/manage/audit/:id/revert`                  | admin  | 把卡的内容恢复到该条记录之前的状态，作为一次新的写入记录                              |
-| `GET /api/manage/feedback?status=&limit=&offset=`    | admin  | 用户反馈，最新在前；`status` 为 `open`、`resolved`、`dismissed`                       |
-| `POST /api/manage/feedback/:id/:action`              | admin  | `resolve`、`dismiss`（仅待处理）或 `reopen`，可带 `{ "note": "处理备注" }`            |
-| `GET /api/manage/stats/clicks?days=7`                | admin  | 官方链接点击统计：每日独立访客、合计与前 50 张卡，`days` 为 1–90                      |
-| `GET /api/manage/community`                          | admin  | 内测群设置与二维码指纹                                                                |
-| `PUT /api/manage/community`                          | admin  | 保存设置；`qr: { "base64" }` 上传图片（PNG/JPEG/WebP，≤512KB），`null` 删除，省略保留 |
+| 方法与路径                                           | 权限   | 说明                                                                                                           |
+| ---------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------- |
+| `GET /api/manage/offers?status=&limit=&offset=`      | 任意   | 任意状态的卡，含 `status`、`version` 等管理字段                                                                |
+| `GET /api/manage/offers/:id`                         | 任意   | 单张卡，任意状态                                                                                               |
+| `POST /api/manage/offers`                            | 任意   | 新增。admin 新增为草稿，inspector 新增直接进入待审核                                                           |
+| `PATCH /api/manage/offers/:id`                       | admin  | 直接修改：`{ "baseVersion": 1, "changes": { ... } }`                                                           |
+| `POST /api/manage/offers/:id/:action`                | 见上表 | 状态流转：`{ "sourceUrl": "https://..." }`，`publish` 另可带 `"verified": true`                                |
+| `POST /api/manage/offers/:id/changes`                | 任意   | 提出变更：`{ "baseVersion": 1, "changes": { ... }, "sourceUrl": "https://..." }`                               |
+| `GET /api/manage/changes?status=pending&offerId=`    | 任意   | 变更申请列表                                                                                                   |
+| `POST /api/manage/changes/:id/apply`                 | admin  | 采纳变更                                                                                                       |
+| `POST /api/manage/changes/:id/reject`                | admin  | 驳回变更                                                                                                       |
+| `POST /api/manage/providers`                         | admin  | 新增提供方：`{ "id", "name", "officialDomains": ["example.com"] }`                                             |
+| `PATCH /api/manage/providers/:id`                    | admin  | 修改名称或官方域名                                                                                             |
+| `GET /api/manage/audit?entityType=&entityId=&limit=` | admin  | 审计日志，最新在前，含变更前后完整快照                                                                         |
+| `POST /api/manage/audit/:id/revert`                  | admin  | 把卡的内容恢复到该条记录之前的状态，作为一次新的写入记录                                                       |
+| `GET /api/manage/feedback?status=&limit=&offset=`    | admin  | 用户反馈，最新在前；`status` 为 `open`、`resolved`、`dismissed`                                                |
+| `POST /api/manage/feedback/:id/:action`              | admin  | `resolve`、`dismiss`（仅待处理）或 `reopen`，可带 `{ "note": "处理备注" }`                                     |
+| `GET /api/manage/stats/clicks?days=7`                | admin  | 官方链接点击统计：每日独立访客、合计与前 50 张卡，`days` 为 1–90                                               |
+| `GET /api/manage/community`                          | admin  | 内测群设置与二维码指纹                                                                                         |
+| `PUT /api/manage/community`                          | admin  | 保存设置；`qr: { "base64" }` 上传图片（PNG/JPEG/WebP，≤512KB），`null` 删除，省略保留                          |
+| `GET /api/manage/prizes`                             | admin  | 限定福利列表，含 `total`（库存）与 `claimed`（已发出），不含兑换码                                             |
+| `POST /api/manage/prizes`                            | admin  | 新建草稿：`{ id, title, description?, valueNote?, redeemUrl?, chance, startsAt?, endsAt? }`，`chance` 为 0–0.2 |
+| `PATCH /api/manage/prizes/:id`                       | admin  | 修改上述字段（`id` 除外），已结束的不能改；进行中时概率合计仍受 20% 上限约束                                   |
+| `POST /api/manage/prizes/:id/codes`                  | admin  | 追加库存：`{ "codes": ["…"] }`，每次 ≤500 个、每个 ≤200 字符，重复的忽略；审计只记数量                         |
+| `GET /api/manage/prizes/:id/winners`                 | admin  | 中奖记录：兑换码后 4 位、中奖时间、北京日、用户 id 前缀                                                        |
+| `POST /api/manage/prizes/:id/:action`                | admin  | `activate`（草稿或暂停 → 进行中）、`pause`、`end`（不可恢复）                                                  |
 
 ### 新增卡的请求体
 
@@ -386,6 +419,7 @@ curl -X POST https://free.vibe-show.com/api/manage/offers/example-ai-credit/veri
 | 422  | `invalid_change`           | 已保存的变更申请不再符合校验规则，应驳回                      |
 | 422  | `not_revertible`           | 该审计记录不是可回滚的内容变更                                |
 | 422  | `idempotency_key_reused`   | 同一幂等键用于不同请求                                        |
+| 422  | `chance_cap_exceeded`      | 进行中的限定福利概率合计将超过 20%                            |
 | 429  | `rate_limited`             | 写入或抽卡过快，见 `Retry-After`                              |
 | 429  | `quota_exhausted`          | 今日免费次数已用完，见 `Retry-After`                          |
 | 429  | `review_queue_full`        | 巡检令牌的待审核队列已满                                      |

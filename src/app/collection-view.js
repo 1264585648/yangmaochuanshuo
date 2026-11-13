@@ -9,6 +9,7 @@ import {
   historyRows,
   retiredDetailDialog,
 } from '../ui/collection-views.js';
+import { bindCopyButtons, myPrizesSection } from '../ui/prize-views.js';
 
 /**
  * @typedef {import('../domain/me.js').CollectionCard} CollectionCard
@@ -92,11 +93,14 @@ export function createCollectionView({ me, showView, root, poolLabel, showDetail
    * @param {CollectionCard[]} cards
    * @param {import('../domain/me.js').Progress} progress
    * @param {{ items: import('../domain/me.js').HistoryItem[], nextCursor: string | null } | null} history
+   * @param {readonly import('../domain/prize.js').WonPrize[]} prizes
    */
-  function render(cards, progress, history) {
-    showView(collectionDialog({ cards, progress, history, poolLabel }));
+  function render(cards, progress, history, prizes) {
+    const prizesHtml = myPrizesSection(prizes);
+    showView(collectionDialog({ cards, progress, history, poolLabel, prizesHtml }));
     const inner = root();
     applyProgressWidths(inner);
+    bindCopyButtons(inner, toast);
     // Listen on the view's own root: it is replaced with each new view.
     inner.addEventListener('click', (event) => {
       const item =
@@ -111,9 +115,14 @@ export function createCollectionView({ me, showView, root, poolLabel, showDetail
     let cancelled = false;
     // Closing or replacing the loading view cancels the pending render.
     showView(collectionLoadingDialog(), { dispose: () => (cancelled = true) });
-    Promise.all([me.getCollection(), me.getHistory().catch(() => null)])
-      .then(([collection, history]) => {
-        if (!cancelled) render(collection.cards, collection.progress, history);
+    Promise.all([
+      me.getCollection(),
+      me.getHistory().catch(() => null),
+      // A failed prize load must not hide the collection; the draw reply showed the code too.
+      me.getMyPrizes().catch(() => []),
+    ])
+      .then(([collection, history, prizes]) => {
+        if (!cancelled) render(collection.cards, collection.progress, history, prizes);
       })
       .catch((error) => {
         if (cancelled) return;

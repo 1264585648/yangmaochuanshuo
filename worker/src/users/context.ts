@@ -3,7 +3,7 @@
 import { createSession, type ResolvedSession, type User } from '../auth/session';
 import { fail } from '../http/respond';
 import { consumeRateLimit, type RateLimit } from '../write/rate-limit';
-import { clientIp, ipHashSecret, ipKey, rateLimitSubject } from './ip';
+import { clientIp, ipHashSecret, ipKey, prizeSubject, rateLimitSubject } from './ip';
 
 type DB = Env['DB'];
 
@@ -36,6 +36,12 @@ export async function ipActor(ctx: UserContext, request: Request): Promise<strin
     return fail(503, 'unavailable', 'This feature is temporarily unavailable');
   }
   return ipKey(rateLimitSubject(clientIp(request)), secret);
+}
+
+/** Keyed hash of the caller's wider network, for the prize win cap. Call after `ipActor`. */
+export async function prizeActor(ctx: UserContext, request: Request): Promise<string> {
+  const secret = ipHashSecret(ctx.env) ?? '';
+  return ipKey(`prize:${prizeSubject(clientIp(request))}`, secret);
 }
 
 /**

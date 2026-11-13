@@ -2,6 +2,7 @@
    quota, draws, collection, favorites) and dialogs to the page. Offers for the
    pool counts and odds come from `/api/offers`; draws run on the server. */
 import '../styles/collection.css';
+import '../styles/prizes.css';
 import { API, DEFAULT_DAILY_DRAWS, DEFAULT_POOL_INDEX, TIMINGS } from './config.js';
 import { POOLS, poolLabel } from './data/pools.js';
 import { createApiClient, describeError } from './api/client.js';
@@ -27,6 +28,8 @@ import { importLegacyOnce } from './app/legacy-import.js';
 import { initialView, renderLobby } from './app/lobby.js';
 import { createMeStore } from './app/me-store.js';
 import { bindOfficialClicks, createEngagement } from './app/engagement.js';
+import { createPrizeBoard } from './app/prizes.js';
+import { bindCopyButtons, wonPrizeBlock } from './ui/prize-views.js';
 import {
   bindPackTilt,
   bindSwipe,
@@ -156,7 +159,9 @@ async function draw() {
     toast('上次未完成的开包已记录，但那张卡已下架，可在图鉴中查看。');
     return;
   }
-  showResult(result.offer, result.draw);
+  showResult(result.offer, result.draw, result.prize);
+  // Stock changed with this draw; a win also changes what the rules show.
+  if (result.prize) prizeBoard.load();
 }
 
 /**
@@ -206,8 +211,9 @@ function showView(html, { wide = false, dispose = null, returnFocus = null } = {
 /**
  * @param {import('./domain/offer.js').Offer} offer
  * @param {{ favorite: boolean, isNew: boolean }} draw
+ * @param {import('./domain/prize.js').WonPrize | null} prize Limited prize won with this draw.
  */
-function showResult(offer, { favorite, isNew }) {
+function showResult(offer, { favorite, isNew }, prize) {
   showView(
     resultDialog({
       offer,
@@ -216,12 +222,14 @@ function showResult(offer, { favorite, isNew }) {
       isNew,
       canDrawAgain: quotaCounts().remaining !== 0,
       now: new Date(),
+      prizeHtml: prize ? wonPrizeBlock({ prize }) : '',
     }),
     // The open button was disabled during the animation and lost focus.
     { returnFocus: $('#openPack') },
   );
   bindFavorite(offer, favorite);
   bindReport(offer);
+  bindCopyButtons($('#dialogContent'), toast);
   $('#nextDraw').addEventListener('click', dialog.close);
 }
 
@@ -281,6 +289,13 @@ function openDaily() {
   showView(dailyDialog(quotaCounts()));
 }
 
+const prizeBoard = createPrizeBoard({
+  listPrizes: () => api.listPrizes(),
+  showView: (html) => showView(html),
+  button: () => $('#prizeButton'),
+  toast,
+});
+
 /** Settles once the community group (if any) is known; started after the catalog. */
 let communityLoaded = null;
 const loadCommunity = () => (communityLoaded ??= engagement.loadCommunity());
@@ -319,6 +334,7 @@ function bindEvents() {
   $('#catalogRetry').addEventListener('click', () => catalog.refresh());
   $('#probabilityButton').addEventListener('click', guarded(openOdds));
   $('#headerCount').addEventListener('click', guarded(openDaily));
+  $('#prizeButton').addEventListener('click', guarded(prizeBoard.open));
   $('#feedbackButton').addEventListener(
     'click',
     guarded(() => engagement.openFeedback(null)),
@@ -364,6 +380,7 @@ setTimeout(() => document.body.classList.remove('is-intro'), TIMINGS.introMs);
 catalog.refresh();
 userLoaded = loadUser();
 loadCommunity();
+prizeBoard.load();
 // The collection no longer depends on the catalog, so `/#collection` opens at once.
 const linked = NAV_ACTIONS[initialView(window.location.hash) ?? ''];
 if (linked) linked();

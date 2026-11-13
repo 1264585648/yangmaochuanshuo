@@ -6,6 +6,7 @@ const HASH_HEX_CHARS = 32;
 const MIN_SECRET_LENGTH = 32;
 const IPV6_GROUPS = 8;
 const IPV6_PREFIX_GROUPS = 4;
+const IPV6_PRIZE_PREFIX_GROUPS = 3;
 
 /** Null when the secret is missing or too short to resist guessing; callers must fail closed. */
 export function ipHashSecret(env: Env): string | null {
@@ -18,14 +19,26 @@ export function ipHashSecret(env: Env): string | null {
  * limiting single addresses would let one client rotate through billions.
  */
 export function rateLimitSubject(ip: string): string {
+  return ipv6Prefix(ip, IPV6_PREFIX_GROUPS);
+}
+
+/**
+ * Bucket for the limited-prize win cap. A /48 is what a free tunnel broker
+ * hands out (65,536 /64s), so a per-/64 cap would be trivially rotated.
+ */
+export function prizeSubject(ip: string): string {
+  return ipv6Prefix(ip, IPV6_PRIZE_PREFIX_GROUPS);
+}
+
+function ipv6Prefix(ip: string, keep: number): string {
   if (!ip.includes(':')) return ip;
   const [head = '', tail = ''] = ip.toLowerCase().split('::');
   const front = head ? head.split(':') : [];
   const back = tail ? tail.split(':') : [];
   const gap = ip.includes('::') ? Math.max(0, IPV6_GROUPS - front.length - back.length) : 0;
   const groups = [...front, ...Array<string>(gap).fill('0'), ...back];
-  const prefix = groups.slice(0, IPV6_PREFIX_GROUPS).map((g) => g.replace(/^0+(?=.)/, '') || '0');
-  return `${prefix.join(':')}::/64`;
+  const prefix = groups.slice(0, keep).map((g) => g.replace(/^0+(?=.)/, '') || '0');
+  return `${prefix.join(':')}::/${keep * 16}`;
 }
 
 /** Cloudflare sets `CF-Connecting-IP`; without it (local tools) all callers share one bucket. */

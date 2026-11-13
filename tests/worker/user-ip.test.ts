@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { ipHashSecret, ipKey, rateLimitSubject } from '../../worker/src/users/ip';
+import { ipHashSecret, ipKey, prizeSubject, rateLimitSubject } from '../../worker/src/users/ip';
+
+describe('prizeSubject', () => {
+  it('keeps IPv4 addresses and widens IPv6 to /48', () => {
+    expect(prizeSubject('203.0.113.7')).toBe('203.0.113.7');
+    expect(prizeSubject('2001:db8:1:2::abcd')).toBe('2001:db8:1::/48');
+    expect(prizeSubject('2001:0db8:0001:ffff::1')).toBe(prizeSubject('2001:db8:1:2::1'));
+  });
+});
 
 describe('rateLimitSubject', () => {
   it('keeps IPv4 addresses as they are', () => {

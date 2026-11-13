@@ -2,6 +2,7 @@
    against the `{ success, data, error, meta }` envelope and every offer is
    validated before it reaches the UI. */
 import { normalizeOffer } from '../domain/offer.js';
+import { normalizePublicPrizes } from '../domain/prize.js';
 
 /** @typedef {'network' | 'timeout' | 'aborted' | 'http' | 'invalid'} ApiErrorKind */
 
@@ -252,5 +253,16 @@ export function createApiClient({ baseUrl = '', timeoutMs, fetchImpl }) {
     return all;
   }
 
-  return { request, listOffers, getOffer, listAllOffers };
+  /**
+   * Public rules for the live limited prizes. Invalid rows are dropped.
+   * @param {{ signal?: AbortSignal }} [options]
+   */
+  async function listPrizes(options = {}) {
+    const { data } = await getJson('/api/prizes', options);
+    const prizes = normalizePublicPrizes(data);
+    if (!prizes) throw new ApiError('invalid', 'Prize list has an unexpected shape');
+    return prizes;
+  }
+
+  return { request, listOffers, getOffer, listAllOffers, listPrizes };
 }

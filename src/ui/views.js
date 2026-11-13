@@ -93,12 +93,24 @@ function resultHeading(offer, isNew) {
 
 /**
  * @param {{ offer: Offer, poolLabel: string, isFavorite: boolean, canDrawAgain: boolean,
- *   isNew?: boolean, now: Date }} props `isNew` is false when the card was already owned.
+ *   isNew?: boolean, now: Date, prizeHtml?: string }} props `isNew` is false when the card
+ *   was already owned. `prizeHtml` is trusted markup for a limited prize won with this draw.
  * @returns {string}
  */
-export function resultDialog({ offer, poolLabel, isFavorite, canDrawAgain, isNew = true, now }) {
-  const heading = resultHeading(offer, isNew);
-  return `<div class="dialog-inner result-dialog rarity-${rarityClass(offer.rarity)}"><div class="dialog-kicker">PACK OPENED · ${e(poolLabel)}</div><h2 id="dialogTitle" class="dialog-title">${heading}</h2>${revealCard(offer, poolLabel)}<div class="reveal-details">${offerBody(offer, now)}${guideLink(offer)}<div class="dialog-actions">${officialButton(offer)}<button type="button" class="modal-button" id="favoriteResult" aria-pressed="${isFavorite}">${favoriteLabel(isFavorite)}</button><button type="button" class="modal-button" id="nextDraw">${canDrawAgain ? '继续抽卡' : '返回大厅'}</button></div><button type="button" class="text-link report-link" id="reportOffer">信息有误？反馈问题</button>${FINEPRINT('卡牌是公开优惠的索引，本站不发放兑换码或资格。领取前请以官方页面的最新规则为准。')}</div></div>`;
+export function resultDialog({
+  offer,
+  poolLabel,
+  isFavorite,
+  canDrawAgain,
+  isNew = true,
+  now,
+  prizeHtml = '',
+}) {
+  const heading = prizeHtml ? '恭喜！额外抽中了一份限定福利' : resultHeading(offer, isNew);
+  const fineprint = prizeHtml
+    ? '上面的福利卡是公开优惠的索引，领取前请以官方页面的最新规则为准；限定福利的兑换码由站长提供。'
+    : '卡牌是公开优惠的索引，本站不发放兑换码或资格。领取前请以官方页面的最新规则为准。';
+  return `<div class="dialog-inner result-dialog rarity-${rarityClass(offer.rarity)}"><div class="dialog-kicker">PACK OPENED · ${e(poolLabel)}</div><h2 id="dialogTitle" class="dialog-title">${heading}</h2>${prizeHtml}${revealCard(offer, poolLabel)}<div class="reveal-details">${offerBody(offer, now)}${guideLink(offer)}<div class="dialog-actions">${officialButton(offer)}<button type="button" class="modal-button" id="favoriteResult" aria-pressed="${isFavorite}">${favoriteLabel(isFavorite)}</button><button type="button" class="modal-button" id="nextDraw">${canDrawAgain ? '继续抽卡' : '返回大厅'}</button></div><button type="button" class="text-link report-link" id="reportOffer">信息有误？反馈问题</button>${FINEPRINT(fineprint)}</div></div>`;
 }
 
 /**

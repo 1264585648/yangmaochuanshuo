@@ -160,5 +160,21 @@ export function createManageClient({
       ),
     getCommunity: () => request('GET', '/api/manage/community').then((r) => r.data),
     putCommunity: (body) => request('PUT', '/api/manage/community', body).then((r) => r.data),
+    listPrizes: () => request('GET', '/api/manage/prizes').then((r) => r.data),
+    createPrize: (body) => request('POST', '/api/manage/prizes', body).then((r) => r.data),
+    editPrize: (id, body) =>
+      request('PATCH', `/api/manage/prizes/${encodeURIComponent(id)}`, body).then((r) => r.data),
+    /** @param {string} id @param {string[]} codes */
+    addPrizeCodes: (id, codes) =>
+      request('POST', `/api/manage/prizes/${encodeURIComponent(id)}/codes`, { codes }).then(
+        (r) => r.data,
+      ),
+    listPrizeWinners: (id) =>
+      request('GET', `/api/manage/prizes/${encodeURIComponent(id)}/winners`).then((r) => r.data),
+    /** @param {string} id @param {'activate' | 'pause' | 'end'} action */
+    transitionPrize: (id, action) =>
+      request('POST', `/api/manage/prizes/${encodeURIComponent(id)}/${action}`, {}).then(
+        (r) => r.data,
+      ),
   };
 }

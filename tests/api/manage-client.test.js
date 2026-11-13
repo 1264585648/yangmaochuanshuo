@@ -143,3 +143,28 @@ describe('createManageClient', () => {
     ]);
   });
 });
+
+describe('prize endpoints', () => {
+  it('maps each prize call to its method and path', async () => {
+    const fetchMock = vi.fn(async () =>
+      jsonResponse({ success: true, data: { ok: 1 }, error: null }),
+    );
+    const client = createManageClient({ getToken: () => 't', fetchImpl: fetchMock });
+    await client.listPrizes();
+    await client.createPrize({ id: 'g-1' });
+    await client.editPrize('g 1', { title: 'x' });
+    await client.addPrizeCodes('g-1', ['A']);
+    await client.listPrizeWinners('g-1');
+    await client.transitionPrize('g-1', 'activate');
+    const calls = fetchMock.mock.calls.map(([url, init]) => `${init.method} ${url}`);
+    expect(calls).toEqual([
+      'GET /api/manage/prizes',
+      'POST /api/manage/prizes',
+      'PATCH /api/manage/prizes/g%201',
+      'POST /api/manage/prizes/g-1/codes',
+      'GET /api/manage/prizes/g-1/winners',
+      'POST /api/manage/prizes/g-1/activate',
+    ]);
+    expect(JSON.parse(fetchMock.mock.calls[3][1].body)).toEqual({ codes: ['A'] });
+  });
+});

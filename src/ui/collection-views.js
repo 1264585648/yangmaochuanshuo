@@ -95,10 +95,11 @@ function historySection(history, poolLabel) {
 /**
  * @param {{ cards: readonly CollectionCard[], progress: Progress,
  *   history: { items: readonly HistoryItem[], nextCursor: string | null } | null,
- *   poolLabel: (poolId: string) => string }} props
+ *   poolLabel: (poolId: string) => string, prizesHtml?: string }} props `prizesHtml` is
+ *   trusted markup for the user's limited prizes.
  * @returns {string}
  */
-export function collectionDialog({ cards, progress, history, poolLabel }) {
+export function collectionDialog({ cards, progress, history, poolLabel, prizesHtml = '' }) {
   const favorites = cards.filter((c) => c.favorite).length;
   const list = cards.length
     ? `<ul class="collection-grid">${cards.map(cardItem).join('')}</ul>`
@@ -112,7 +113,7 @@ export function collectionDialog({ cards, progress, history, poolLabel }) {
     kicker: KICKER,
     title: TITLE,
     lead: `已发现 ${progress.live.found} / ${progress.live.total} 张有效福利 · 收藏 ${favorites} 张`,
-    body: `${progressBars(progress, poolLabel)}${list}${retired}${historySection(history, poolLabel)}${FINEPRINT(STORAGE_NOTE)}`,
+    body: `${prizesHtml}${progressBars(progress, poolLabel)}${list}${retired}${historySection(history, poolLabel)}${FINEPRINT(STORAGE_NOTE)}`,
   });
 }
 

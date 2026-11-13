@@ -21,7 +21,15 @@ import {
   putCommunityHandler,
   transitionFeedback,
 } from './engagement';
-import { COMMUNITY_BODY_MAX_BYTES } from '../../config';
+import {
+  addPrizeCodes,
+  createPrize,
+  editPrize,
+  listPrizesHandler,
+  listWinnersHandler,
+  transitionPrize,
+} from './prizes';
+import { COMMUNITY_BODY_MAX_BYTES, PRIZE_CODES_BODY_MAX_BYTES } from '../../config';
 import type { Handler } from './shared';
 
 interface Route {
@@ -65,6 +73,18 @@ const ROUTES: readonly Route[] = [
     pattern: new RegExp(`${P}/community$`),
     methods: { GET: getCommunityHandler, PUT: putCommunityHandler },
     maxBodyBytes: COMMUNITY_BODY_MAX_BYTES,
+  },
+  { pattern: new RegExp(`${P}/prizes$`), methods: { GET: listPrizesHandler, POST: createPrize } },
+  { pattern: new RegExp(`${P}/prizes/([^/]+)$`), methods: { PATCH: editPrize } },
+  {
+    pattern: new RegExp(`${P}/prizes/([^/]+)/codes$`),
+    methods: { POST: addPrizeCodes },
+    maxBodyBytes: PRIZE_CODES_BODY_MAX_BYTES,
+  },
+  { pattern: new RegExp(`${P}/prizes/([^/]+)/winners$`), methods: { GET: listWinnersHandler } },
+  {
+    pattern: new RegExp(`${P}/prizes/([^/]+)/(activate|pause|end)$`),
+    methods: { POST: transitionPrize },
   },
 ];
 

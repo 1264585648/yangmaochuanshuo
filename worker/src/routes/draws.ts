@@ -8,7 +8,8 @@ import { utcDay } from '../domain/visibility';
 import { readJsonBody } from '../http/body';
 import { fail, methodNotAllowed, ok } from '../http/respond';
 import { getOwnedOffer, listDrawCandidates } from '../repo/offers';
-import { ensureUser, ipActor, rateLimited, type UserContext } from '../users/context';
+import { listRollablePrizes, rollPrize } from '../prizes/prizes';
+import { ensureUser, ipActor, prizeActor, rateLimited, type UserContext } from '../users/context';
 import { nextReset, quotaDay } from '../users/day';
 import { insertDraw, readDrawState, type DrawState, type DrawView } from '../users/draws';
 import { validateKey } from '../write/idempotency';
@@ -41,9 +42,9 @@ async function drawResponse(
   { status, cookie }: { status: number; cookie: string | null },
 ): Promise<Response> {
   const offer = await getOwnedOffer(ctx.db, draw.offerId, utcDay(ctx.now));
-  const { offerId: _offerId, ...publicDraw } = draw;
+  const { offerId: _offerId, prize, ...publicDraw } = draw;
   const response = ok(
-    { draw: publicDraw, offer, quota: quotaView(ctx.now, state.used) },
+    { draw: publicDraw, offer, quota: quotaView(ctx.now, state.used), prize },
     { status },
   );
   if (status === 200) response.headers.set('idempotent-replayed', 'true');
@@ -94,6 +95,9 @@ async function performDraw(
   const candidates = await listDrawCandidates(ctx.db, pool, utcDay(ctx.now));
   const picked = drawFromPool(candidates, pool, ctx.random);
   if (!picked) return fail(409, 'pool_empty', 'This pool has no live cards right now');
+  // Rolled only when a prize is live, so draws without prizes use the same randomness as before.
+  const prizes = await listRollablePrizes(ctx.db, ctx.now);
+  const prizeId = rollPrize(prizes, ctx.random);
 
   const owner = await ensureUser(ctx, actor);
   if (owner instanceof Response) return owner;
@@ -108,6 +112,7 @@ async function performDraw(
       day,
       key,
       now: ctx.now,
+      prize: prizeId ? { id: prizeId, visitor: await prizeActor(ctx, request) } : null,
     },
     DAILY_DRAWS,
   );

@@ -78,11 +78,16 @@ export function createFakeUserApi({ offers, max = 3 }) {
     if (!user) user = { id: 'u_fake', kind: 'guest', createdAt: '2026-11-12T00:00:00.000Z' };
   };
 
+  /** Limited prizes won so far, and the one the next new draw wins (if any). */
+  const won = [];
+  let nextPrize = null;
+
   function draw(key, pool) {
     const index = draws.findIndex((d) => d.key === key);
     if (index !== -1) {
       const d = draws[index];
-      return ok({ draw: drawView(d, index), offer: owned(d.offer), quota: quota() }, 200);
+      const prize = d.prize ?? null;
+      return ok({ draw: drawView(d, index), offer: owned(d.offer), quota: quota(), prize }, 200);
     }
     if (user && quota().used >= max) return fail(429, 'quota_exhausted', quota());
     const picked = drawFromPool(offers(), pool, () => 0);
@@ -95,9 +100,13 @@ export function createFakeUserApi({ offers, max = 3 }) {
       offer: picked,
       pool,
       at: new Date(seq * 1000).toISOString(),
+      prize: nextPrize,
     };
+    if (nextPrize) won.unshift(nextPrize);
+    nextPrize = null;
     draws.push(d);
-    return ok({ draw: drawView(d, draws.length - 1), offer: picked, quota: quota() }, 201);
+    const prize = d.prize;
+    return ok({ draw: drawView(d, draws.length - 1), offer: picked, quota: quota(), prize }, 201);
   }
 
   function collection() {
@@ -183,6 +192,7 @@ export function createFakeUserApi({ offers, max = 3 }) {
     if (path === '/api/me') return ok({ user, quota: quota() });
     if (path === '/api/me/collection') return collection();
     if (path === '/api/me/draws') return history(url.searchParams.get('before'));
+    if (path === '/api/me/prizes') return ok({ prizes: won });
     if (path === '/api/me/import') {
       if (importGate) await importGate;
       return importLegacy(JSON.parse(init.body));
@@ -203,6 +213,10 @@ export function createFakeUserApi({ offers, max = 3 }) {
     calls,
     favorites,
     draws,
+    /** The next new draw wins this prize (shape of the server's WonPrize). */
+    winNext(prize) {
+      nextPrize = prize;
+    },
     /** @param {'network' | 'server' | 'lost' | null} mode */
     failDraws(mode) {
       drawFailure = mode;

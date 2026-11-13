@@ -38,10 +38,15 @@ export function createFakeApi({ offers: initial = CATALOG } = {}) {
   let open = () => {};
   let failing = false;
   const calls = [];
+  /** Public limited-prize rules served at `/api/prizes` (not logged in `calls`). */
+  let prizes = [];
   const user = createFakeUserApi({ offers: () => offers });
 
   async function fetchImpl(url, init = {}) {
     const parsed = new URL(String(url), 'https://dealdex.test');
+    if (parsed.pathname === '/api/prizes') {
+      return jsonResponse({ success: true, data: prizes, error: null });
+    }
     const isUser = parsed.pathname === '/api/draws' || parsed.pathname.startsWith('/api/me');
     if (!isUser) calls.push(String(url));
     if (gate) await gate;
@@ -87,6 +92,9 @@ export function createFakeApi({ offers: initial = CATALOG } = {}) {
     },
     setOffers(next) {
       offers = next;
+    },
+    setPrizes(next) {
+      prizes = next;
     },
     calls,
     user,

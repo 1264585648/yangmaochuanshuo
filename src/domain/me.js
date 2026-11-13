@@ -1,6 +1,7 @@
 /* Validation for the user API (`/api/me*`, `/api/draws`). The server already
    checks everything; this guards the UI against schema drift. */
 import { POOL_IDS, RARITY_IDS, normalizeOffer } from './offer.js';
+import { normalizeWonPrize } from './prize.js';
 
 /**
  * @typedef {import('./offer.js').Offer} Offer
@@ -12,7 +13,8 @@ import { POOL_IDS, RARITY_IDS, normalizeOffer } from './offer.js';
  * @typedef {Offer | RetiredOffer} OwnedOffer
  * @typedef {{ id: string, pool: string, rarity: string, createdAt: string, isNew: boolean,
  *   favorite: boolean }} Draw
- * @typedef {{ draw: Draw, offer: OwnedOffer, quota: Quota }} DrawResult
+ * @typedef {{ draw: Draw, offer: OwnedOffer, quota: Quota,
+ *   prize: import('./prize.js').WonPrize | null }} DrawResult
  * @typedef {{ offer: OwnedOffer, firstDrawnAt: string, lastDrawnAt: string, drawCount: number,
  *   favorite: boolean, live: boolean }} CollectionCard
  * @typedef {{ found: number, total: number }} Tally
@@ -89,7 +91,9 @@ export function normalizeDrawResult(raw) {
   const draw = normalizeDraw(raw.draw);
   const offer = normalizeOwnedOffer(raw.offer);
   const quota = normalizeQuota(raw.quota);
-  return draw && offer && quota ? { draw, offer, quota } : null;
+  // A malformed prize is dropped here; the winner can still see it in the collection.
+  const prize = normalizeWonPrize(raw.prize);
+  return draw && offer && quota ? { draw, offer, quota, prize } : null;
 }
 
 /** @param {unknown} raw @returns {CollectionCard | null} */

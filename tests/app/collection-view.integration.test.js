@@ -38,7 +38,7 @@ function setup(getHistory) {
   document.body.replaceChildren(host);
   const toast = vi.fn();
   const view = createCollectionView({
-    me: { getCollection: async () => collection, getHistory },
+    me: { getCollection: async () => collection, getHistory, getMyPrizes: async () => [] },
     showView: (html) => {
       host.innerHTML = html;
     },

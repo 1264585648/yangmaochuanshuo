@@ -4,11 +4,25 @@
  * Same rules as the rest of the page: every dynamic value is escaped. */
 import { escapeHTML } from '../ui/escape.js';
 import { poolLabel } from '../data/pools.js';
+import { fromLocalInput, toLocalInput } from './admin-time.js';
+import {
+  PRIZE_TAB,
+  handlePrizeClick,
+  handlePrizeSubmit,
+  initialPrizeState,
+  isPrizeButton,
+  isPrizeForm,
+  loadPrizeTab,
+  renderPrizeTab,
+} from './admin-prizes.js';
+
+export { fromLocalInput, toLocalInput };
 
 export const BETA_TABS = Object.freeze([
   { id: 'feedback', label: '用户反馈' },
   { id: 'stats', label: '点击统计' },
   { id: 'community', label: '内测群' },
+  PRIZE_TAB,
 ]);
 
 export const isBetaTab = (tab) => BETA_TABS.some((t) => t.id === tab);
@@ -49,6 +63,7 @@ export function initialBetaState() {
     stats: null,
     statsDays: 7,
     community: null,
+    ...initialPrizeState(),
   };
 }
 
@@ -64,6 +79,7 @@ export async function loadBetaTab(client, state) {
   }
   if (state.tab === 'stats') return { stats: await client.getClickStats(state.statsDays) };
   if (state.tab === 'community') return { community: await client.getCommunity() };
+  if (state.tab === PRIZE_TAB.id) return loadPrizeTab(client);
   return {};
 }
 
@@ -170,22 +186,6 @@ function renderStatsTab(state) {
     </section>`;
 }
 
-/** ISO timestamp → value for `<input type="datetime-local">` in local time. */
-export function toLocalInput(iso) {
-  if (!iso) return '';
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '';
-  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
-  return local.toISOString().slice(0, 16);
-}
-
-/** `datetime-local` value → ISO timestamp, or null when empty or invalid. */
-export function fromLocalInput(value) {
-  if (!value) return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-}
-
 function qrStatus(c, now) {
   if (!c?.qr) return '<span class="status-badge is-unknown">未上传</span>';
   if (!c.qrExpiresAt) return '<span class="status-badge is-open">长期有效</span>';
@@ -228,6 +228,7 @@ export function renderBetaTab(state) {
   if (state.tab === 'feedback') return renderFeedbackTab(state);
   if (state.tab === 'stats') return renderStatsTab(state);
   if (state.tab === 'community') return renderCommunityTab(state);
+  if (state.tab === PRIZE_TAB.id) return renderPrizeTab(state);
   return '';
 }
 
@@ -323,11 +324,12 @@ export async function buildCommunityBody(data, now = new Date()) {
  * @param {HTMLButtonElement} target
  */
 export const isBetaButton = (target) =>
+  isPrizeButton(target) ||
   target.dataset.feedbackStatus !== undefined ||
   Boolean(target.dataset.statsDays) ||
   Boolean(target.dataset.feedbackAction && target.dataset.feedbackId);
 
-export const isBetaForm = (form) => form.id === 'communityForm';
+export const isBetaForm = (form) => form.id === 'communityForm' || isPrizeForm(form);
 
 /**
  * Handle clicks on beta-tab controls. Returns true when the click was handled.
@@ -336,6 +338,7 @@ export const isBetaForm = (form) => form.id === 'communityForm';
  *   showToast: (m: string) => void, handleError: (e: unknown) => void, render: () => void }} ctx
  */
 export async function handleBetaClick(target, ctx) {
+  if (isPrizeButton(target)) return handlePrizeClick(target, ctx);
   const { dataset } = target;
   if (dataset.feedbackStatus !== undefined) {
     ctx.state.feedbackStatus = dataset.feedbackStatus;
@@ -377,6 +380,7 @@ export async function handleBetaClick(target, ctx) {
  * @param {Parameters<typeof handleBetaClick>[1]} ctx
  */
 export async function handleBetaSubmit(form, ctx) {
+  if (isPrizeForm(form)) return handlePrizeSubmit(form, ctx);
   if (form.id !== 'communityForm') return false;
   try {
     const body = await buildCommunityBody(new FormData(form));

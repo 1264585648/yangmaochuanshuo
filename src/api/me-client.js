@@ -8,6 +8,7 @@ import {
   normalizeHistory,
   normalizeMe,
 } from '../domain/me.js';
+import { normalizeWonPrizes } from '../domain/prize.js';
 
 /**
  * @template T
@@ -47,6 +48,12 @@ export function createMeClient({ request }) {
     async getCollection() {
       const { data } = await request('/api/me/collection');
       return expectValid(normalizeCollection(data), 'Collection');
+    },
+
+    /** Limited prizes this user won, codes included. */
+    async getMyPrizes() {
+      const { data } = await request('/api/me/prizes');
+      return expectValid(normalizeWonPrizes(data), 'Prizes');
     },
 
     /** @param {string | null} [before] Cursor from the previous page. */

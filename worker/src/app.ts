@@ -1,5 +1,5 @@
 import { utcDay } from './domain/visibility';
-import { fail, methodNotAllowed, notFound } from './http/respond';
+import { fail, methodNotAllowed, notFound, ok, PUBLIC_CACHE } from './http/respond';
 import { withSecurityHeaders } from './http/security';
 import { routeManage } from './routes/manage';
 import { type UserLimits } from './users/context';
@@ -10,6 +10,7 @@ import { USER_LIMITS } from './config';
 import { runCleanup } from './maintenance/cleanup';
 import { routeCatalogPage } from './routes/pages';
 import { getOffer, listOffers } from './routes/read';
+import { listPublicPrizes } from './prizes/prizes';
 import { robotsTxt, sitemapXml } from './routes/seo';
 import { DEFAULT_RATE_LIMIT, type RateLimit } from './write/rate-limit';
 
@@ -40,8 +41,15 @@ async function routeSite(request: Request, env: Env, url: URL, today: string): P
 
 const SITE_PATHS = new Set(['/robots.txt', '/sitemap.xml']);
 
-async function routePublic(request: Request, env: Env, url: URL, today: string): Promise<Response> {
+async function routePublic(request: Request, env: Env, url: URL, at: Date): Promise<Response> {
   const isRead = (READ_METHODS as readonly string[]).includes(request.method);
+  const today = utcDay(at);
+
+  if (url.pathname === '/api/prizes') {
+    if (!isRead) return methodNotAllowed(READ_METHODS);
+    // Public rules only: odds and stock, never codes.
+    return ok(await listPublicPrizes(env.DB, at), { cache: PUBLIC_CACHE });
+  }
 
   if (url.pathname === '/api/offers') {
     return isRead ? listOffers(env.DB, url, today) : methodNotAllowed(READ_METHODS);
@@ -88,7 +96,7 @@ export function createHandler({
           limits: userLimits,
         });
       }
-      return await routePublic(request, env, url, utcDay(at));
+      return await routePublic(request, env, url, at);
     } catch (error: unknown) {
       // Log full detail server-side; callers get a generic message.
       console.error('api_error', {

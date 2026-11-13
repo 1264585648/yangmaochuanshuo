@@ -57,6 +57,8 @@ describe('schema', () => {
       'offer_changes',
       'offer_clicks',
       'offers',
+      'prize_codes',
+      'prizes',
       'providers',
       'rate_limits',
       'sessions',

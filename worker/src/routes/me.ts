@@ -10,6 +10,7 @@ import { quotaDay } from '../users/day';
 import { countDrawsOnDay } from '../users/draws';
 import { getCollection, getHistory, postImport, setFavorite } from './collection';
 import { postDraw, quotaView } from './draws';
+import { listWonPrizes } from '../prizes/prizes';
 
 const READ_METHODS = ['GET', 'HEAD'] as const;
 const FAVORITE_PATH = /^\/api\/me\/favorites\/([^/]+)$/;
@@ -22,6 +23,15 @@ async function getMe(request: Request, ctx: UserContext): Promise<Response> {
   const user = ctx.session?.user ?? null;
   const used = user ? await countDrawsOnDay(ctx.db, user.id, quotaDay(ctx.now)) : 0;
   return ok({ user, quota: quotaView(ctx.now, used) });
+}
+
+/** Prizes this user won, codes included. Never creates a user. */
+async function getMyPrizes(request: Request, ctx: UserContext): Promise<Response> {
+  if (!(READ_METHODS as readonly string[]).includes(request.method)) {
+    return methodNotAllowed(READ_METHODS);
+  }
+  const user = ctx.session?.user ?? null;
+  return ok({ prizes: user ? await listWonPrizes(ctx.db, user.id) : [] });
 }
 
 export const isUserPath = (path: string): boolean =>
@@ -39,6 +49,8 @@ function dispatch(request: Request, url: URL, ctx: UserContext): Promise<Respons
       return getHistory(request, url, ctx);
     case '/api/me/import':
       return postImport(request, ctx);
+    case '/api/me/prizes':
+      return getMyPrizes(request, ctx);
   }
   const favorite = FAVORITE_PATH.exec(url.pathname);
   if (favorite?.[1]) return setFavorite(request, favorite[1], ctx);
