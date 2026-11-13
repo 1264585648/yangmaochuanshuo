@@ -47,9 +47,12 @@ describe('catalog page header', () => {
   });
 });
 
+/** Catalog requests only; the page also asks for the community group once. */
+const offerCalls = () => api.calls.filter((c) => c.startsWith('/api/offers'));
+
 describe('catalog page entry', () => {
   it('keeps the server-rendered list without refetching', () => {
-    expect(api.calls).toHaveLength(0);
+    expect(offerCalls()).toHaveLength(0);
     expect(document.querySelectorAll('.catalog-card')).toHaveLength(CATALOG.length);
   });
 
@@ -58,7 +61,7 @@ describe('catalog page entry', () => {
     cloud.checked = true;
     cloud.dispatchEvent(new Event('change', { bubbles: true }));
     await vi.waitFor(() => expect(document.querySelectorAll('.catalog-card')).toHaveLength(1));
-    expect(api.calls[0]).toBe('/api/offers?pool=cloud&limit=20&offset=0');
+    expect(offerCalls()[0]).toBe('/api/offers?pool=cloud&limit=20&offset=0');
     expect(window.location.search).toBe('?pool=cloud');
   });
 });

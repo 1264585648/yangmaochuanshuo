@@ -4,6 +4,7 @@ import { escapeHTML as e } from './escape.js';
 import { poolIconSVG, EXTERNAL_ICON } from './icons.js';
 import { conditionChips, hostOf, safeHttpsUrl, validityLabel, verifiedLabel } from './format.js';
 import { offerHref } from '../domain/catalog-query.js';
+import { popularityBadge } from './popularity.js';
 
 /** @typedef {import('../domain/offer.js').Offer} Offer */
 
@@ -31,12 +32,15 @@ export function chipsHTML(conditions) {
  * @param {string} url
  * @param {string} label
  * @param {string} className
+ * @param {string} [offerId] Marks the link as an offer's official page, so a
+ *   click is counted (see `src/app/official-clicks.js`).
  * @returns {string} Anchor, or '' when the link is not https.
  */
-export function externalLink(url, label, className) {
+export function externalLink(url, label, className, offerId) {
   const href = safeHttpsUrl(url);
   if (!href) return '';
-  return `<a class="${className}" href="${e(href)}" target="_blank" rel="noopener noreferrer">${e(label)}${EXTERNAL_ICON}<span class="sr-only">（在新窗口打开）</span></a>`;
+  const track = offerId ? ` data-official-offer="${e(offerId)}"` : '';
+  return `<a class="${className}" href="${e(href)}" target="_blank" rel="noopener noreferrer"${track}>${e(label)}${EXTERNAL_ICON}<span class="sr-only">（在新窗口打开）</span></a>`;
 }
 
 /**
@@ -61,7 +65,7 @@ export function offerBody(offer, now) {
   const note = offer.conditions.note ? `<p class="cond-note">${e(offer.conditions.note)}</p>` : '';
   const source = externalLink(offer.sourceUrl, `来源：${hostOf(offer.sourceUrl)}`, 'source-link');
   const page = `<a class="offer-page-link" href="${e(offerHref(offer.id))}">福利页面（可分享）›</a>`;
-  return `<div class="offer-body"><div class="reward-name">${e(offer.title)}</div><div class="reward-provider">${e(offer.provider.name)} ${rarityChip(offer.rarity, 'mini')}</div><div class="benefit-box"><span class="benefit-label">你能得到</span><strong>${e(offer.benefit)}</strong></div><p class="reward-desc">${e(offer.summary)}</p><div class="dialog-section-title">领取条件</div>${chipsHTML(offer.conditions)}${note}<dl class="offer-facts"><div><dt>核验</dt><dd class="${stale.trim()}">${e(verified)}</dd></div><div><dt>有效期</dt><dd>${e(validityLabel(offer.validUntil))}</dd></div></dl><div class="offer-links">${source}${page}</div></div>`;
+  return `<div class="offer-body"><div class="reward-name">${e(offer.title)}</div><div class="reward-provider">${e(offer.provider.name)} ${rarityChip(offer.rarity, 'mini')}${popularityBadge(offer, now)}</div><div class="benefit-box"><span class="benefit-label">你能得到</span><strong>${e(offer.benefit)}</strong></div><p class="reward-desc">${e(offer.summary)}</p><div class="dialog-section-title">领取条件</div>${chipsHTML(offer.conditions)}${note}<dl class="offer-facts"><div><dt>核验</dt><dd class="${stale.trim()}">${e(verified)}</dd></div><div><dt>有效期</dt><dd>${e(validityLabel(offer.validUntil))}</dd></div></dl><div class="offer-links">${source}${page}</div></div>`;
 }
 
 /**
@@ -69,7 +73,12 @@ export function offerBody(offer, now) {
  * @returns {string}
  */
 export function officialButton(offer) {
-  return externalLink(offer.officialUrl, '前往官方页面', 'modal-button primary official-link');
+  return externalLink(
+    offer.officialUrl,
+    '前往官方页面',
+    'modal-button primary official-link',
+    offer.id,
+  );
 }
 
 /** @param {number} n */

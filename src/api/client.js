@@ -54,6 +54,7 @@ const CODE_MESSAGES = Object.freeze({
   pool_empty: '这个卡池暂时没有有效福利，换一个试试吧。',
   rate_limited: '操作太频繁了，请稍等片刻再试。',
   unavailable: '服务暂时不可用，请稍后重试。',
+  unknown_offer: '这张福利已不存在，无法提交反馈。',
 });
 
 const QUERY_KEYS = Object.freeze([

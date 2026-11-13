@@ -59,11 +59,15 @@ export function renderLobby($, view) {
 }
 
 /** URL hashes that open a dialog when the lobby loads (e.g. `/#collection`). */
-const HASH_VIEWS = Object.freeze({ '#collection': 'collection' });
+const HASH_VIEWS = Object.freeze({
+  '#collection': 'collection',
+  '#feedback': 'feedback',
+  '#community': 'community',
+});
 
 /**
  * @param {string} hash `location.hash`
- * @returns {'collection' | null}
+ * @returns {'collection' | 'feedback' | 'community' | null}
  */
 export function initialView(hash) {
   return Object.hasOwn(HASH_VIEWS, hash) ? HASH_VIEWS[hash] : null;

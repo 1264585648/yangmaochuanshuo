@@ -13,6 +13,17 @@ import {
   parseListField,
 } from '../domain/admin-form.js';
 import { escapeHTML } from '../ui/escape.js';
+import {
+  BETA_TABS,
+  handleBetaClick,
+  handleBetaSubmit,
+  initialBetaState,
+  isBetaButton,
+  isBetaForm,
+  isBetaTab,
+  loadBetaTab,
+  renderBetaTab,
+} from './admin-beta.js';
 import { formatDate } from '../ui/format.js';
 
 const TOKEN_STORAGE_KEY = 'dealdex_admin_token';
@@ -74,7 +85,7 @@ function renderHeader(state) {
     { id: 'offers', label: '福利卡管理' },
     { id: 'providers', label: '提供方' },
     { id: 'changes', label: '变更审核' },
-    ...(state.me.scope === 'admin' ? [{ id: 'audit', label: '审计日志' }] : []),
+    ...(state.me.scope === 'admin' ? [{ id: 'audit', label: '审计日志' }, ...BETA_TABS] : []),
   ];
   return `
     <section class="admin-panel">
@@ -682,6 +693,7 @@ export function mountAdminPage({ main, toastEl, win, baseUrl = '', fetchImpl }) 
     audit: [],
     modal: null,
     modalError: null,
+    ...initialBetaState(),
   };
 
   let toastTimer;
@@ -709,6 +721,7 @@ export function mountAdminPage({ main, toastEl, win, baseUrl = '', fetchImpl }) 
     else if (state.tab === 'providers') body = renderProvidersTab(state);
     else if (state.tab === 'changes') body = renderChangesTab(state);
     else if (state.tab === 'audit') body = renderAuditTab(state);
+    else if (isBetaTab(state.tab)) body = renderBetaTab(state);
 
     main.innerHTML = [renderHeader(state), renderAlert(state.error), body, renderModal(state)].join(
       '',
@@ -717,6 +730,10 @@ export function mountAdminPage({ main, toastEl, win, baseUrl = '', fetchImpl }) 
 
   async function loadTabData() {
     state.error = null;
+    if (isBetaTab(state.tab)) {
+      Object.assign(state, await loadBetaTab(client, state));
+      return;
+    }
     if (state.tab === 'offers') {
       const [offersRes, providers] = await Promise.all([
         client.listOffers({
@@ -798,6 +815,8 @@ export function mountAdminPage({ main, toastEl, win, baseUrl = '', fetchImpl }) 
     render();
   }
 
+  const betaContext = () => ({ state, client, refresh, showToast, handleError, render });
+
   async function runDirectTransition(id, action) {
     try {
       await client.transitionOffer(id, action, {});
@@ -822,6 +841,10 @@ export function mountAdminPage({ main, toastEl, win, baseUrl = '', fetchImpl }) 
     if (form.id === 'changeFilterForm') {
       state.changeOfferId = String(data.get('offerId') ?? '');
       await refresh();
+      return;
+    }
+    if (isBetaForm(form)) {
+      await handleBetaSubmit(form, betaContext());
       return;
     }
     if (form.id === 'auditFilterForm') {
@@ -934,6 +957,10 @@ export function mountAdminPage({ main, toastEl, win, baseUrl = '', fetchImpl }) 
     const target = event.target instanceof Element ? event.target.closest('button') : null;
     if (!(target instanceof HTMLButtonElement)) return;
 
+    if (isBetaButton(target)) {
+      await handleBetaClick(target, betaContext());
+      return;
+    }
     if (target.dataset.modalClose) {
       state.modal = null;
       state.modalError = null;

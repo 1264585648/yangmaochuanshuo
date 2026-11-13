@@ -1,0 +1,166 @@
+/* Closed-beta extras: interest badges, feedback form, community group. */
+
+/* Controls that need the page script stay hidden without it. */
+html:not(.has-js) .js-only {
+  display: none !important;
+}
+
+/* ── interest badge ── */
+.pop-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.5;
+  vertical-align: 2px;
+  white-space: nowrap;
+}
+.pop-badge.is-hot {
+  color: #ffd9a8;
+  background: #c2552a33;
+  border: 1px solid #e0875066;
+}
+.pop-badge.is-new {
+  color: #c8f0d2;
+  background: #2f7a4a33;
+  border: 1px solid #5fbf8066;
+}
+
+/* ── footer entries ── */
+.beta-links {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.beta-link {
+  font-size: 12px;
+  color: #e7d5bd;
+  background: #ffffff0d;
+  border: 1px solid #8b745d80;
+  border-radius: 100px;
+  padding: 5px 14px;
+}
+.beta-link:hover {
+  color: white;
+  border-color: #c79a54;
+}
+.beta-link.is-community {
+  color: #352416;
+  font-weight: 700;
+  border-color: #c79a54;
+  background: linear-gradient(180deg, #efd19a, #c89042);
+}
+.beta-link[hidden] {
+  display: none;
+}
+
+/* ── report link under offer actions ── */
+.report-link {
+  display: block;
+  margin: 12px auto 0;
+  font-size: 12px;
+  color: #b9a58c;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── feedback form ── */
+.fb-form {
+  margin-top: 6px;
+}
+.fb-choices {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.fb-choices legend {
+  grid-column: 1 / -1;
+  padding: 0;
+}
+.fb-choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+  border: 1px solid #8b745d66;
+  border-radius: 9px;
+  color: #e7d5bd;
+  font-size: 13px;
+  cursor: pointer;
+}
+.fb-choice:has(input:checked) {
+  border-color: #c79a54;
+  background: #c8904222;
+}
+.fb-choice input {
+  accent-color: #c89042;
+  margin: 0;
+}
+.fb-field {
+  display: block;
+}
+.fb-field textarea,
+.fb-field input {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 14px;
+  color: #f7e6c9;
+  background: #13151f;
+  border: 1px solid #8b745d80;
+  border-radius: 9px;
+  padding: 10px 12px;
+}
+.fb-field textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+.fb-field textarea:focus,
+.fb-field input:focus {
+  outline: 2px solid #c79a54;
+  outline-offset: 1px;
+}
+.fb-error {
+  margin: 12px 0 0;
+  color: #ffb4a0;
+  font-size: 13px;
+}
+
+/* ── community group ── */
+.community-qr {
+  margin: 18px auto 0;
+  text-align: center;
+}
+.community-qr img {
+  display: block;
+  margin: 0 auto;
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  background: white;
+  border-radius: 12px;
+  padding: 8px;
+}
+.community-qr figcaption {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #d3bd9d;
+}
+.community-expiry {
+  display: block;
+  font-size: 12px;
+  color: #a99d91;
+}
+
+@media (max-width: 480px) {
+  .fb-choices {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

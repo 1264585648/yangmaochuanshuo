@@ -43,3 +43,13 @@ export const CLEANUP = Object.freeze({
   /** Rows removed per table per run; leftovers go on the next run. */
   batchSize: 5_000,
 });
+
+/** Below this many distinct visitors an offer shows no count, never a made-up one. */
+export const POPULARITY_MIN_VISITORS = 10;
+
+/** Feedback submissions per network. */
+export const FEEDBACK_LIMIT: RateLimit = Object.freeze({ max: 10, windowSeconds: 60 * 60 });
+
+/** Community QR image: decoded size cap, and the request cap for the base64 upload. */
+export const COMMUNITY_QR_MAX_BYTES = 512 * 1024;
+export const COMMUNITY_BODY_MAX_BYTES = 768 * 1024;

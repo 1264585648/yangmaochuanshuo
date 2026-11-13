@@ -6,6 +6,7 @@ import { API, DEFAULT_DAILY_DRAWS, DEFAULT_POOL_INDEX, TIMINGS } from './config.
 import { POOLS, poolLabel } from './data/pools.js';
 import { createApiClient, describeError } from './api/client.js';
 import { createMeClient } from './api/me-client.js';
+import { createEngagementClient } from './api/engagement-client.js';
 import { RARITIES } from './domain/draw.js';
 import { countByPool, poolOdds } from './domain/catalog.js';
 import { isRetired, remainingDraws } from './domain/me.js';
@@ -25,6 +26,7 @@ import { createDrawFlow } from './app/draw-flow.js';
 import { importLegacyOnce } from './app/legacy-import.js';
 import { initialView, renderLobby } from './app/lobby.js';
 import { createMeStore } from './app/me-store.js';
+import { bindOfficialClicks, createEngagement } from './app/engagement.js';
 import {
   bindPackTilt,
   bindSwipe,
@@ -37,6 +39,7 @@ import {
 const $ = (selector) => /** @type {HTMLElement} */ (document.querySelector(selector));
 const api = createApiClient({ baseUrl: API.baseUrl, timeoutMs: API.timeoutMs });
 const meClient = createMeClient(api);
+const engagementClient = createEngagementClient({ request: api.request, baseUrl: API.baseUrl });
 const toast = createToast($('#toast'), TIMINGS.toastMs);
 const scene = $('#packScene');
 
@@ -218,6 +221,7 @@ function showResult(offer, { favorite, isNew }) {
     { returnFocus: $('#openPack') },
   );
   bindFavorite(offer, favorite);
+  bindReport(offer);
   $('#nextDraw').addEventListener('click', dialog.close);
 }
 
@@ -237,7 +241,22 @@ function showDetail(offer, isFavorite, back) {
     }),
   );
   bindFavorite(offer, isFavorite);
+  bindReport(offer);
   if (back) $('#dialogBack').addEventListener('click', back.open);
+}
+
+const engagement = createEngagement({
+  client: engagementClient,
+  showView: (html) => showView(html),
+  root: () => $('#dialogContent'),
+  onCommunity: (community) => {
+    $('#communityButton').hidden = community === null;
+  },
+});
+
+/** @param {import('./domain/offer.js').Offer} offer */
+function bindReport(offer) {
+  $('#reportOffer').addEventListener('click', () => engagement.openFeedback(offer));
 }
 
 const collectionView = createCollectionView({
@@ -262,7 +281,15 @@ function openDaily() {
   showView(dailyDialog(quotaCounts()));
 }
 
-const NAV_ACTIONS = { collection: collectionView.open };
+/** Settles once the community group (if any) is known; started after the catalog. */
+let communityLoaded = null;
+const loadCommunity = () => (communityLoaded ??= engagement.loadCommunity());
+
+const NAV_ACTIONS = {
+  collection: collectionView.open,
+  feedback: () => engagement.openFeedback(null),
+  community: () => loadCommunity().then(() => engagement.openCommunity()),
+};
 
 function onKeydown(event) {
   if (dialog.isOpen()) {
@@ -292,6 +319,12 @@ function bindEvents() {
   $('#catalogRetry').addEventListener('click', () => catalog.refresh());
   $('#probabilityButton').addEventListener('click', guarded(openOdds));
   $('#headerCount').addEventListener('click', guarded(openDaily));
+  $('#feedbackButton').addEventListener(
+    'click',
+    guarded(() => engagement.openFeedback(null)),
+  );
+  $('#communityButton').addEventListener('click', guarded(engagement.openCommunity));
+  bindOfficialClicks(document, engagementClient.trackOfficialClick);
   for (const button of document.querySelectorAll('[data-nav]')) {
     button.addEventListener('click', () => {
       const action = NAV_ACTIONS[button.dataset.nav];
@@ -330,6 +363,7 @@ document.body.classList.add('is-intro');
 setTimeout(() => document.body.classList.remove('is-intro'), TIMINGS.introMs);
 catalog.refresh();
 userLoaded = loadUser();
+loadCommunity();
 // The collection no longer depends on the catalog, so `/#collection` opens at once.
 const linked = NAV_ACTIONS[initialView(window.location.hash) ?? ''];
 if (linked) linked();

@@ -4,6 +4,7 @@ import { withSecurityHeaders } from './http/security';
 import { routeManage } from './routes/manage';
 import { type UserLimits } from './users/context';
 import { isUserPath, routeUser } from './routes/me';
+import { isEngagementPath, routeEngagement } from './routes/engagement';
 import { cryptoRandom } from '../../src/domain/draw.js';
 import { USER_LIMITS } from './config';
 import { runCleanup } from './maintenance/cleanup';
@@ -74,6 +75,9 @@ export function createHandler({
       if (isSite) return await routeSite(request, env, url, utcDay(at));
       if (url.pathname === '/api/manage' || url.pathname.startsWith('/api/manage/')) {
         return await routeManage(request, env, url, at, rateLimit);
+      }
+      if (isEngagementPath(url.pathname)) {
+        return await routeEngagement(request, url, { db: env.DB, env, now: at });
       }
       if (isUserPath(url.pathname)) {
         return await routeUser(request, url, {

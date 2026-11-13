@@ -45,6 +45,17 @@ describe('normalizeOffer', () => {
     expect(offer.lastVerifiedAt).toBeNull();
   });
 
+  it('keeps valid interest fields and drops bad ones without rejecting the offer', () => {
+    const good = normalizeOffer(
+      apiOffer({ id: 'p', publishedAt: '2026-11-12T00:00:00Z', officialVisitors: 12 }),
+    );
+    expect(good).toMatchObject({ publishedAt: '2026-11-12T00:00:00Z', officialVisitors: 12 });
+    for (const officialVisitors of [0, -3, 1.5, '12', null, undefined]) {
+      const offer = normalizeOffer(apiOffer({ id: 'p', publishedAt: 5, officialVisitors }));
+      expect(offer).toMatchObject({ publishedAt: null, officialVisitors: null });
+    }
+  });
+
   it('treats a non-array regions value as unrestricted', () => {
     const base = apiOffer({ id: 'r' });
     const offer = normalizeOffer({ ...base, conditions: { ...base.conditions, regions: 'US' } });

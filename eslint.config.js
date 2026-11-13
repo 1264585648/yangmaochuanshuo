@@ -22,6 +22,8 @@ export default tseslint.config(
       'tests/**/*.integration.test.js',
       'tests/app/motion.test.js',
       'tests/app/discover.test.js',
+      'tests/app/engagement.test.js',
+      'tests/app/admin-beta.test.js',
     ],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },

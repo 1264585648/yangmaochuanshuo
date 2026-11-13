@@ -153,6 +153,40 @@ const OFFERS = [
 const q = (v) => (v === null ? 'NULL' : `'${String(v).replaceAll("'", "''")}'`);
 const flag = (flags, f) => (flags.includes(f) ? 1 : 0);
 
+/* Local-only activity so the admin pages and interest badges have something to
+   show. Deterministic, clearly fake visitor ids; this script refuses --remote. */
+let seed = 42;
+const nextRandom = () => {
+  seed = (seed * 1103515245 + 12345) % 2 ** 31;
+  return seed / 2 ** 31;
+};
+const day = (n) => daysAgo(n).slice(0, 10);
+const clickRows = OFFERS.flatMap(([id], index) => {
+  const visitors = Math.floor(nextRandom() * 30);
+  return Array.from({ length: visitors }, (_, v) => {
+    const when = day(Math.floor(nextRandom() * 10));
+    return `INSERT OR IGNORE INTO offer_clicks (offer_id, day, visitor) VALUES (${q(id)}, ${q(when)}, ${q(`local-visitor-${index}-${v}`)});`;
+  });
+});
+const FEEDBACK = [
+  ['offer', OFFERS[0][0], 'expired', '【示例】活动页显示已结束', 'wx: example'],
+  ['offer', OFFERS[1][0], 'wrong_info', '【示例】额度好像变成 3 美元了', ''],
+  ['general', null, 'want_offer', '【示例】希望多一些设计工具类的福利', ''],
+  ['general', null, 'suggestion', '【示例】图鉴能按卡池筛选就好了', 'example@example.com'],
+];
+const feedbackRows = FEEDBACK.map(
+  ([kind, offerId, category, message, contact], i) =>
+    `INSERT INTO feedback (kind, offer_id, category, message, contact, created_at, updated_at) VALUES (${q(kind)}, ${q(offerId)}, ${q(category)}, ${q(message)}, ${q(contact)}, ${q(daysAgo(i))}, ${q(daysAgo(i))});`,
+);
+const community = {
+  enabled: true,
+  title: '【示例】羊毛传说内测群',
+  description: '本地开发用的示例入口，在 /admin 的「内测群」页可换成真实链接或二维码。',
+  link: 'https://example.com/join',
+  linkLabel: '打开示例链接',
+  qrExpiresAt: null,
+};
+
 const sql = [
   ...PROVIDERS.map(
     ([id, name, domain]) =>
@@ -162,6 +196,15 @@ const sql = [
     const domain = PROVIDERS.find((p) => p[0] === provider)[2];
     return `INSERT OR REPLACE INTO offers (id, provider_id, pool, rarity, title, summary, benefit, official_url, source_url, new_users_only, student_only, requires_payment_method, auto_renews, regions, conditions_note, status, valid_from, valid_until, last_verified_at, created_by, created_at, updated_at) VALUES (${q(id)}, ${q(provider)}, ${q(pool)}, ${q(rarity)}, ${q(`【示例】${title}`)}, ${q('本地开发用的虚构福利，不对应任何真实活动。')}, ${q(benefit)}, ${q(`https://www.${domain}/offers/${id}`)}, ${q(`https://docs.${domain}/terms/${id}`)}, ${flag(flags, 'n')}, ${flag(flags, 's')}, ${flag(flags, 'p')}, ${flag(flags, 'r')}, ${q(JSON.stringify(regions))}, ${q(flags.includes('p') ? '验证付款方式时可能产生小额预授权。' : '')}, 'published', NULL, ${q(until)}, ${verified === null ? 'NULL' : q(daysAgo(verified))}, 'local-seed', ${q(TS)}, ${q(TS)});`;
   }),
+  // Stagger publish dates so some cards show "新上架" and some do not.
+  ...OFFERS.map(
+    ([id], i) => `UPDATE offers SET published_at = ${q(daysAgo(i * 4))} WHERE id = ${q(id)};`,
+  ),
+  'DELETE FROM offer_clicks;',
+  ...clickRows,
+  "DELETE FROM feedback WHERE message LIKE '【示例】%';",
+  ...feedbackRows,
+  `INSERT OR REPLACE INTO site_settings (key, value, updated_at) VALUES ('community', ${q(JSON.stringify(community))}, ${q(TS)});`,
 ].join('\n');
 
 const dir = mkdtempSync(join(tmpdir(), 'dealdex-seed-'));
@@ -174,7 +217,10 @@ const run = (args) => execFileSync(process.execPath, [wrangler, ...args], { stdi
 try {
   run(['d1', 'migrations', 'apply', 'dealdex', '--local']);
   run(['d1', 'execute', 'dealdex', '--local', `--file=${file}`]);
-  console.log(`Seeded ${PROVIDERS.length} providers and ${OFFERS.length} example offers locally.`);
+  console.log(
+    `Seeded ${PROVIDERS.length} providers, ${OFFERS.length} example offers, ` +
+      `${clickRows.length} sample clicks and ${FEEDBACK.length} sample feedback items locally.`,
+  );
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }

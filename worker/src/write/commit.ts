@@ -12,7 +12,7 @@ type Statement = ReturnType<DB['prepare']>;
 
 export interface AuditEntry {
   action: string;
-  entityType: 'offer' | 'provider' | 'change';
+  entityType: 'offer' | 'provider' | 'change' | 'feedback' | 'setting';
   entityId: string;
   before: unknown;
   after: unknown;

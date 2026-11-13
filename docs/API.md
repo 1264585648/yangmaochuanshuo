@@ -29,6 +29,30 @@
 
 返回单张卡。草稿、待审核、已失效、已过期或不存在的卡一律返回 `404 not_found`。
 
+### 卡片上的热度字段
+
+列表与单卡响应都带两个字段：`publishedAt`（首次发布时间，用于「新上架」标签，前台显示 14 天）和 `officialVisitors`（点开过官方页面的独立访客数）。访客数低于 10 时返回 `null`，前台不显示数字。所有数字都来自真实点击，没有任何基数或虚构数据。
+
+## 内测接口（点击、反馈、内测群）
+
+写请求只接受同源（与 `/api/me*` 相同的 Origin 校验），不会创建用户。访客以 IP 的 HMAC 哈希（`IP_HASH_SECRET`）识别，不存原始 IP；缺少密钥时写接口返回 `503 unavailable`。
+
+| 方法与路径                   | 说明                                                                                                                                                |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/offers/:id/click` | 记录一次「打开官方页面」，请求体为空。只计当前公开的卡；同一访客同一北京日对同一张卡只写一行，重复点击不产生写入。返回 `{ "recorded": true/false }` |
+| `POST /api/feedback`         | 提交反馈，`201` 返回 `{ "id" }`。每个网络每小时 10 条，超出返回 `429`                                                                               |
+| `GET /api/community`         | 内测群信息，未配置或已关闭时 `data` 为 `null`。二维码过期后 `qr` 为 `null`                                                                          |
+| `GET /api/community/qr?v=`   | 二维码图片（同源提供，以满足 CSP `img-src 'self'`），过期或未配置时 `404`                                                                           |
+
+反馈请求体：
+
+```json
+{ "kind": "offer", "offerId": "<卡 id>", "category": "expired | wrong_info | link_broken | other", "message": "选填，≤1000 字", "contact": "选填，≤100 字" }
+{ "kind": "general", "category": "suggestion | bug | want_offer | other", "message": "必填，2–1000 字", "contact": "选填" }
+```
+
+报告的卡必须存在（已下架的卡也可以报告），否则返回 `422 unknown_offer`。
+
 ## 用户接口 `/api/me*`
 
 轻量用户体系的 A 层：服务端签发匿名身份，无需注册。规划见 `docs/PLANNING.md` 阶段 3。
@@ -268,21 +292,26 @@ curl -X POST https://free.vibe-show.com/api/manage/offers/example-ai-credit/veri
 
 ### 接口列表
 
-| 方法与路径                                           | 权限   | 说明                                                                             |
-| ---------------------------------------------------- | ------ | -------------------------------------------------------------------------------- |
-| `GET /api/manage/offers?status=&limit=&offset=`      | 任意   | 任意状态的卡，含 `status`、`version` 等管理字段                                  |
-| `GET /api/manage/offers/:id`                         | 任意   | 单张卡，任意状态                                                                 |
-| `POST /api/manage/offers`                            | 任意   | 新增。admin 新增为草稿，inspector 新增直接进入待审核                             |
-| `PATCH /api/manage/offers/:id`                       | admin  | 直接修改：`{ "baseVersion": 1, "changes": { ... } }`                             |
-| `POST /api/manage/offers/:id/:action`                | 见上表 | 状态流转：`{ "sourceUrl": "https://..." }`，`publish` 另可带 `"verified": true`  |
-| `POST /api/manage/offers/:id/changes`                | 任意   | 提出变更：`{ "baseVersion": 1, "changes": { ... }, "sourceUrl": "https://..." }` |
-| `GET /api/manage/changes?status=pending&offerId=`    | 任意   | 变更申请列表                                                                     |
-| `POST /api/manage/changes/:id/apply`                 | admin  | 采纳变更                                                                         |
-| `POST /api/manage/changes/:id/reject`                | admin  | 驳回变更                                                                         |
-| `POST /api/manage/providers`                         | admin  | 新增提供方：`{ "id", "name", "officialDomains": ["example.com"] }`               |
-| `PATCH /api/manage/providers/:id`                    | admin  | 修改名称或官方域名                                                               |
-| `GET /api/manage/audit?entityType=&entityId=&limit=` | admin  | 审计日志，最新在前，含变更前后完整快照                                           |
-| `POST /api/manage/audit/:id/revert`                  | admin  | 把卡的内容恢复到该条记录之前的状态，作为一次新的写入记录                         |
+| 方法与路径                                           | 权限   | 说明                                                                                  |
+| ---------------------------------------------------- | ------ | ------------------------------------------------------------------------------------- |
+| `GET /api/manage/offers?status=&limit=&offset=`      | 任意   | 任意状态的卡，含 `status`、`version` 等管理字段                                       |
+| `GET /api/manage/offers/:id`                         | 任意   | 单张卡，任意状态                                                                      |
+| `POST /api/manage/offers`                            | 任意   | 新增。admin 新增为草稿，inspector 新增直接进入待审核                                  |
+| `PATCH /api/manage/offers/:id`                       | admin  | 直接修改：`{ "baseVersion": 1, "changes": { ... } }`                                  |
+| `POST /api/manage/offers/:id/:action`                | 见上表 | 状态流转：`{ "sourceUrl": "https://..." }`，`publish` 另可带 `"verified": true`       |
+| `POST /api/manage/offers/:id/changes`                | 任意   | 提出变更：`{ "baseVersion": 1, "changes": { ... }, "sourceUrl": "https://..." }`      |
+| `GET /api/manage/changes?status=pending&offerId=`    | 任意   | 变更申请列表                                                                          |
+| `POST /api/manage/changes/:id/apply`                 | admin  | 采纳变更                                                                              |
+| `POST /api/manage/changes/:id/reject`                | admin  | 驳回变更                                                                              |
+| `POST /api/manage/providers`                         | admin  | 新增提供方：`{ "id", "name", "officialDomains": ["example.com"] }`                    |
+| `PATCH /api/manage/providers/:id`                    | admin  | 修改名称或官方域名                                                                    |
+| `GET /api/manage/audit?entityType=&entityId=&limit=` | admin  | 审计日志，最新在前，含变更前后完整快照                                                |
+| `POST /api/manage/audit/:id/revert`                  | admin  | 把卡的内容恢复到该条记录之前的状态，作为一次新的写入记录                              |
+| `GET /api/manage/feedback?status=&limit=&offset=`    | admin  | 用户反馈，最新在前；`status` 为 `open`、`resolved`、`dismissed`                       |
+| `POST /api/manage/feedback/:id/:action`              | admin  | `resolve`、`dismiss`（仅待处理）或 `reopen`，可带 `{ "note": "处理备注" }`            |
+| `GET /api/manage/stats/clicks?days=7`                | admin  | 官方链接点击统计：每日独立访客、合计与前 50 张卡，`days` 为 1–90                      |
+| `GET /api/manage/community`                          | admin  | 内测群设置与二维码指纹                                                                |
+| `PUT /api/manage/community`                          | admin  | 保存设置；`qr: { "base64" }` 上传图片（PNG/JPEG/WebP，≤512KB），`null` 删除，省略保留 |
 
 ### 新增卡的请求体
 

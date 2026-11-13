@@ -164,6 +164,16 @@ describe('GET /offers/:id', () => {
     expect(html).toContain('href="https://docs.example.com/deal"');
   });
 
+  it('marks the official link for click counting and offers a script-only report button', async () => {
+    const { html } = await page('/offers/ai-ssr');
+    expect(html).toMatch(
+      /class="modal-button primary official-link"[^>]*data-official-offer="ai-ssr"/,
+    );
+    expect(html).toContain('data-report-offer="ai-ssr"');
+    expect(html).toContain('class="text-link report-link js-only"');
+    expect(html).toContain('id="feedbackButton"');
+  });
+
   it.each(['ai-expired', 'ai-draft', 'ai-past', 'no-such-offer', 'Bad_Id', 'a/b'])(
     'returns a noindex 404 page for %s',
     async (id) => {

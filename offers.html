@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="/styles/motion.css" />
     <link rel="stylesheet" href="/styles/catalog.css" />
     <link rel="stylesheet" href="/styles/guide.css" />
+    <link rel="stylesheet" href="/styles/engagement.css" />
   </head>
   <body class="catalog-page">
     <div class="world" aria-hidden="true"></div>
@@ -84,8 +85,23 @@
       <footer class="bottom-note">
         <span class="note-ornament">✦</span> 本站只整理公开优惠信息，实际领取资格以官方活动规则为准
         <span class="note-ornament">✦</span>
+        <span class="beta-links js-only">
+          <button type="button" class="beta-link" id="feedbackButton">意见反馈</button
+          ><button type="button" class="beta-link is-community" id="communityButton" hidden>
+            加入内测群
+          </button>
+        </span>
       </footer>
     </div>
+
+    <div class="overlay" id="overlay" hidden>
+      <div class="overlay-dim" data-close></div>
+      <div class="dialog-frame" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+        <button class="close-button" type="button" id="closeDialog" aria-label="关闭">×</button>
+        <div id="dialogContent"></div>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script type="module" src="/src/catalog.js"></script>
   </body>
 </html>

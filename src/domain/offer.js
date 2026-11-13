@@ -26,6 +26,9 @@
  * @property {string | null} validFrom
  * @property {string | null} validUntil
  * @property {string | null} lastVerifiedAt
+ * @property {string | null} publishedAt When the offer first went live.
+ * @property {number | null} officialVisitors People who opened the official page;
+ *   null below the server's display threshold.
  * @property {Guide | null} [guide] Only on single-offer responses; absent from list
  *   responses, null when the server has none or it failed validation.
  */
@@ -245,6 +248,12 @@ export function normalizeOffer(raw) {
     validFrom: raw.validFrom ?? null,
     validUntil: raw.validUntil ?? null,
     lastVerifiedAt: raw.lastVerifiedAt ?? null,
+    // Optional extras: a bad value is dropped instead of rejecting the offer.
+    publishedAt: isText(raw.publishedAt) ? raw.publishedAt : null,
+    officialVisitors:
+      Number.isInteger(raw.officialVisitors) && raw.officialVisitors > 0
+        ? raw.officialVisitors
+        : null,
     // List responses carry no guide: leave the key out rather than claim there is none.
     ...('guide' in raw ? { guide: normalizeGuide(raw.guide) } : {}),
   });

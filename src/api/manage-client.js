@@ -57,7 +57,7 @@ export function createManageClient({
   const doFetch = (...args) => (fetchImpl ?? globalThis.fetch)(...args);
 
   /**
-   * @param {'GET' | 'POST' | 'PATCH'} method
+   * @param {'GET' | 'POST' | 'PATCH' | 'PUT'} method
    * @param {string} path
    * @param {unknown} [body]
    */
@@ -145,5 +145,20 @@ export function createManageClient({
       request('POST', `/api/manage/audit/${encodeURIComponent(String(id))}/revert`, {}).then(
         (r) => r.data,
       ),
+    listFeedback: (params = {}) =>
+      request('GET', `/api/manage/feedback${buildManageQuery(params)}`),
+    /** @param {number | string} id @param {'resolve' | 'dismiss' | 'reopen'} action */
+    transitionFeedback: (id, action, body = {}) =>
+      request(
+        'POST',
+        `/api/manage/feedback/${encodeURIComponent(String(id))}/${action}`,
+        body,
+      ).then((r) => r.data),
+    getClickStats: (days = 7) =>
+      request('GET', `/api/manage/stats/clicks?days=${encodeURIComponent(String(days))}`).then(
+        (r) => r.data,
+      ),
+    getCommunity: () => request('GET', '/api/manage/community').then((r) => r.data),
+    putCommunity: (body) => request('PUT', '/api/manage/community', body).then((r) => r.data),
   };
 }

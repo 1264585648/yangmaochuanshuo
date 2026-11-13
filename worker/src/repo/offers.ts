@@ -3,6 +3,7 @@ import { parseStoredGuide, type Guide } from '../domain/guide';
 import type { Conditions } from '../domain/schema';
 import type { Status } from '../domain/status';
 import { PUBLIC_OFFER_SQL } from '../domain/visibility';
+import { POPULARITY_MIN_VISITORS } from '../config';
 
 type DB = Env['DB'];
 
@@ -28,8 +29,11 @@ export interface OfferRow {
   valid_from: string | null;
   valid_until: string | null;
   last_verified_at: string | null;
+  published_at: string | null;
   version: number;
   guide: string | null;
+  /** Distinct visitors who opened the official link; only on list and detail reads. */
+  official_visitors?: number | null;
 }
 
 export interface PublicOffer {
@@ -46,6 +50,9 @@ export interface PublicOffer {
   validFrom: string | null;
   validUntil: string | null;
   lastVerifiedAt: string | null;
+  publishedAt: string | null;
+  /** Visitors who opened the official page; null below the display threshold or when not counted. */
+  officialVisitors: number | null;
 }
 
 /** Detail view: list responses leave the guide out to stay small. */
@@ -69,11 +76,20 @@ function parseRegions(raw: string): string[] {
 /** Columns `toPublicOffer` reads; queries over many offers select only these. */
 export type PublicOfferRow = Omit<OfferRow, 'guide' | 'status' | 'version'>;
 
+/** Distinct visitors per offer; served by the `offer_clicks` primary key prefix. */
+const VISITORS_SQL = `(SELECT COUNT(DISTINCT oc.visitor) FROM offer_clicks oc WHERE oc.offer_id = o.id) AS official_visitors`;
+
 /** Column list for `PublicOfferRow`, for a query joining `offers o` and `providers p`. */
 export const PUBLIC_OFFER_COLUMNS = `o.id, o.provider_id, p.name AS provider_name, o.pool, o.rarity,
   o.title, o.summary, o.benefit, o.official_url, o.source_url, o.new_users_only, o.student_only,
   o.requires_payment_method, o.auto_renews, o.regions, o.conditions_note, o.valid_from,
-  o.valid_until, o.last_verified_at`;
+  o.valid_until, o.last_verified_at, o.published_at, ${VISITORS_SQL}`;
+
+/** Real counts only, and only once they are large enough to mean something. */
+function visitorsToShow(count: number | null | undefined): number | null {
+  const n = Number(count ?? 0);
+  return Number.isInteger(n) && n >= POPULARITY_MIN_VISITORS ? n : null;
+}
 
 export function toPublicOffer(row: PublicOfferRow): PublicOffer {
   return {
@@ -97,10 +113,12 @@ export function toPublicOffer(row: PublicOfferRow): PublicOffer {
     validFrom: row.valid_from,
     validUntil: row.valid_until,
     lastVerifiedAt: row.last_verified_at,
+    publishedAt: row.published_at ?? null,
+    officialVisitors: visitorsToShow(row.official_visitors),
   };
 }
 
-const SELECT_OFFER = `SELECT o.*, p.name AS provider_name FROM offers o JOIN providers p ON p.id = o.provider_id`;
+const SELECT_OFFER = `SELECT o.*, p.name AS provider_name, ${VISITORS_SQL} FROM offers o JOIN providers p ON p.id = o.provider_id`;
 
 /** Qualify the shared visibility fragment with the offers alias. */
 export const PUBLIC_WHERE = PUBLIC_OFFER_SQL.replace(

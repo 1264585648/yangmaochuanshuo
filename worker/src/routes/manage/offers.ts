@@ -77,6 +77,7 @@ export const createOffer: Handler = async ({ db, client, now, body }) => {
     ...contentColumns(content),
     status: initialStatus(client.scope),
     last_verified_at: null,
+    published_at: null,
     version: 1,
     created_by: client.id,
     created_at: at,
@@ -213,12 +214,28 @@ export const transitionOffer: Handler = async ({ db, client, now, body }, [id, a
   const verifiedAt = verifies ? at : row.last_verified_at;
   const statement = db
     .prepare(
-      `UPDATE offers SET status = ?, last_verified_at = ?, updated_at = ?
+      `UPDATE offers SET status = ?, last_verified_at = ?, updated_at = ?,
+         published_at = CASE WHEN ? THEN COALESCE(published_at, ?) ELSE published_at END
        WHERE id = ? AND status = ? AND version = ?`,
     )
-    .bind(result.to, verifiedAt, at, row.id, row.status, row.version);
+    .bind(
+      result.to,
+      verifiedAt,
+      at,
+      action === 'publish' ? 1 : 0,
+      at,
+      row.id,
+      row.status,
+      row.version,
+    );
+  const publishedAt = action === 'publish' ? (row.published_at ?? at) : row.published_at;
   const after = toManagedOffer(
-    nextRow(row, { status: result.to, last_verified_at: verifiedAt, updated_at: at }),
+    nextRow(row, {
+      status: result.to,
+      last_verified_at: verifiedAt,
+      updated_at: at,
+      published_at: publishedAt,
+    }),
   );
   return plan({
     steps: [{ statement, guarded: true }],

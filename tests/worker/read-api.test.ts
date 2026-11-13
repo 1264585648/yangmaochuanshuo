@@ -100,6 +100,8 @@ describe('GET /api/offers', () => {
       validFrom: null,
       validUntil: null,
       lastVerifiedAt: '2026-11-10T08:00:00Z',
+      publishedAt: null,
+      officialVisitors: null,
     });
   });
 

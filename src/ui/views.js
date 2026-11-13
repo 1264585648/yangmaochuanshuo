@@ -98,7 +98,7 @@ function resultHeading(offer, isNew) {
  */
 export function resultDialog({ offer, poolLabel, isFavorite, canDrawAgain, isNew = true, now }) {
   const heading = resultHeading(offer, isNew);
-  return `<div class="dialog-inner result-dialog rarity-${rarityClass(offer.rarity)}"><div class="dialog-kicker">PACK OPENED · ${e(poolLabel)}</div><h2 id="dialogTitle" class="dialog-title">${heading}</h2>${revealCard(offer, poolLabel)}<div class="reveal-details">${offerBody(offer, now)}${guideLink(offer)}<div class="dialog-actions">${officialButton(offer)}<button type="button" class="modal-button" id="favoriteResult" aria-pressed="${isFavorite}">${favoriteLabel(isFavorite)}</button><button type="button" class="modal-button" id="nextDraw">${canDrawAgain ? '继续抽卡' : '返回大厅'}</button></div>${FINEPRINT('卡牌是公开优惠的索引，本站不发放兑换码或资格。领取前请以官方页面的最新规则为准。')}</div></div>`;
+  return `<div class="dialog-inner result-dialog rarity-${rarityClass(offer.rarity)}"><div class="dialog-kicker">PACK OPENED · ${e(poolLabel)}</div><h2 id="dialogTitle" class="dialog-title">${heading}</h2>${revealCard(offer, poolLabel)}<div class="reveal-details">${offerBody(offer, now)}${guideLink(offer)}<div class="dialog-actions">${officialButton(offer)}<button type="button" class="modal-button" id="favoriteResult" aria-pressed="${isFavorite}">${favoriteLabel(isFavorite)}</button><button type="button" class="modal-button" id="nextDraw">${canDrawAgain ? '继续抽卡' : '返回大厅'}</button></div><button type="button" class="text-link report-link" id="reportOffer">信息有误？反馈问题</button>${FINEPRINT('卡牌是公开优惠的索引，本站不发放兑换码或资格。领取前请以官方页面的最新规则为准。')}</div></div>`;
 }
 
 /**
@@ -109,5 +109,5 @@ export function detailDialog({ offer, poolLabel, isFavorite, backLabel, now }) {
   const back = backLabel
     ? `<button type="button" class="back-button" id="dialogBack">‹ ${e(backLabel)}</button>`
     : '';
-  return `<div class="dialog-inner detail-dialog">${back}<div class="dialog-kicker">${e(poolLabel)}</div><h2 id="dialogTitle" class="sr-only">${e(offer.title)}</h2><div class="detail-emblem pool-${e(offer.pool)}" aria-hidden="true">${poolIconSVG(offer.pool)}</div>${offerBody(offer, now)}${guideLink(offer)}<div class="dialog-actions">${officialButton(offer)}<button type="button" class="modal-button" id="favoriteResult" aria-pressed="${isFavorite}">${favoriteLabel(isFavorite)}</button></div>${FINEPRINT('领取前请以官方页面的最新规则为准。发现信息有误？可通过来源链接核对。')}</div>`;
+  return `<div class="dialog-inner detail-dialog">${back}<div class="dialog-kicker">${e(poolLabel)}</div><h2 id="dialogTitle" class="sr-only">${e(offer.title)}</h2><div class="detail-emblem pool-${e(offer.pool)}" aria-hidden="true">${poolIconSVG(offer.pool)}</div>${offerBody(offer, now)}${guideLink(offer)}<div class="dialog-actions">${officialButton(offer)}<button type="button" class="modal-button" id="favoriteResult" aria-pressed="${isFavorite}">${favoriteLabel(isFavorite)}</button></div><button type="button" class="text-link report-link" id="reportOffer">信息有误？反馈问题</button>${FINEPRINT('领取前请以官方页面的最新规则为准。发现信息过期或有误，点上方「反馈问题」告诉我们。')}</div>`;
 }

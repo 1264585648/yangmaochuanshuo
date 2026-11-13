@@ -14,11 +14,21 @@ import {
   transitionOffer,
 } from './offers';
 import { createProvider, listProvidersHandler, updateProvider } from './providers';
+import {
+  clickStatsHandler,
+  getCommunityHandler,
+  listFeedbackHandler,
+  putCommunityHandler,
+  transitionFeedback,
+} from './engagement';
+import { COMMUNITY_BODY_MAX_BYTES } from '../../config';
 import type { Handler } from './shared';
 
 interface Route {
   pattern: RegExp;
-  methods: Partial<Record<'GET' | 'POST' | 'PATCH', Handler>>;
+  methods: Partial<Record<'GET' | 'POST' | 'PATCH' | 'PUT', Handler>>;
+  /** Request body cap when it differs from the default. */
+  maxBodyBytes?: number;
 }
 
 const P = '^/api/manage';
@@ -45,6 +55,17 @@ const ROUTES: readonly Route[] = [
   { pattern: new RegExp(`${P}/providers/([^/]+)$`), methods: { PATCH: updateProvider } },
   { pattern: new RegExp(`${P}/audit$`), methods: { GET: listAuditEntries } },
   { pattern: new RegExp(`${P}/audit/(\\d+)/revert$`), methods: { POST: revertAuditEntry } },
+  { pattern: new RegExp(`${P}/feedback$`), methods: { GET: listFeedbackHandler } },
+  {
+    pattern: new RegExp(`${P}/feedback/(\\d+)/([a-z]+)$`),
+    methods: { POST: transitionFeedback },
+  },
+  { pattern: new RegExp(`${P}/stats/clicks$`), methods: { GET: clickStatsHandler } },
+  {
+    pattern: new RegExp(`${P}/community$`),
+    methods: { GET: getCommunityHandler, PUT: putCommunityHandler },
+    maxBodyBytes: COMMUNITY_BODY_MAX_BYTES,
+  },
 ];
 
 function decodeParams(match: RegExpExecArray): string[] | null {
@@ -95,7 +116,7 @@ export async function routeManage(
   }
   const key = validateKey(request.headers.get('idempotency-key'));
   if (!key.ok) return key.response;
-  const body = await readJsonBody(request);
+  const body = await readJsonBody(request, route.maxBodyBytes);
   if (!body.ok) return body.response;
 
   const idempotency = { key: key.key, hash: await requestHash(method, url.pathname, body.raw) };

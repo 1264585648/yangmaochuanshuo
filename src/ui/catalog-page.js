@@ -121,7 +121,7 @@ export function pagination(filters, total, pageSize) {
 export function catalogResults({ offers, total, filters, pageSize = CATALOG_PAGE_SIZE }) {
   const status = `<p class="result-count" id="catalogStatus" role="status">共 ${total} 张</p>`;
   if (offers.length > 0) {
-    return `${status}<ul class="catalog-grid">${offers.map(catalogCard).join('')}</ul>${pagination(filters, total, pageSize)}`;
+    return `${status}<ul class="catalog-grid">${offers.map((offer) => catalogCard(offer)).join('')}</ul>${pagination(filters, total, pageSize)}`;
   }
   if (total > 0) {
     const first = e(catalogHref({ ...filters, page: 1 }));

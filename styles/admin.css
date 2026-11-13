@@ -372,14 +372,17 @@
 }
 
 .status-badge.is-published,
-.status-badge.is-applied {
+.status-badge.is-applied,
+.status-badge.is-resolved,
+.status-badge.is-open {
   border-color: #6ab88a80;
   background: #6ab88a24;
   color: #c8f3d8;
 }
 
 .status-badge.is-expired,
-.status-badge.is-rejected {
+.status-badge.is-rejected,
+.status-badge.is-dismissed {
   border-color: #d16e6e80;
   background: #d16e6e24;
   color: #ffd0d0;
@@ -526,4 +529,105 @@
   .admin-form-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── beta tabs: feedback, click stats, community group ── */
+.admin-form {
+  display: grid;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.admin-feedback-text {
+  margin: 10px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: #efe2cb;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 4px 0 18px;
+}
+
+.admin-stat {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #0f1523;
+  border: 1px solid #ffffff17;
+}
+
+.admin-stat strong {
+  font-size: 24px;
+  color: #f7dfa9;
+}
+
+.admin-stat span {
+  font-size: 12px;
+  color: #9e9281;
+}
+
+.admin-bars {
+  list-style: none;
+  margin: 10px 0 20px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.admin-bars li {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #cfc1ab;
+}
+
+.admin-bars meter {
+  width: 100%;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: #efe2cb;
+}
+
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #ffffff17;
+}
+
+.admin-table th {
+  color: #cfc1ab;
+  font-weight: 600;
+}
+
+.admin-qr-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-qr-preview {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  background: white;
+  border-radius: 10px;
+  padding: 6px;
 }
