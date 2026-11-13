@@ -30,14 +30,24 @@ npm run dev             # 终端 2：Vite 热更新，/api 代理到 8787
 | `npm run db:migrate:remote` | 对线上 D1 执行迁移                              |
 | `npm test`                  | 运行 Vitest 测试                                |
 | `npm run coverage`          | 运行测试并生成覆盖率报告                        |
+| `npm run test:e2e`          | Playwright 端到端测试（见下文）                 |
 | `npm run lint`              | ESLint 检查                                     |
 | `npm run format`            | Prettier 格式化全部文件                         |
 | `npm run build`             | 构建到 `dist/`                                  |
 | `npm run check`             | lint、格式检查、测试、构建，CI 执行同一组合     |
 
+### 端到端测试
+
+`npm run test:e2e` 用 Playwright 在 Chromium、WebKit（桌面 Safari 配置）和 iPhone 15 配置下跑核心流程：选池、查看概率、开包、收藏、刷新后次数与图鉴保持、打开已收集的卡、每日 3 次上限（含绕过页面直接调用接口），以及目录页的筛选、搜索、前进后退、单卡页、404 和不运行脚本时的筛选。
+
+- 首次运行前执行 `npx playwright install chromium webkit` 下载浏览器。
+- 测试会自动构建前端，在 `.wrangler/e2e-state` 新建一份独立的本地 D1 并写入示例数据，再用 HTTPS 启动 Worker（端口默认 8790，可用 `E2E_PORT` 修改）。用 HTTPS 是因为 WebKit 在普通 http 下不会回传带 Secure 标记的 Cookie。
+- 每个用例都会检查浏览器控制台：出现脚本错误或 CSP 拦截即判为失败。因此关闭了失败截图（Playwright 截图前会向页面注入样式，会被 CSP 拦下），失败时查看 `test-results/` 中的追踪文件。
+- CI 中作为独立任务运行，失败时上传报告。
+
 ### 部署与数据库
 
-前端与接口一起部署为一个 Cloudflare Worker（`wrangler.jsonc`）：`npm run build` 生成 `dist/`，由 Worker 作为静态资源提供；`/api/*`、目录页 `/offers`、`/sitemap.xml` 与 `/robots.txt` 由 Worker 处理。页面依赖同源的 `/api/offers`，单独部署到纯静态托管只会显示「暂不可用」。发布时先构建再部署（`npm run build && npx wrangler deploy`）：`wrangler deploy` 不会自动构建，而静态资源的安全响应头来自构建时复制进 `dist/` 的 `public/_headers`，用旧的 `dist/` 部署会缺少这些响应头。
+前端与接口一起部署为一个 Cloudflare Worker（`wrangler.jsonc`）：`npm run build` 生成 `dist/`，由 Worker 作为静态资源提供；`/api/*`、目录页 `/offers`、`/sitemap.xml` 与 `/robots.txt` 由 Worker 处理。页面依赖同源的 `/api/offers`，单独部署到纯静态托管只会显示「暂不可用」。发布时先构建再部署（`npm run build && npx wrangler deploy`），并且要在只含待发布提交的干净检出中进行（例如 `git worktree add`），否则工作区里未提交的改动会一起打包上线：`wrangler deploy` 不会自动构建，而静态资源的安全响应头来自构建时复制进 `dist/` 的 `public/_headers`，用旧的 `dist/` 部署会缺少这些响应头。
 
 线上数据库是 Cloudflare D1 `dealdex`，已在 `wrangler.jsonc` 中配置并完成迁移。新增迁移后执行 `npm run db:migrate:remote`。
 
@@ -88,9 +98,12 @@ wrangler.jsonc         Worker、静态资源与 D1 配置
 scripts/manage-token.mjs 写入接口令牌的签发、列出与吊销
 scripts/seed-local.mjs 本地 D1 示例数据（拒绝远程）
 tests/                 Vitest 单元测试、jsdom 页面集成测试与本地 D1 接口测试
+e2e/                   Playwright 端到端测试
+playwright.config.js   端到端测试配置（浏览器、测试服务器）
+scripts/e2e-server.mjs 端到端测试用的 Worker 启动脚本
 vite.config.js         开发服务器、构建与测试配置
 eslint.config.js       ESLint 配置
-.github/workflows/     CI：lint、格式检查、测试、构建
+.github/workflows/     CI：lint、格式检查、测试、构建；端到端测试
 docs/IMPLEMENTATION.md 第一阶段实施记录与上线边界
 docs/PLANNING.md       前期规划与分阶段路线
 docs/API.md            接口说明（含 AI 巡检接入流程）

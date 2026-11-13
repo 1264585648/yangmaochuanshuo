@@ -5,7 +5,15 @@ import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
   {
-    ignores: ['dist/', 'coverage/', 'node_modules/', '.wrangler/', 'worker-configuration.d.ts'],
+    ignores: [
+      'dist/',
+      'coverage/',
+      'node_modules/',
+      '.wrangler/',
+      'worker-configuration.d.ts',
+      'test-results/',
+      'playwright-report/',
+    ],
   },
   js.configs.recommended,
   {
@@ -13,7 +21,7 @@ export default tseslint.config(
     languageOptions: { ecmaVersion: 2023, sourceType: 'module', globals: globals.browser },
   },
   {
-    files: ['*.config.js', 'tests/**/*.{js,ts}', 'scripts/**/*.{js,mjs}'],
+    files: ['*.config.js', 'tests/**/*.{js,ts}', 'scripts/**/*.{js,mjs}', 'e2e/**/*.js'],
     languageOptions: { ecmaVersion: 2023, sourceType: 'module', globals: globals.node },
   },
   {
@@ -22,6 +30,8 @@ export default tseslint.config(
       'tests/**/*.integration.test.js',
       'tests/app/motion.test.js',
       'tests/app/discover.test.js',
+      // Callbacks passed to page.evaluate run in the browser.
+      'e2e/**/*.js',
     ],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
