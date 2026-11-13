@@ -33,3 +33,13 @@ export const USER_LIMITS = Object.freeze({
   /** Favorite toggles and imports per user. */
   writesPerUser: Object.freeze({ max: 60, windowSeconds: 60 }),
 });
+
+/** Daily maintenance run by the cron trigger in wrangler.jsonc. */
+export const CLEANUP = Object.freeze({
+  /** Rate-limit windows older than this are dropped; must exceed every configured window. */
+  rateLimitRetentionSeconds: 24 * 60 * 60,
+  /** Guests with no draws, favorites or import are removed once this old. */
+  emptyGuestGraceDays: 7,
+  /** Rows removed per table per run; leftovers go on the next run. */
+  batchSize: 5_000,
+});
