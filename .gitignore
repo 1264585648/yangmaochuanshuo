@@ -34,3 +34,7 @@ worker-configuration.d.ts
 
 # Unrelated local reference docs (not part of this project)
 信也通用外呼对外接口文档outbound-vendor-api.html
+
+# Visual baselines are rendered on Linux CI only; local previews stay local
+e2e/*-snapshots/*-win32.png
+e2e/*-snapshots/*-darwin.png

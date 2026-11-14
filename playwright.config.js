@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const PORT = Number(process.env.E2E_PORT ?? 8790);
+const VISUAL = /visual\.spec\.js$/;
 
 export default defineConfig({
   testDir: 'e2e',
@@ -22,13 +23,36 @@ export default defineConfig({
     locale: 'zh-CN',
     timezoneId: 'Asia/Shanghai',
   },
+  expect: {
+    // Baselines and comparisons both run on the same Linux CI image.
+    toHaveScreenshot: { maxDiffPixelRatio: 0.001 },
+  },
   projects: [
     {
       name: 'chromium',
+      testIgnore: VISUAL,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
-    { name: 'mobile', use: { ...devices['iPhone 15'] } },
+    { name: 'webkit', testIgnore: VISUAL, use: { ...devices['Desktop Safari'] } },
+    { name: 'mobile', testIgnore: VISUAL, use: { ...devices['iPhone 15'] } },
+    // Visual regression at the three sizes the design targets, all in Chromium.
+    {
+      name: 'visual-desktop',
+      testMatch: VISUAL,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+    },
+    {
+      name: 'visual-tablet',
+      testMatch: VISUAL,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 820, height: 1180 },
+        deviceScaleFactor: 2,
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
+    { name: 'visual-phone', testMatch: VISUAL, use: { ...devices['Pixel 7'] } },
   ],
   webServer: {
     command: 'node scripts/e2e-server.mjs',

@@ -1,0 +1,31 @@
+name: Update visual baselines
+
+# Run by hand after an intended UI change. Renders the visual regression
+# screenshots on the same image and browsers as the CI e2e job and uploads
+# them; download the artifact, review the images and commit them to
+# e2e/visual.spec.js-snapshots/.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baselines:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Same browsers and system fonts as the e2e job, so the pixels match.
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test --project=visual-desktop --project=visual-tablet --project=visual-phone --update-snapshots
+      - uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines
+          path: e2e/visual.spec.js-snapshots/
+          retention-days: 7
