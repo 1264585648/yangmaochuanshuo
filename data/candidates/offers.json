@@ -2973,6 +2973,727 @@
           "/learn 为客户端渲染，抓取时正文为空，链接本身可用。中文课程是否与英文同步未核实，卡面未写。"
         ]
       }
+    },
+    {
+      "request": {
+        "id": "opencode-zen-free-models",
+        "providerId": "opencode",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "OpenCode 限时免费模型",
+        "summary": "开源编程智能体 OpenCode 的模型列表中常有一批标注 Free 的模型限时免费，名单每隔几天轮换。免费模型只能在 OpenCode 客户端内使用；部分模型在免费期内会留存数据或用于改进模型。",
+        "benefit": "在 OpenCode 中免费使用一批限时免费模型，名单轮换",
+        "officialUrl": "https://opencode.ai/docs/console/models/",
+        "sourceUrl": "https://opencode.ai/docs/console/models/",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "免费名单与各模型限额随时调整，以模型页为准。部分模型会留存数据或用于训练，个别模型不对部分国家和地区开放，不要提交个人或机密信息。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 OpenCode 模型页，查看当前标注 Free 的模型及各自的数据政策。",
+              "link": {
+                "label": "OpenCode 模型列表",
+                "url": "https://opencode.ai/docs/console/models/"
+              }
+            },
+            {
+              "text": "安装 OpenCode 客户端。免费模型只能在 OpenCode 内使用，其他客户端需改用付费模型。"
+            },
+            {
+              "text": "在 OpenCode 的模型选择中挑选带 Free 的模型开始使用。"
+            },
+            {
+              "text": "处理敏感代码前，先确认所选模型是否会留存数据或用于训练。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": ["https://opencode.ai/docs/console/models/"],
+        "quote": "\"GLM-5.3-Flash Free is free on OpenCode for a limited time.\" \"Free-tier chat models require OpenCode; use paid models or Go from other clients.\" Big Pickle: data \"may be used to improve the model\"; Nemotron: \"Trial use only — do not submit personal or confidential data.\"",
+        "uncertainties": [
+          "页面未明确免费模型是否需要登录或 API Key，卡面不作此表述。",
+          "/docs/zen/ 现重定向到 /docs/console/models/，以后可能再次调整路径。",
+          "名单每几天变化，具体型号不写入卡面。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "qoder-pro-trial-daily-credits",
+        "providerId": "qoder",
+        "pool": "ai",
+        "rarity": "S",
+        "title": "Qoder：新用户 14 天 Pro 试用，个人用户每天领 100 Credits",
+        "summary": "AI 编程平台 Qoder（国际版）新用户首次登录客户端可获 14 天 Pro 试用与 300 Credits。另外，所有个人用户（含免费版）每天可在桌面端手动领取 100 Credits，每笔 30 天有效。",
+        "benefit": "新用户 14 天 Pro 试用 + 300 Credits；个人用户每天可领 100 Credits",
+        "officialUrl": "https://docs.qoder.com/account/pricing",
+        "sourceUrl": "https://docs.qoder.com/events/100credits",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "试用需最新版客户端，不支持虚拟机，每人限一个账号，多开试用账号会被冻结。每日 Credits 需在桌面端每天 10:00（UTC+8）后手动领取，错过不补；团队版与企业版不参与，活动结束时间另行公告。"
+        },
+        "validFrom": "2026-09-18",
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "查看 Qoder 定价页中的新用户 Pro 试用说明。",
+              "link": {
+                "label": "Qoder 定价",
+                "url": "https://docs.qoder.com/account/pricing"
+              }
+            },
+            {
+              "text": "下载最新版 Qoder 客户端并首次登录，自动开始 14 天 Pro 试用并获得 300 Credits（不支持虚拟机）。"
+            },
+            {
+              "text": "每天 10:00（UTC+8）后在 Qoder 桌面端手动领取当日 100 Credits，每笔 30 天有效，错过不补。",
+              "link": {
+                "label": "每日领取 100 Credits 规则",
+                "url": "https://docs.qoder.com/events/100credits"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": [
+          "https://docs.qoder.com/account/pricing",
+          "https://docs.qoder.com/events/100credits"
+        ],
+        "quote": "\"free 14-day Pro trial upon their first sign-in to Qoder Client (requires latest version; not available on virtual machines)\", \"300 credits\", \"limited to one account per user; any additional trial accounts created will be frozen.\" Daily: \"Each account can claim 100 Credits once per window.\" \"Each reward is valid for 30 days\" \"Teams and Enterprise subscribers are not eligible.\" Start \"September 18, 2026 at 10:00\", end \"To be announced.\"",
+        "uncertainties": [
+          "定价页未说明试用到期未升级时剩余试用 Credits 如何处理（第三方称清零），卡面不写。",
+          "每日 100 Credits 约合每月 3,000，超过 Pro 月度额度，按此定为 S；需每天手动领取，请审核是否保留 S。",
+          "Qoduck 每日免费额度活动页写 2026-11-07 至 11-11，已过期，未收录。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "qoder-cn-pro-trial-daily-credits",
+        "providerId": "qoder",
+        "pool": "ai",
+        "rarity": "S",
+        "title": "Qoder CN：新用户 2 周试用，个人用户每天领 100 Credits",
+        "summary": "阿里云旗下 AI 编程平台 Qoder 的国内版 Qoder CN：个人体验版含 2 周试用与 300 Credits。另外，个人用户（含免费与试用用户）每天可在桌面端手动领取 100 通用 Credits，每笔 30 天有效。",
+        "benefit": "新用户 2 周试用 + 300 Credits；个人用户每天可领 100 Credits",
+        "officialUrl": "https://docs.qoder.cn/product-overview/billing-description",
+        "sourceUrl": "https://docs.qoder.cn/events/100credits",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "每日 Credits 仅限 Qoder CN 桌面端领取，每天 10:00 开放新一轮，错过不可补领、不累计。企业订阅（团队版、企业标准版、企业专属版）不适用。活动结束时间另行公告。"
+        },
+        "validFrom": "2026-09-18",
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "查看 Qoder CN 计费说明中的个人体验版：2 周试用及 300 Credits。",
+              "link": {
+                "label": "Qoder CN 计费说明",
+                "url": "https://docs.qoder.cn/product-overview/billing-description"
+              }
+            },
+            {
+              "text": "在 Qoder CN 官网注册并登录桌面客户端，开始试用。"
+            },
+            {
+              "text": "每天 10:00 后在 Qoder CN 桌面端手动领取当日 100 Credits，每笔 30 天有效。",
+              "link": {
+                "label": "每日领取 100 Credits 规则",
+                "url": "https://docs.qoder.cn/events/100credits"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": [
+          "https://docs.qoder.cn/product-overview/billing-description",
+          "https://docs.qoder.cn/events/100credits"
+        ],
+        "quote": "个人体验版：\"有限的体验额度，含为期 2 周的试用及 300 Credits\"。\"Qoder CN 新老个人用户……免费用户和试用期用户均可参与。\" \"每个账号每轮限领一次，每次 100 通用 Credits，需主动领取。\" \"每笔奖励自领取之日起 30 天\" \"企业订阅用户……不适用。\" 开始时间 2026 年 9 月 18 日 10:00，结束时间另行公告。",
+        "uncertainties": [
+          "官方未写明地区限制，regions 留空（合并时已从 CN 改为空数组）。",
+          "计费说明未说明试用到期后的处理。",
+          "与国际版卡内容相近，按面向人群不同分开收录；如需合并请删去其一。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "codebuddy-workbuddy-free-credits",
+        "providerId": "codebuddy",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "CodeBuddy / WorkBuddy 体验版：每月 500 积分",
+        "summary": "腾讯的 AI 编程助手 CodeBuddy 与 AI 办公智能体 WorkBuddy 同账号积分共享。免费体验版每月 500 基础积分，当月有效不结转，另含每月 5,000 次代码补全（限时不限次）、Auto 模型调度等。",
+        "benefit": "体验版免费，每月 500 积分（两款产品共享），代码补全限时不限次",
+        "officialUrl": "https://www.workbuddy.cn/docs/workbuddy/Pricing",
+        "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "积分当月有效、不结转；开通付费会员后不再另发体验版 500 积分。官网另有新用户、签到、邀请等活动积分，额度与有效期以客户端和活动页为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "查看 WorkBuddy 定价页中的体验版额度，以及两款产品积分共享的说明。",
+              "link": {
+                "label": "WorkBuddy 定价详情",
+                "url": "https://www.workbuddy.cn/docs/workbuddy/Pricing"
+              }
+            },
+            {
+              "text": "下载 WorkBuddy 或 CodeBuddy 并登录，即为免费体验版。"
+            },
+            {
+              "text": "在个人中心查看积分余额与到期时间，积分按到期先后扣减。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": [
+          "https://www.workbuddy.cn/docs/workbuddy/Pricing",
+          "https://www.codebuddy.cn/docs/ide/Account/pricing",
+          "https://www.codebuddy.cn/docs/ide/Account/credits",
+          "https://www.workbuddy.cn/docs/workbuddy/Buddy-One/Credits"
+        ],
+        "quote": "体验版价格\"免费\"，基础积分/月 \"500\"；代码实时补全 \"5,000 次/月（限免无限次）\"；\"WorkBuddy 和 CodeBuddy 同一账号积分共享，无需分别订阅。\" \"积分按月发放，当月有效、不累积结转\"；\"开通付费会员后，体验版 500 积分不再另行发放。\"",
+        "uncertainties": [
+          "新用户首登积分：官网 llms.txt 写 2300 积分（90 天）、新手任务 +900、每日签到 100，第三方文章另有 2,000 和 5,000 的说法；正式文档未写，卡面未收录具体数字。",
+          "邀请活动页（www.workbuddy.cn/events/invite/）为脚本渲染，未能抓取正文；第三方称新用户经邀请得 2,000 积分，截止 2026-11-30。",
+          "\"限免\"项目（补全不限次、全模型可选）随时可能取消。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "trae-cn-free-credits",
+        "providerId": "trae",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "TRAE 国内版：新用户 2,000 积分，每月 500 与每日签到积分",
+        "summary": "字节跳动的 AI 编程工具 TRAE 国内版：新用户注册一次性赠送 2,000 积分（31 天有效）；免费用户每月登录送 500 积分（当月有效），每天签到再得 100 积分（31 天有效）。",
+        "benefit": "新用户 2,000 积分；每月 500 积分；每日签到 100 积分",
+        "officialUrl": "https://docs.trae.cn/ide_plans-and-billing",
+        "sourceUrl": "https://docs.trae.cn/ide_plans-and-billing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "新用户 2,000 积分仅限首次注册。签到在头像菜单中手动完成。免费用户不能购买加量积分。2026-11-18 起 TRAE 账号升级为豆包飞书账号，官方称会员与积分保留。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "查看 TRAE 套餐与计费说明中的免费积分来源。",
+              "link": {
+                "label": "TRAE 套餐与计费",
+                "url": "https://docs.trae.cn/ide_plans-and-billing"
+              }
+            },
+            {
+              "text": "下载 TRAE 国内版并注册登录，领取新用户 2,000 积分。"
+            },
+            {
+              "text": "每天点击头像，在菜单中点 `签到` 领取 100 积分；每月登录自动获得 500 积分。"
+            },
+            {
+              "text": "如 TRAE 绑定的手机号与豆包账号不同，2026-11-18 账号升级前请先查看官方升级通知。",
+              "link": {
+                "label": "账号体系升级通知",
+                "url": "https://docs.trae.cn/ide_important-notice-for-trae-account-upgrade-and-integration"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": [
+          "https://docs.trae.cn/ide_plans-and-billing",
+          "https://docs.trae.cn/ide_important-notice-for-trae-account-upgrade-and-integration",
+          "https://www.trae.cn/pricing"
+        ],
+        "quote": "每月登录赠送 \"500 积分\" 有效期 \"当前自然月\"；新用户注册福利 \"一次性赠送 2000 积分\" \"31 个自然日\"；每日签到 \"每天 100 积分\" \"31 个自然日\"；\"免费用户无法购买\"。\"自 2026 年 11 月 18 日起，TRAE 账号将自动升级为豆包飞书账号。\"",
+        "uncertainties": [
+          "www.trae.cn/pricing 只列免费版每月 500 积分，未列新用户与签到积分；以 docs.trae.cn 为准。",
+          "第三方有每日签到 150 积分的说法，与官方文档 100 不符，按官方。",
+          "邀请双方各 500 积分的活动截止 2026-12-31，未写入卡面。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "baidu-qianfan-new-user-tokens",
+        "providerId": "baidu-cloud",
+        "pool": "ai",
+        "rarity": "S",
+        "title": "百度千帆新用户：17 款模型各送 100 万 Tokens",
+        "summary": "首次开通百度千帆大模型平台时，系统自动为 17 款指定模型各发放 100 万 Tokens 免费额度，3 个月有效。覆盖 ERNIE-4.5-Turbo、ERNIE-X1-Turbo、DeepSeek-R1/V3.1、Kimi-K2-Instruct、Qwen3 与 Qwen3-Coder 等。",
+        "benefit": "17 款模型各 100 万 Tokens 免费额度，3 个月有效",
+        "officialUrl": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
+        "sourceUrl": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "只能抵扣预置模型服务的在线推理，不能抵扣批量推理。额度仅限页面列出的模型，用完后需购买付费服务。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册百度智能云账号，进入千帆大模型平台并同意用户协议，平台自动开通并发放额度。",
+              "link": {
+                "label": "新用户免费额度说明",
+                "url": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg"
+              }
+            },
+            {
+              "text": "在控制台的资源页查看各模型剩余的免费 Tokens 与到期时间。"
+            },
+            {
+              "text": "创建 API Key，调用页面列出的模型，注意额度只抵扣在线推理，不含批量推理。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": ["https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg"],
+        "quote": "\"2025年10月24日0点起，访问千帆大模型平台，阅读并同意用户协议后，系统将自动开通千帆大模型平台并发放新用户免费Tokens额度\"；每个模型 100 万 Tokens、有效期 3 个月；\"仅支持抵扣预置模型服务在线推理（调用）消耗的Tokens，不支持抵扣批量推理（调用）消耗的Tokens\"。页面更新时间 2026-11-11。",
+        "uncertainties": [
+          "第三方文章称 ERNIE-Speed/Lite 长期免费，官方页面未见此说法，未写入卡面。",
+          "文档首页另提到实名认证送 20 元代金券（一个月有效），本次未抓取到原文，未写入卡面。",
+          "页面未写实名认证是否为领取前提。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "tencent-hunyuan-free-quota",
+        "providerId": "tencent-cloud",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "腾讯混元大模型首次开通免费额度",
+        "summary": "首次开通腾讯混元大模型服务后，混元生文发放免费调用额度供测试体验：Hunyuan-a13b 等共 100 万 Tokens（共享消耗），Hunyuan-embedding 另有 100 万 Tokens，资源包 1 年有效。",
+        "benefit": "混元生文共 100 万 Tokens + Embedding 100 万 Tokens，1 年有效",
+        "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
+        "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "需先完成腾讯云个人或企业实名认证。资源包自开通之日起 1 年内未用完即过期作废；其他混元模型的免费额度以计费页为准。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "注册腾讯云账号并完成个人或企业实名认证。",
+              "link": {
+                "label": "混元计费与免费额度",
+                "url": "https://cloud.tencent.com/document/product/1729/97731"
+              }
+            },
+            {
+              "text": "在控制台首次开通腾讯混元大模型服务，免费资源包自动发放。"
+            },
+            {
+              "text": "创建密钥调用 Hunyuan-a13b 或 Hunyuan-embedding，1 年内用完，过期作废。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": ["https://cloud.tencent.com/document/product/1729/97731"],
+        "quote": "\"首次开通腾讯混元大模型服务后，混元生文将发放一定量级的免费调用额度，供您测试体验。\" Hunyuan-a13b：\"共100万 tokens，共享消耗。\" Hunyuan-embedding：\"100万 tokens。\" \"资源包有效期为1年，自开通服务之日起1年内若免费资源包未使用完，则过期作废。\" 使用前须通过腾讯云企业或个人实名认证。",
+        "uncertainties": [
+          "“共享消耗”具体覆盖哪些生文模型，页面表格不完整，卡面只点名 Hunyuan-a13b。",
+          "第三方所说 hunyuan-lite 永久免费，官方计费页未见该模型，未写入。",
+          "页面写“首次开通”，newUsersOnly 按首次开通理解填 true。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "nvidia-nim-free-api",
+        "providerId": "nvidia",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "NVIDIA NIM 免费 API：开发者计划成员原型试用",
+        "summary": "加入免费的 NVIDIA 开发者计划后，可在 NVIDIA API 目录（build.nvidia.com）免费调用 NIM 模型接口，用于原型、研究、开发与测试；目录含 Nemotron、DeepSeek 等开放模型。",
+        "benefit": "免费调用 NIM API 端点，仅限原型、研究、开发与测试用途",
+        "officialUrl": "https://build.nvidia.com/",
+        "sourceUrl": "https://docs.api.nvidia.com/nim/docs/product",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "官方写明开发者计划下的 NIM 访问仅用于原型、研究、开发与测试，不可用于生产；生产部署需 90 天 AI Enterprise 试用或商业授权。官方文档未公布速率限制。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 NVIDIA API 目录，注册账号并加入免费的 NVIDIA 开发者计划。",
+              "link": {
+                "label": "NVIDIA API 目录",
+                "url": "https://build.nvidia.com/"
+              }
+            },
+            {
+              "text": "选择一个模型，在模型页生成 API Key。"
+            },
+            {
+              "text": "用 OpenAI 兼容接口调用，只用于原型和测试；要上线生产需另行取得授权。",
+              "link": {
+                "label": "使用条件说明",
+                "url": "https://docs.api.nvidia.com/nim/docs/product"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": ["https://docs.api.nvidia.com/nim/docs/product"],
+        "quote": "\"Members of the NVIDIA Developer Program have free access to NIM API endpoints for prototyping\"; \"NIM access through the NVIDIA Developer Program is for prototyping, research, development and testing purposes only\"; \"can select the option to access NIM via a free 90-day NVIDIA AI Enterprise Trial\".",
+        "uncertainties": [
+          "第三方称每分钟 40 次请求、注册需手机验证，官方文档未写，未写入卡面。",
+          "build.nvidia.com 首页本次未抓取正文；“含 Nemotron、DeepSeek 等开放模型”出自第三方搜索摘要，发布前请人工打开目录页核对。",
+          "未核实中国大陆注册与访问情况。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "kilo-code-free-models",
+        "providerId": "kilo",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "Kilo Code 免费模型：Auto Free 自动路由",
+        "summary": "开源编程助手 Kilo Code（VS Code、JetBrains、CLI）可通过 Kilo Gateway 调用标注 :free 的免费模型，用量只记录不计费；选择 kilo-auto/free 会自动路由到当前可用的免费模型。免费模型名单经常变化。",
+        "benefit": "免费模型调用不计费，每个 IP 每小时最多 200 次",
+        "officialUrl": "https://kilo.ai/docs/getting-started/using-kilo-for-free",
+        "sourceUrl": "https://kilo.ai/docs/gateway/usage-and-billing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "Auto Free 可能把请求发给会保留并用提示词与输出改进服务的提供方，NVIDIA 免费端点仅限试用且记录使用，勿提交个人或机密数据。上游也可能限流。官方未说明中国大陆可用性。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "安装 Kilo Code 扩展（VS Code 或 JetBrains）或 CLI。",
+              "link": {
+                "label": "官方免费使用说明",
+                "url": "https://kilo.ai/docs/getting-started/using-kilo-for-free"
+              }
+            },
+            {
+              "text": "在模型选择器中输入 `free` 选一个免费模型（CLI 中运行 `/models`），或直接选 `kilo-auto/free` 自动路由。"
+            },
+            {
+              "text": "免费模型每个 IP 每小时最多 200 次请求，超出会返回 429；稍等再试，或换另一个免费模型。",
+              "link": {
+                "label": "官方用量与计费说明",
+                "url": "https://kilo.ai/docs/gateway/usage-and-billing"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": [
+          "https://kilo.ai/docs/getting-started/using-kilo-for-free",
+          "https://kilo.ai/docs/gateway/usage-and-billing",
+          "https://kilo.ai/pricing"
+        ],
+        "quote": "\"Kilo Code supports free models for coding and background tasks.\" \"All free model requests (both anonymous and authenticated) are rate-limited by IP address: Free models per IP | 200 requests per hour\" \"Models tagged with :free have zero cost -- usage is tracked but not billed\"",
+        "uncertainties": [
+          "是否必须注册账号：用量页称免费模型允许匿名请求，但扩展内使用流程未逐步核对。",
+          "免费模型名单随时变化，卡面不写具体型号。",
+          "官方未说明中国大陆可用性。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "cursor-free-plan",
+        "providerId": "cursor",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "Cursor 免费版",
+        "summary": "AI 代码编辑器 Cursor 提供 0 元免费版，含有限用量的 Agent 与 Chat，官方未公布具体次数；免费版不能使用第三方模型。付费版本现作为 X Subscription（Grok、Cursor 与 X 合一订阅）出售。",
+        "benefit": "免费使用 Cursor 编辑器，Agent 与 Chat 有用量上限（未公布具体次数）",
+        "officialUrl": "https://cursor.com/pricing",
+        "sourceUrl": "https://cursor.com/docs/account/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "免费版第三方模型不可用。付费订阅只经 X Subscription Corp 出售。官方未说明中国大陆可用性。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Cursor 价格页，确认免费版当前包含的功能。",
+              "link": {
+                "label": "官方价格页",
+                "url": "https://cursor.com/pricing"
+              }
+            },
+            {
+              "text": "下载 Cursor 并登录账号，默认即为免费版。"
+            },
+            {
+              "text": "免费版 Agent 与 Chat 用量有限，用完后需等待重置或升级付费版；付费版只经 X Subscription 官方渠道购买。",
+              "link": {
+                "label": "官方计费文档",
+                "url": "https://cursor.com/docs/account/pricing"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": ["https://cursor.com/pricing", "https://cursor.com/docs/account/pricing"],
+        "quote": "Free $0: \"Limited agent requests\" \"Limited Chat requests\"; docs: \"Agent and Chat with limited usage.\" Third-party models \"Not available.\" \"Cursor is sold as part of The X Subscription, one subscription for Grok, Cursor, and X.\" \"Subscriptions are only sold directly through X Subscription Corp.\"",
+        "uncertainties": [
+          "官方未公布免费版具体次数与重置周期。",
+          "“下载并登录即为免费版”为一般性说明，未逐字核对。",
+          "价格页未明确免费版本身是否也属于 X Subscription。",
+          "官方未说明中国大陆可用性。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "devin-desktop-free",
+        "providerId": "devin",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "Devin 免费版：Tab 补全与行内编辑不限量",
+        "summary": "Cognition 的 Devin 个人免费版 0 元：Devin Desktop 的 Tab 补全与行内编辑不限量，另含少量编程智能体额度，可用模型有限。更多模型、云端智能体 Devin Cloud 需 20 美元/月的 Pro 版。",
+        "benefit": "Tab 补全与行内编辑不限量，另有少量智能体（Agent）额度",
+        "officialUrl": "https://devin.ai/pricing",
+        "sourceUrl": "https://devin.ai/pricing",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "官方未公布免费版智能体额度的具体数值。官方未说明中国大陆可用性。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Devin 价格页，在 Individual Plans 中找到 Free 档。",
+              "link": {
+                "label": "官方价格页",
+                "url": "https://devin.ai/pricing"
+              }
+            },
+            {
+              "text": "点 `Download` 下载 Devin Desktop 并登录。"
+            },
+            {
+              "text": "日常补全与行内编辑不限量；智能体额度较少，可优先用小模型处理简单任务以节省额度。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": ["https://devin.ai/pricing"],
+        "quote": "Free $0: \"Light quota to code with agents\" \"Limited model availability\" \"Unlimited inline edits\" \"Unlimited Tab completions\"; Pro $20/month adds \"Full model availability\" and \"Access to cloud agents (Devin Cloud)\".",
+        "uncertainties": [
+          "第三方文章称 Devin Desktop 即原 Windsurf，官方价格页未提及 Windsurf，卡面不作此表述。",
+          "价格页未说明免费版是否需要绑卡，按 false 填写。",
+          "“小模型节省额度”出自 FAQ 对付费额度的说明，是否同样适用于免费版未确认。",
+          "官方未说明中国大陆可用性。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "google-antigravity-free",
+        "providerId": "google-antigravity",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "Google Antigravity 免费版：每周刷新的智能体额度",
+        "summary": "Google 的智能体编程工具 Antigravity 个人版 0 元：未订阅 Google AI Pro/Ultra 的个人账户也有每周刷新的使用额度，可用 Gemini 模型，Tab 补全不限量，并可使用定时任务、CLI 等全部功能。",
+        "benefit": "每周刷新的智能体额度，Gemini 模型可用，Tab 补全不限量，含 CLI",
+        "officialUrl": "https://antigravity.google/pricing",
+        "sourceUrl": "https://antigravity.google/docs/plans",
+        "conditions": {
+          "newUsersOnly": false,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "额度随可用算力与任务复杂度变化，官方未公布具体数值；只有 AI Pro/Ultra 用户可用购买的 AI 额度继续使用。官方未说明年龄与地区限制。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开 Antigravity 价格页，确认个人版免费档当前权益。",
+              "link": {
+                "label": "官方价格页",
+                "url": "https://antigravity.google/pricing"
+              }
+            },
+            {
+              "text": "下载 Antigravity，用个人 Google 账号登录。"
+            },
+            {
+              "text": "额度每周刷新，复杂任务消耗更多；用完后等下周刷新，或订阅 Google AI Pro/Ultra 提高额度。",
+              "link": {
+                "label": "官方套餐说明",
+                "url": "https://antigravity.google/docs/plans"
+              }
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": [
+          "https://antigravity.google/pricing",
+          "https://antigravity.google/docs/plans"
+        ],
+        "quote": "pricing: Individual \"$0/month\", \"Access to a variety of agent models\", \"Unlimited Tab completions\", \"Basic weekly rate limits\". plans: \"Users not on Google AI Pro or Ultra plans receive the following benefits: A meaningful quota, refreshed weekly\"; all plans get \"Access to all product features, such as scheduled tasks and the CLI.\"",
+        "uncertainties": [
+          "提供方单独登记为 google-antigravity（只含 antigravity.google），未改动已有的 google 提供方。",
+          "“用个人 Google 账号登录”为推断，套餐页只写适用于个人账户，未核对登录页。",
+          "官方未说明中国大陆可用性。"
+        ]
+      }
+    },
+    {
+      "request": {
+        "id": "baidu-comate-free",
+        "providerId": "baidu-comate",
+        "pool": "ai",
+        "rarity": "A",
+        "title": "文心快码 Comate 个人标准版：免费并送 5,000 积分",
+        "summary": "百度文心快码（Comate）个人标准版免费，首次注册赠送 5,000 积分，含编程智能体、续写与改写、Spec 模式、Figma 转代码、自定义智能体等功能。专业版 59 元/月含 25,000 积分。",
+        "benefit": "个人标准版免费使用，首次注册赠送 5,000 积分",
+        "officialUrl": "https://comate.baidu.com/zh/pricing",
+        "sourceUrl": "https://comate.baidu.com/zh/pricing",
+        "conditions": {
+          "newUsersOnly": true,
+          "studentOnly": false,
+          "requiresPaymentMethod": false,
+          "autoRenews": false,
+          "regions": [],
+          "note": "赠送积分只限首次注册；积分有效期与各模型消耗标准价格页未写明，以客户端为准。免费 Auto-Free 模式只列在付费版中。"
+        },
+        "validFrom": null,
+        "validUntil": null,
+        "guide": {
+          "kind": "brief",
+          "steps": [
+            {
+              "text": "打开文心快码价格页，选择“个人标准版·Free”。",
+              "link": {
+                "label": "官方价格页",
+                "url": "https://comate.baidu.com/zh/pricing"
+              }
+            },
+            {
+              "text": "点 `前往下载` 安装 IDE 插件或客户端，用百度账号首次注册登录。"
+            },
+            {
+              "text": "在客户端查看已到账的 5,000 积分与有效期，按需选择模型使用。"
+            }
+          ]
+        }
+      },
+      "review": {
+        "fetchedAt": "2026-11-14",
+        "evidenceUrls": ["https://comate.baidu.com/zh/pricing"],
+        "quote": "\"个人标准版·Free 免费 首次注册，赠送5000积分\"；\"个人专业版·Pro ￥59/月 含25000积分/月\"；功能：编程智能体、续写与改写、Spec 模式、Figma 转代码、自定义智能体、技能、规则、Mission 工作模式。",
+        "uncertainties": [
+          "价格页为客户端渲染，本次用浏览器渲染后抓取文本。",
+          "积分有效期、是否每月补发均未写明。",
+          "“用百度账号登录”与“客户端查看积分”为一般性说明，未逐字核对。"
+        ]
+      }
     }
   ]
 }

@@ -329,6 +329,116 @@
       "review": {
         "notes": "www.freecodecamp.org/news 下有作者投稿文章，审核时注意来源路径。"
       }
+    },
+    {
+      "request": {
+        "id": "opencode",
+        "name": "OpenCode",
+        "officialDomains": ["opencode.ai"]
+      },
+      "review": {
+        "notes": "opencode.ai 下有 /s/ 会话分享页（用户内容），按主机匹配无法排除，审核来源路径时请留意。"
+      }
+    },
+    {
+      "request": {
+        "id": "qoder",
+        "name": "Qoder",
+        "officialDomains": ["docs.qoder.com", "docs.qoder.cn"]
+      },
+      "review": {
+        "notes": "只登记文档站具体主机，覆盖国际版（docs.qoder.com）与国内版 Qoder CN（docs.qoder.cn）。"
+      }
+    },
+    {
+      "request": {
+        "id": "codebuddy",
+        "name": "腾讯云代码助手 CodeBuddy",
+        "officialDomains": ["www.codebuddy.cn", "www.workbuddy.cn"]
+      },
+      "review": {
+        "notes": "WorkBuddy 与 CodeBuddy 同账号积分共享，作为同一提供方登记；只登记 www 具体主机。未复用 tencent-cloud（其域名只有 cloud.tencent.com）。"
+      }
+    },
+    {
+      "request": {
+        "id": "trae",
+        "name": "TRAE",
+        "officialDomains": ["docs.trae.cn", "www.trae.cn"]
+      },
+      "review": {
+        "notes": "国内版 TRAE（字节跳动），只登记具体主机。"
+      }
+    },
+    {
+      "request": {
+        "id": "nvidia",
+        "name": "NVIDIA",
+        "officialDomains": ["docs.api.nvidia.com", "build.nvidia.com"]
+      },
+      "review": {
+        "notes": "只登记具体主机，未登记 nvidia.com（其下 forums.developer.nvidia.com 允许用户发帖）。"
+      }
+    },
+    {
+      "request": {
+        "id": "baidu-cloud",
+        "name": "百度智能云",
+        "officialDomains": ["cloud.baidu.com"]
+      },
+      "review": {
+        "notes": "登记 cloud.baidu.com 会同时信任子域名 qianfan.cloud.baidu.com（千帆社区，含用户发帖）。与 cloud.tencent.com 的处理方式相同，审核来源路径时请留意只使用 /doc/ 下的官方文档。"
+      }
+    },
+    {
+      "request": {
+        "id": "kilo",
+        "name": "Kilo Code",
+        "officialDomains": ["kilo.ai"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "cursor",
+        "name": "Cursor",
+        "officialDomains": ["cursor.com"]
+      },
+      "review": {
+        "notes": "登记 cursor.com 会同时信任 forum.cursor.com（用户发帖论坛），按主机匹配无法排除；审核来源路径时请留意。"
+      }
+    },
+    {
+      "request": {
+        "id": "devin",
+        "name": "Devin（Cognition）",
+        "officialDomains": ["devin.ai"]
+      },
+      "review": {
+        "notes": ""
+      }
+    },
+    {
+      "request": {
+        "id": "baidu-comate",
+        "name": "百度文心快码",
+        "officialDomains": ["comate.baidu.com"]
+      },
+      "review": {
+        "notes": "只登记 comate.baidu.com，未登记 baidu.com（其下有贴吧、百家号等用户内容）。如另一批次为千帆新增了百度提供方，可考虑合并。"
+      }
+    },
+    {
+      "request": {
+        "id": "google-antigravity",
+        "name": "Google Antigravity",
+        "officialDomains": ["antigravity.google"]
+      },
+      "review": {
+        "notes": "单独建提供方，避免修改线上已有的 google 提供方（PATCH 会整体替换其域名列表）。antigravity.google 为 Google 官方产品站。"
+      }
     }
   ]
 }
